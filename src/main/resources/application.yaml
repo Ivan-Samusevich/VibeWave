@@ -1,0 +1,14 @@
+spring:
+  apllication:
+    name: VibeWave
+  datasource:
+    url:  jdbc:postgresql://localhost:5432/VibeWave
+    username: postgres
+    password: gfhjkm12
+  jpa:
+    hibernate:
+      show-sql: true
+      generate-ddl: false
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-1.yaml
+    enabled: true
