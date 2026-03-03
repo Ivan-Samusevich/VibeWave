@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { User } from '../types/api';
 
 const api = axios.create({
   baseURL: '/api',
@@ -14,25 +15,32 @@ api.interceptors.request.use((config) => {
 
 export const authService = {
   login: async (data: any) => {
-    // Simulating API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Путь: /api/users/signin
+    const response = await api.post<string>('/users/signin', {
+      email: data.email,
+      password: data.password,
+    });
     
-    // Mock response
-    if (data.email === 'test@example.com' && data.password === 'password123') {
-      return {
-        user: { id: '1', email: data.email, name: 'Test User' },
-        token: 'mock-jwt-token',
-      };
-    }
-    throw new Error('Invalid email or password');
-  },
-  register: async (data: any) => {
-    // Simulating API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const token = response.data;
     
     return {
-      user: { id: '2', email: data.email, name: data.fullName },
-      token: 'mock-jwt-token-new',
+      token,
+      user: { email: data.email, username: 'User' } as User,
+    };
+  },
+  register: async (data: any) => {
+    // Путь: /api/users/signup
+    const response = await api.post<string>('/users/signup', {
+      email: data.email,
+      password: data.password,
+      username: data.fullName,
+    });
+    
+    const token = response.data;
+    
+    return {
+      token,
+      user: { email: data.email, username: data.fullName } as User,
     };
   },
 };

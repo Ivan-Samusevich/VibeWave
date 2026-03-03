@@ -2,15 +2,16 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { Card } from '../../components/Card';
 import { authService } from '../../services/authService';
 import { setCredentials, setLoading, setError } from './authSlice';
-import { LogIn } from 'lucide-react';
+import { LogIn, AlertCircle } from 'lucide-react';
 import { motion } from 'motion/react';
+import { RootState } from '../../store';
 
 const schema = yup.object({
   email: yup.string().email('Некорректный email').required('Email обязателен'),
@@ -20,6 +21,7 @@ const schema = yup.object({
 export const LoginForm: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { error } = useSelector((state: RootState) => state.auth);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isSuccess, setIsSuccess] = React.useState(false);
 
@@ -36,7 +38,8 @@ export const LoginForm: React.FC = () => {
       dispatch(setCredentials(response));
       setIsSuccess(true);
     } catch (err: any) {
-      dispatch(setError(err.message));
+      const message = err.response?.data?.message || err.response?.data || err.message || 'Ошибка входа';
+      dispatch(setError(message));
     } finally {
       setIsSubmitting(false);
       dispatch(setLoading(false));
@@ -76,6 +79,17 @@ export const LoginForm: React.FC = () => {
           <h1 className="text-3xl font-bold tracking-tight text-zinc-900 font-display">VibeWave</h1>
           <p className="text-zinc-500">С возвращением! Войдите в свой аккаунт.</p>
         </div>
+
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-2 rounded-lg bg-red-50 p-3 text-sm text-red-600 border border-red-100"
+          >
+            <AlertCircle className="h-4 w-4" />
+            <span>{error}</span>
+          </motion.div>
+        )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Input
