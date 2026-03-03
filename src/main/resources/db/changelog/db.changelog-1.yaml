@@ -25,7 +25,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: password_hash
+                  name: password
                   type: varchar(100)
                   constraints:
                     nullable: false
@@ -62,8 +62,6 @@ databaseChangeLog:
               - column:
                   name: is_active
                   type: boolean
-                  constraints:
-                    nullable: false
         - addForeignKeyConstraint:
             constraintName: fk_users_profile_user
             baseTableName: users_profile
