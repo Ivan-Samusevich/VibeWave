@@ -1,6 +1,6 @@
 export interface User {
   userId?: number;
-  username: string;
+  userName: string;
   email: string;
   password?: string;
   createdAt?: string;
@@ -10,8 +10,8 @@ export interface User {
 export interface UserProfile {
   userProfileId: number;
   description?: string;
-  avatarUrl?: string;
-  isActive: boolean;
+  avatar_url?: string;
+  is_active: boolean;
 }
 
 export interface Post {
@@ -22,7 +22,7 @@ export interface Post {
   createdAt: string;
   updatedAt?: string;
   media?: Media[];
-  user?: User; // Для отображения автора поста
+  user?: User;
 }
 
 export interface Media {

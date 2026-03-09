@@ -21,11 +21,12 @@ export const authService = {
       password: data.password,
     });
     
-    const token = response.data;
+    const message = response.data;
     
     return {
-      token,
-      user: { email: data.email, username: 'User' } as User,
+      token: 'dummy-token', 
+      user: { email: data.email, userName: 'User' } as User,
+      message
     };
   },
   register: async (data: any) => {
@@ -33,14 +34,15 @@ export const authService = {
     const response = await api.post<string>('/users/signup', {
       email: data.email,
       password: data.password,
-      username: data.fullName,
+      userName: data.fullName,
     });
     
-    const token = response.data;
+    const message = response.data;
     
     return {
-      token,
-      user: { email: data.email, username: data.fullName } as User,
+      token: 'dummy-token',
+      user: { email: data.email, userName: data.fullName } as User,
+      message
     };
   },
 };

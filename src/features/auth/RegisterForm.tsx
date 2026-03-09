@@ -16,7 +16,7 @@ import { RootState } from '../../store';
 const schema = yup.object({
   fullName: yup.string().required('Имя обязательно'),
   email: yup.string().email('Некорректный email').required('Email обязателен'),
-  password: yup.string().min(6, 'Минимум 6 символов').required('Пароль обязателен'),
+  password: yup.string().min(8, 'Минимум 8 символов').required('Пароль обязателен'),
   confirmPassword: yup.string()
     .oneOf([yup.ref('password')], 'Пароли должны совпадать')
     .required('Подтверждение пароля обязательно'),
@@ -27,7 +27,6 @@ export const RegisterForm: React.FC = () => {
   const navigate = useNavigate();
   const { error } = useSelector((state: RootState) => state.auth);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [isSuccess, setIsSuccess] = React.useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
@@ -40,7 +39,7 @@ export const RegisterForm: React.FC = () => {
     try {
       const response = await authService.register(data);
       dispatch(setCredentials(response));
-      setIsSuccess(true);
+      navigate('/');
     } catch (err: any) {
       const message = err.response?.data?.message || err.response?.data || err.message || 'Ошибка регистрации';
       dispatch(setError(message));
@@ -49,27 +48,6 @@ export const RegisterForm: React.FC = () => {
       dispatch(setLoading(false));
     }
   };
-
-  if (isSuccess) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-md text-center"
-      >
-        <Card className="space-y-4">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-            <UserPlus className="h-6 w-6 text-green-600" />
-          </div>
-          <h2 className="text-2xl font-bold text-zinc-900">Регистрация успешна!</h2>
-          <p className="text-zinc-500">Добро пожаловать в VibeWave. Ваш аккаунт создан.</p>
-          <Button variant="outline" onClick={() => setIsSuccess(false)} className="w-full">
-            Вернуться
-          </Button>
-        </Card>
-      </motion.div>
-    );
-  }
 
   return (
     <motion.div

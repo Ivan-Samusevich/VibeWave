@@ -15,7 +15,7 @@ import { RootState } from '../../store';
 
 const schema = yup.object({
   email: yup.string().email('Некорректный email').required('Email обязателен'),
-  password: yup.string().min(6, 'Минимум 6 символов').required('Пароль обязателен'),
+  password: yup.string().min(8, 'Минимум 8 символов').required('Пароль обязателен'),
 }).required();
 
 export const LoginForm: React.FC = () => {
@@ -23,7 +23,6 @@ export const LoginForm: React.FC = () => {
   const navigate = useNavigate();
   const { error } = useSelector((state: RootState) => state.auth);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [isSuccess, setIsSuccess] = React.useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema)
@@ -36,7 +35,7 @@ export const LoginForm: React.FC = () => {
     try {
       const response = await authService.login(data);
       dispatch(setCredentials(response));
-      setIsSuccess(true);
+      navigate('/');
     } catch (err: any) {
       const message = err.response?.data?.message || err.response?.data || err.message || 'Ошибка входа';
       dispatch(setError(message));
@@ -45,27 +44,6 @@ export const LoginForm: React.FC = () => {
       dispatch(setLoading(false));
     }
   };
-
-  if (isSuccess) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-md text-center"
-      >
-        <Card className="space-y-4">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-            <LogIn className="h-6 w-6 text-green-600" />
-          </div>
-          <h2 className="text-2xl font-bold text-zinc-900">Успешный вход!</h2>
-          <p className="text-zinc-500">Вы успешно авторизованы в VibeWave.</p>
-          <Button variant="outline" onClick={() => setIsSuccess(false)} className="w-full">
-            Вернуться
-          </Button>
-        </Card>
-      </motion.div>
-    );
-  }
 
   return (
     <motion.div
