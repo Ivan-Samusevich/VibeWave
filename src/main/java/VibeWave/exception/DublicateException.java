@@ -2,8 +2,14 @@ package VibeWave.exception;
 
 import org.springframework.http.HttpStatus;
 
+
+
 public class DublicateException extends ApplicationException {
-    public DublicateException(String message) {
+
+    private final String errorCode;
+
+    public DublicateException(String message, String errorCode) {
       super(message, "Dublicate Error", HttpStatus.CONFLICT);
+      this.errorCode = errorCode;
   }
 }

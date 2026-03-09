@@ -6,24 +6,21 @@ import VibeWave.exception.DublicateException;
 import VibeWave.exception.ValidationException;
 import VibeWave.repository.UserProfileRepository;
 import VibeWave.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class SignService {
     //todo добавить jwt
+    //todo добавить интерфейс для сервиса и передлать аннотации транзакций
     private final UserRepository userRepository;
-    private final UserProfileRepository userProfileRepository; //todo Может можно не создавать с сасого начала, а только при исползовании
-    private final PasswordEncoder encoder = new BCryptPasswordEncoder();
-
-    //todo узнать, как вернуть exception пользователя, а не в консоль
-
-    public SignService(UserRepository userRepository, UserProfileRepository userProfileRepository) {
-        this.userRepository = userRepository;
-        this.userProfileRepository = userProfileRepository;
-    }
+    private final UserProfileRepository userProfileRepository;
+    private final PasswordEncoder encoder;
 
     public String signIn(User user){
         checkSignIn(user);
@@ -32,13 +29,13 @@ public class SignService {
 
     private void checkSignIn(User user) {
         if(user.getEmail() == null || user.getPassword() == null) {
-            throw new ValidationException("Вы не ввели почту или пароль");
+            throw new ValidationException("Вы не ввели почту или пароль", "Password_OR_Email_Empty");
         }
         if(!userRepository.existsByEmail(user.getEmail())){
-            throw new ValidationException("Пользователя с такой почтой не существует");
+            throw new ValidationException("Пользователя с такой почтой не существует", "Uncorrect_Email");
         }
         if(!isPasswordCorrect(user)){
-            throw new ValidationException("Неверный пароль");
+            throw new ValidationException("Неверный пароль", "Uncorrect_Password");
         }
     }
 
@@ -55,27 +52,27 @@ public class SignService {
 
     private void checkSignUp(User user){
         if(user.getUserName() == null){
-            throw new ValidationException("Введите имя пользователя");
+            throw new ValidationException("Введите имя пользователя", "Name_Is_Empty");
         }
 
         if(user.getEmail() == null){
-            throw new ValidationException("Введите почту");
+            throw new ValidationException("Введите почту", "Email_Is_Empty");
         }
 
         if(userRepository.existsByEmail(user.getEmail())){
-            throw new DublicateException("Пользователь с такой почтой уже существует");
+            throw new DublicateException("Пользователь с такой почтой уже существует", "Email_Is_Not_Free");
         }
 
         if(user.getPassword() == null){
-            throw new ValidationException("Введите пароль");
+            throw new ValidationException("Введите пароль", "Password_Is_Empty");
         }
 
         if(user.getPassword().length() < 8){
-            throw new ValidationException("Длина пароля не менее 8 символов")  ;
+            throw new ValidationException("Длина пароля не менее 8 символов", "Short_Password")  ;
         }
     }
 
-    @Transactional
+
     private void createUser(User user){
         user.setPassword(hashPassword(user.getPassword()));
         userRepository.save(user);
@@ -86,9 +83,8 @@ public class SignService {
         return encoder.encode(password);
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     private void createUserProfile(int id){
-
         UserProfile userProfile = new UserProfile();
         userProfile.setUserProfileId(id);
         userProfileRepository.save(userProfile);
