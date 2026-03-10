@@ -19,8 +19,8 @@ export const RegisterForm: React.FC = () => {
     >
       <Card className="space-y-6">
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-900 font-display">VibeWave</h1>
-          <p className="text-zinc-500">Создайте аккаунт, чтобы начать делиться вайбом.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-zinc-900 font-display dark:text-zinc-50">VibeWave</h1>
+          <p className="text-zinc-500 dark:text-zinc-400">Создайте аккаунт, чтобы начать делиться вайбом.</p>
         </div>
 
         {error && (
@@ -67,7 +67,7 @@ export const RegisterForm: React.FC = () => {
           </Button>
         </form>
 
-        <p className="text-center text-sm text-zinc-600">
+        <p className="text-center text-sm text-zinc-600 dark:text-zinc-400">
           Уже есть аккаунт?{' '}
           <Link to="/login" className="font-medium text-indigo-600 hover:underline">
             Войти

@@ -19,8 +19,8 @@ export const LoginForm: React.FC = () => {
     >
       <Card className="space-y-6">
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-900 font-display">VibeWave</h1>
-          <p className="text-zinc-500">С возвращением! Войдите в свой аккаунт.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-zinc-900 font-display dark:text-zinc-50">VibeWave</h1>
+          <p className="text-zinc-500 dark:text-zinc-400">С возвращением! Войдите в свой аккаунт.</p>
         </div>
 
         {error && (
@@ -56,14 +56,14 @@ export const LoginForm: React.FC = () => {
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-zinc-200" />
+            <span className="w-full border-t border-zinc-200 dark:border-zinc-800" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white px-2 text-zinc-500">Или</span>
+            <span className="bg-white px-2 text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400">Или</span>
           </div>
         </div>
 
-        <p className="text-center text-sm text-zinc-600">
+        <p className="text-center text-sm text-zinc-600 dark:text-zinc-400">
           Нет аккаунта?{' '}
           <Link to="/register" className="font-medium text-indigo-600 hover:underline">
             Зарегистрироваться
