@@ -7,7 +7,11 @@ import { Button } from './Button';
 import { LogOut, User, Home, PlusSquare, Sun, Moon, MessageCircle } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
-export const Navbar: React.FC = () => {
+interface NavbarProps {
+  onAddPostClick?: () => void;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ onAddPostClick }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.auth);
@@ -32,7 +36,10 @@ export const Navbar: React.FC = () => {
           <Link to="/chat" className="p-2 text-zinc-600 hover:text-zinc-900 transition-colors dark:text-zinc-400 dark:hover:text-zinc-100">
             <MessageCircle className="h-6 w-6" />
           </Link>
-          <button className="p-2 text-zinc-600 hover:text-zinc-900 transition-colors dark:text-zinc-400 dark:hover:text-zinc-100 cursor-pointer">
+          <button 
+            onClick={onAddPostClick}
+            className="p-2 text-zinc-600 hover:text-zinc-900 transition-colors dark:text-zinc-400 dark:hover:text-zinc-100"
+          >
             <PlusSquare className="h-6 w-6" />
           </button>
           

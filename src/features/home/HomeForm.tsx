@@ -4,9 +4,10 @@ import { RootState } from '../../store';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
-import { User, Heart, MessageCircle, Send } from 'lucide-react';
+import { User, Heart, MessageCircle, Send, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Navbar } from '../../components/Navbar';
+import { Navbar } from '../../components/NavBar';
+import { CreatePostModal } from '../../components/CreatePostModal';
 
 interface PostData {
   id: number;
@@ -15,11 +16,15 @@ interface PostData {
   isLiked: boolean;
   caption: string;
   timeAgo: string;
+  createdAt: number;
+  mediaUrl: string;
+  mediaType: 'image' | 'video';
   comments: { id: number; userName: string; text: string }[];
 }
 
 export const HomeForm: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const [posts, setPosts] = useState<PostData[]>([
     {
@@ -29,6 +34,9 @@ export const HomeForm: React.FC = () => {
       isLiked: false,
       caption: 'Наслаждаюсь закатом на берегу океана. #nature #vibes',
       timeAgo: '2 ЧАСА НАЗАД',
+      createdAt: Date.now() - 7200000,
+      mediaUrl: 'https://picsum.photos/seed/vibewave-1/600/600',
+      mediaType: 'image',
       comments: [
         { id: 1, userName: 'maria_sky', text: 'Это просто невероятно! 😍' }
       ]
@@ -40,6 +48,9 @@ export const HomeForm: React.FC = () => {
       isLiked: true,
       caption: 'Новое рабочее место готово. Продуктивность зашкаливает! 💻',
       timeAgo: '5 ЧАСОВ НАЗАД',
+      createdAt: Date.now() - 18000000,
+      mediaUrl: 'https://picsum.photos/seed/vibewave-2/600/600',
+      mediaType: 'image',
       comments: []
     },
     {
@@ -49,6 +60,9 @@ export const HomeForm: React.FC = () => {
       isLiked: false,
       caption: 'Лучший завтрак в моей жизни. Рецепт в профиле! 🥞',
       timeAgo: '1 ДЕНЬ НАЗАД',
+      createdAt: Date.now() - 86400000,
+      mediaUrl: 'https://picsum.photos/seed/vibewave-3/600/600',
+      mediaType: 'image',
       comments: []
     }
   ]);
@@ -98,13 +112,50 @@ export const HomeForm: React.FC = () => {
     setExpandedComments(prev => ({ ...prev, [postId]: true }));
   };
 
+  const deletePost = (postId: number) => {
+    setPosts(prev => prev.filter(post => post.id !== postId));
+  };
+
+  const deleteComment = (postId: number, commentId: number) => {
+    setPosts(prev => prev.map(post => {
+      if (post.id === postId) {
+        return {
+          ...post,
+          comments: post.comments.filter(comment => comment.id !== commentId)
+        };
+      }
+      return post;
+    }));
+  };
+
+  const handleAddPost = (newPost: { caption: string; mediaUrl: string; mediaType: 'image' | 'video' }) => {
+    if (!user) return;
+
+    const post: PostData = {
+      id: Date.now(),
+      userName: user.userName,
+      likes: 0,
+      isLiked: false,
+      caption: newPost.caption,
+      timeAgo: 'ТОЛЬКО ЧТО',
+      createdAt: Date.now(),
+      mediaUrl: newPost.mediaUrl,
+      mediaType: newPost.mediaType,
+      comments: [],
+    };
+
+    setPosts(prev => [post, ...prev]);
+  };
+
+  const sortedPosts = [...posts].sort((a, b) => b.createdAt - a.createdAt);
+
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 transition-colors duration-200">
-      <Navbar />
+      <Navbar onAddPostClick={() => setIsModalOpen(true)} />
 
       <main className="mx-auto max-w-2xl px-4 py-8">
         <div className="space-y-8">
-          {posts.map((post) => (
+          {sortedPosts.map((post) => (
             <motion.div
               key={post.id}
               initial={{ opacity: 0, y: 20 }}
@@ -112,20 +163,42 @@ export const HomeForm: React.FC = () => {
               transition={{ duration: 0.3 }}
             >
               <Card className="p-0 overflow-hidden border-zinc-200 dark:border-zinc-800">
-                <div className="flex items-center gap-3 p-4">
-                  <div className="h-8 w-8 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center">
-                    <User className="h-5 w-5 text-zinc-500" />
+                <div className="flex items-center justify-between p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center">
+                      <User className="h-5 w-5 text-zinc-500" />
+                    </div>
+                    <span className="text-sm font-semibold dark:text-zinc-100">{post.userName}</span>
                   </div>
-                  <span className="text-sm font-semibold dark:text-zinc-100">{post.userName}</span>
+                  {user?.userName === post.userName && (
+                    <button 
+                      onClick={() => deletePost(post.id)}
+                      className="p-1 text-zinc-400 hover:text-red-500 transition-colors cursor-pointer"
+                      title="Удалить публикацию"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
                 </div>
                 
-                <div className="aspect-square bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center">
-                  <img 
-                    src={`https://picsum.photos/seed/vibewave-${post.id}/600/600`} 
-                    alt="Post content" 
-                    className="h-full w-full object-cover"
-                    referrerPolicy="no-referrer"
-                  />
+                <div className="aspect-square bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center overflow-hidden">
+                  {post.mediaType === 'video' ? (
+                    <video 
+                      src={post.mediaUrl} 
+                      className="h-full w-full object-cover" 
+                      controls 
+                      autoPlay 
+                      muted 
+                      loop 
+                    />
+                  ) : (
+                    <img 
+                      src={post.mediaUrl} 
+                      alt="Post content" 
+                      className="h-full w-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  )}
                 </div>
 
                 <div className="p-4 space-y-3">
@@ -166,10 +239,21 @@ export const HomeForm: React.FC = () => {
                         className="space-y-2 pt-2 overflow-hidden"
                       >
                         {post.comments.map(comment => (
-                          <p key={comment.id} className="text-sm">
-                            <span className="font-semibold mr-2 dark:text-zinc-100">{comment.userName}</span>
-                            <span className="dark:text-zinc-400">{comment.text}</span>
-                          </p>
+                          <div key={comment.id} className="flex items-start justify-between group/comment">
+                            <p className="text-sm">
+                              <span className="font-semibold mr-2 dark:text-zinc-100">{comment.userName}</span>
+                              <span className="dark:text-zinc-400">{comment.text}</span>
+                            </p>
+                            {user?.userName === comment.userName && (
+                              <button 
+                                onClick={() => deleteComment(post.id, comment.id)}
+                                className="opacity-0 group-hover/comment:opacity-100 p-1 text-zinc-400 hover:text-red-500 transition-all cursor-pointer"
+                                title="Удалить комментарий"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </button>
+                            )}
+                          </div>
                         ))}
                       </motion.div>
                     )}
@@ -210,6 +294,12 @@ export const HomeForm: React.FC = () => {
           ))}
         </div>
       </main>
+
+      <CreatePostModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onAddPost={handleAddPost} 
+      />
     </div>
   );
 };
