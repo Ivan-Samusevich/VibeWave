@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { User } from '../types/api';
+import { jwtDecode } from 'jwt-decode';
+
 
 const api = axios.create({
   baseURL: '/api',
@@ -21,12 +23,27 @@ export const authService = {
       password: data.password,
     });
     
-    const message = response.data;
+    // Бэкенд возвращает строку: "Авторизация прошла успешно <token>"
+    const responseData = response.data;
+    const parts = responseData.split(' ');
+    const token = parts[parts.length - 1];
+    
+    if (!token || token.length < 20) {
+      throw new Error('Не удалось получить токен авторизации');
+    }
+
+    // Декодируем токен для получения данных пользователя
+    const decoded: any = jwtDecode(token);
+    const user: User = {
+      userId: decoded.userId,
+      userName: decoded.userName || decoded.sub,
+      email: data.email,
+    };
     
     return {
-      token: 'dummy-token', 
-      user: { email: data.email, userName: 'User' } as User,
-      message
+      token,
+      user,
+      message: parts.slice(0, -1).join(' ')
     };
   },
   register: async (data: any) => {
@@ -40,8 +57,6 @@ export const authService = {
     const message = response.data;
     
     return {
-      token: 'dummy-token',
-      user: { email: data.email, userName: data.fullName } as User,
       message
     };
   },

@@ -7,11 +7,11 @@ import { motion, AnimatePresence } from 'motion/react';
 interface CreatePostModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddPost: (post: { caption: string; mediaUrl: string; mediaType: 'image' | 'video' }) => void;
+  onAddPost: (post: { text: string; mediaUrl: string; mediaType: 'image' | 'video' }) => void;
 }
 
 export const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onAddPost }) => {
-  const [caption, setCaption] = useState('');
+  const [text, setText] = useState('');
   const [mediaFile, setMediaFile] = useState<File | null>(null);
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<'image' | 'video'>('image');
@@ -31,7 +31,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClos
     e.preventDefault();
     if (mediaPreview) {
       onAddPost({
-        caption,
+        text,
         mediaUrl: mediaPreview,
         mediaType,
       });
@@ -40,7 +40,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClos
   };
 
   const handleClose = () => {
-    setCaption('');
+    setText('');
     setMediaFile(null);
     setMediaPreview(null);
     onClose();
@@ -99,8 +99,8 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClos
               <div className="space-y-2">
                 <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Описание</label>
                 <textarea
-                  value={caption}
-                  onChange={(e) => setCaption(e.target.value)}
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
                   placeholder="Добавьте подпись..."
                   className="w-full min-h-100px p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-indigo-500 outline-none resize-none text-sm dark:text-zinc-100"
                 />

@@ -32,9 +32,8 @@ export const useRegisterForm = () => {
     dispatch(setLoading(true));
     dispatch(setError(null));
     try {
-      const response = await authService.register(data);
-      dispatch(setCredentials(response));
-      navigate('/');
+      await authService.register(data);
+      navigate('/login');
     } catch (err: any) {
       const message = err.response?.data?.message || err.response?.data || err.message || 'Ошибка регистрации';
       dispatch(setError(message));

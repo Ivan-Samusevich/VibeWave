@@ -14,7 +14,7 @@ interface PostData {
   userName: string;
   likes: number;
   isLiked: boolean;
-  caption: string;
+  text: string;
   timeAgo: string;
   createdAt: number;
   mediaUrl: string;
@@ -32,7 +32,7 @@ export const HomeForm: React.FC = () => {
       userName: 'alex_vibe',
       likes: 1234,
       isLiked: false,
-      caption: 'Наслаждаюсь закатом на берегу океана. #nature #vibes',
+      text: 'Наслаждаюсь закатом на берегу океана. #nature #vibes',
       timeAgo: '2 ЧАСА НАЗАД',
       createdAt: Date.now() - 7200000,
       mediaUrl: 'https://picsum.photos/seed/vibewave-1/600/600',
@@ -46,7 +46,7 @@ export const HomeForm: React.FC = () => {
       userName: 'tech_guru',
       likes: 856,
       isLiked: true,
-      caption: 'Новое рабочее место готово. Продуктивность зашкаливает! 💻',
+      text: 'Новое рабочее место готово. Продуктивность зашкаливает! 💻',
       timeAgo: '5 ЧАСОВ НАЗАД',
       createdAt: Date.now() - 18000000,
       mediaUrl: 'https://picsum.photos/seed/vibewave-2/600/600',
@@ -58,7 +58,7 @@ export const HomeForm: React.FC = () => {
       userName: 'foodie_life',
       likes: 2105,
       isLiked: false,
-      caption: 'Лучший завтрак в моей жизни. Рецепт в профиле! 🥞',
+      text: 'Лучший завтрак в моей жизни. Рецепт в профиле! 🥞',
       timeAgo: '1 ДЕНЬ НАЗАД',
       createdAt: Date.now() - 86400000,
       mediaUrl: 'https://picsum.photos/seed/vibewave-3/600/600',
@@ -128,7 +128,7 @@ export const HomeForm: React.FC = () => {
     }));
   };
 
-  const handleAddPost = (newPost: { caption: string; mediaUrl: string; mediaType: 'image' | 'video' }) => {
+  const handleAddPost = (newPost: { text: string; mediaUrl: string; mediaType: 'image' | 'video' }) => {
     if (!user) return;
 
     const post: PostData = {
@@ -136,7 +136,7 @@ export const HomeForm: React.FC = () => {
       userName: user.userName,
       likes: 0,
       isLiked: false,
-      caption: newPost.caption,
+      text: newPost.text,
       timeAgo: 'ТОЛЬКО ЧТО',
       createdAt: Date.now(),
       mediaUrl: newPost.mediaUrl,
@@ -226,7 +226,7 @@ export const HomeForm: React.FC = () => {
                     <p className="text-sm font-semibold dark:text-zinc-100">{post.likes.toLocaleString()} отметок «Нравится»</p>
                     <p className="text-sm dark:text-zinc-300">
                       <span className="font-semibold mr-2 dark:text-zinc-100">{post.userName}</span>
-                      {post.caption}
+                      {post.text}
                     </p>
                   </div>
 

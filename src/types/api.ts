@@ -17,12 +17,12 @@ export interface UserProfile {
 export interface Post {
   postId: number;
   userId: number;
-  caption: string;
+  text: string;
   location?: string;
   createdAt: string;
   updatedAt?: string;
   media?: Media[];
-  user?: User;
+  user?: User; 
 }
 
 export interface Media {
@@ -41,6 +41,14 @@ export interface Comment {
   content: string;
   createdAt: string;
   user?: User;
+}
+
+export interface Message {
+  messageId: number;
+  senderId: number;
+  receiverId: number;
+  text: string;
+  createdAt: string;
 }
 
 export interface ApiError {
