@@ -13,7 +13,7 @@ import lombok.Setter;
 public class UserProfile {
 
     @Id
-    private int userProfileId;
+    private Long userProfileId;
 
     private String description;
     private String avatar_url;

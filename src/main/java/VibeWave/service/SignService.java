@@ -1,13 +1,15 @@
 package VibeWave.service;
 
+import VibeWave.config.JwtTokenUtil;
+import VibeWave.dto.UserDto;
 import VibeWave.entity.User;
 import VibeWave.entity.UserProfile;
 import VibeWave.exception.DublicateException;
 import VibeWave.exception.ValidationException;
 import VibeWave.repository.UserProfileRepository;
 import VibeWave.repository.UserRepository;
+import VibeWave.service.Impl.SignImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -15,16 +17,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class SignService {
-    //todo добавить jwt
-    //todo добавить интерфейс для сервиса и передлать аннотации транзакций
+public class SignService implements SignImpl {
+    //todo добавить access и refresh jwt
+    //todo передлать аннотации транзакций
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final PasswordEncoder encoder;
+    private final JwtTokenUtil jwtTokenUtil;
 
     public String signIn(User user){
         checkSignIn(user);
-        return "Авторизация прошла успешно";
+        UserDto userDto = new UserDto(user.getUserId(), user.getUserName());
+
+        return "Авторизация прошла успешно" + " " + jwtTokenUtil.generateToken(userDto);
     }
 
     private void checkSignIn(User user) {
@@ -44,9 +49,11 @@ public class SignService {
         return encoder.matches(user.getPassword(), userInTable.getPassword());
     }
 
+    @Override
     public String signUp(User user){
         checkSignUp(user);
         createUser(user);
+        //todo добавить генерацию jwt
         return "Регистрация прошла успешно";
     }
 
@@ -84,9 +91,11 @@ public class SignService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private void createUserProfile(int id){
+    private void createUserProfile(Long id){
         UserProfile userProfile = new UserProfile();
         userProfile.setUserProfileId(id);
         userProfileRepository.save(userProfile);
     }
+
+
 }

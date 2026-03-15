@@ -1,5 +1,10 @@
 package VibeWave.dto;
 
+import lombok.Getter;
 
-public class SendMessageRequest {
+@Getter
+public class MessageDto {
+
+    private String text;
+    //private String imageUrl
 }

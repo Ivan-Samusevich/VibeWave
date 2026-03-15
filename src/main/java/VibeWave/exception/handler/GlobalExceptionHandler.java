@@ -32,4 +32,5 @@ public class GlobalExceptionHandler extends RuntimeException {
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
+
 }

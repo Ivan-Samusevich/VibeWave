@@ -11,16 +11,15 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "messages")
-public class Message {
+@Table(name = "posts")
+public class Post {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long messageId;
-
+    private Long postId;
+    private Long userId;
     private String text;
-
-    private Long senderId;
-    private Long receiverId;
+    private String location;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

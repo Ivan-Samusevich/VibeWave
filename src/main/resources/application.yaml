@@ -1,5 +1,5 @@
 spring:
-  apllication:
+  application:
     name: VibeWave
   datasource:
     url:  jdbc:postgresql://localhost:5432/VibeWave
@@ -12,3 +12,6 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-1.yaml
     enabled: true
+jwt:
+  secret: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  expiration: 86400000

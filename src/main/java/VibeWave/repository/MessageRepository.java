@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface ChatRepository extends JpaRepository<Message, Long> {
-    List<Message> findBySenderIdAndReceiverId(Long senderId, Long receiverId);
+public interface MessageRepository extends JpaRepository<Message, Long> {
+    //List<Message> findBySenderIdAndReceiverId(Long senderId, Long receiverId);
 
     @Query("""
         SELECT m FROM Message m
