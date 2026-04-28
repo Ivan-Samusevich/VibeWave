@@ -5,7 +5,7 @@ import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
+import java.util.Date;
 
 @Component
 public class JwtTokenUtil {
@@ -13,17 +13,30 @@ public class JwtTokenUtil {
     @Value("${jwt.secret}")
     private String SecretKey;
 
-    @Value("${jwt.expiration}")
-    private Long ExpiRationTime;
+    @Value("${jwt.accessExpirationTime}")
+    private Long AccessExpirationTime;
 
+    @Value("${jwt.refreshExpirationTime}")
+    private Long RefreshExpirationTime;
 
-    public String generateToken(UserDto userDto){
+    public String generateAccessToken(UserDto userDto){
         return Jwts.builder()
                 .setSubject(userDto.getUserName())
                 .claim("userId", userDto.getUserId())
                 .claim("userName", userDto.getUserName())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + ExpiRationTime))
+                .setExpiration(new Date(System.currentTimeMillis() + AccessExpirationTime))
+                .signWith(SignatureAlgorithm.HS256, SecretKey)
+                .compact();
+    }
+
+    public String generateRefreshToken(UserDto userDto){
+        return Jwts.builder()
+                .setSubject(userDto.getUserName())
+                .claim("userId", userDto.getUserId())
+                .claim("userName", userDto.getUserName())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + RefreshExpirationTime))
                 .signWith(SignatureAlgorithm.HS256, SecretKey)
                 .compact();
     }
@@ -35,7 +48,7 @@ public class JwtTokenUtil {
                     .setSigningKey(SecretKey)
                     .parseClaimsJws(token)
                     .getBody();
-        } catch (ExpiredJwtException e){
+        } catch (ExpiredJwtException e){                //Обьеденить 4 catch в ИнстенсОфф
             throw new RuntimeException("Токен истёк", e);
         } catch (UnsupportedJwtException e) {
             throw new RuntimeException("Неподдерживаемый токен", e);
@@ -50,11 +63,12 @@ public class JwtTokenUtil {
 
     public Long getUserIdFromToken(String token){
         Claims claims = validateToken(token);
-        return claims.get("UserId", Long.class);
+        return claims.get("userId", Long.class);
     }
 
     public String getUserNameFromToken(String token){
         Claims claims = validateToken(token);
         return claims.get("userName", String.class);
+
     }
 }

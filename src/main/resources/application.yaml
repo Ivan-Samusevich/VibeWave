@@ -14,4 +14,5 @@ spring:
     enabled: true
 jwt:
   secret: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-  expiration: 86400000
+  accessExpirationTime: 900000 #15 минут
+  refreshExpirationTime: 604800000 #1 неделя

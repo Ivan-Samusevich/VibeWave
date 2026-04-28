@@ -10,10 +10,14 @@ import VibeWave.repository.UserProfileRepository;
 import VibeWave.repository.UserRepository;
 import VibeWave.service.Impl.SignImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -25,11 +29,18 @@ public class SignService implements SignImpl {
     private final PasswordEncoder encoder;
     private final JwtTokenUtil jwtTokenUtil;
 
-    public String signIn(User user){
+    public ResponseEntity<?> signIn(User user){
         checkSignIn(user);
+
+        user = userRepository.findByEmail(user.getEmail());
         UserDto userDto = new UserDto(user.getUserId(), user.getUserName());
 
-        return "Авторизация прошла успешно" + " " + jwtTokenUtil.generateToken(userDto);
+        String jwt = jwtTokenUtil.generateAccessToken(userDto);
+
+        Map<String, String> response = new HashMap<>(); //todo Надо создать UserResponce, в котором будут храниться 2 токена. Этот объект потом передать на фронт
+        response.put("accessToken", jwt);
+        response.put("tokenType", "Bearer ");
+        return ResponseEntity.ok(response); //todo На фронте пока получает строку
     }
 
     private void checkSignIn(User user) {

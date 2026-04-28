@@ -5,6 +5,7 @@ import VibeWave.service.SignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ public class SignController {
     public SignController(SignService signService){this.signService = signService;}
 
     @PostMapping("/signin")
-    public String signIn(@RequestBody User user){return signService.signIn(user);}
+    public ResponseEntity<?> signIn(@RequestBody User user){return signService.signIn(user);}
 
     @PostMapping("/signup")
     public String signUp(@RequestBody User user){return signService.signUp(user);}

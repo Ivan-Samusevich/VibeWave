@@ -21,6 +21,8 @@ public class Post {
     private String text;
     private String location;
 
+    //todo Добавить потом лайки
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -28,4 +30,14 @@ public class Post {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public Post(){
+
+    }
+
+    public Post(Long userId, String text, String location){
+        this.userId = userId;
+        this.text = text;
+        this.location = location;
+    }
 }
