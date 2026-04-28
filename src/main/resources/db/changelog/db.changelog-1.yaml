@@ -131,8 +131,8 @@ databaseChangeLog:
                     constraints:
                       nullable: false
                 - column:
-                    name: location
-                    type: varchar(100)
+                    name: likes_count
+                    type: int
                 - column:
                     name: created_at
                     type: timestamp
@@ -199,6 +199,13 @@ databaseChangeLog:
               tableName: likes
               columns:
                 - column:
+                    name: like_id
+                    type: int
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                      nullable: false
+                - column:
                     name: user_id
                     type: int
                     constraints:
@@ -210,6 +217,11 @@ databaseChangeLog:
                       nullable: false
                 - column:
                     name: created_at
+                    type: timestamp
+                    constraints:
+                      nullable: false
+                - column:
+                    name: updated_at
                     type: timestamp
                     constraints:
                       nullable: false

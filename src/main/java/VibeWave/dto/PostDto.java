@@ -15,5 +15,4 @@ public class PostDto {
 
     private String text;
 
-    private String location;
 }

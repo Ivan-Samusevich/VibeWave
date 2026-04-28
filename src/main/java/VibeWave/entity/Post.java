@@ -2,6 +2,7 @@ package VibeWave.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "posts")
+@RequiredArgsConstructor
 public class Post {
 
     @Id
@@ -19,8 +21,7 @@ public class Post {
     private Long postId;
     private Long userId;
     private String text;
-    private String location;
-
+    private Long likesCount;
     //todo Добавить потом лайки
 
     @CreationTimestamp
@@ -31,13 +32,4 @@ public class Post {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public Post(){
-
-    }
-
-    public Post(Long userId, String text, String location){
-        this.userId = userId;
-        this.text = text;
-        this.location = location;
-    }
 }

@@ -27,4 +27,11 @@ public class HomePageController {
     public List<Post> getPosts(){
         return homePageService.getPosts();
     }
+
+    @PostMapping("/putLike/{postId}")
+    public void putLike(@PathVariable Long postId,
+                        @AuthenticationPrincipal UserDto currentUser){
+        homePageService.putLike(currentUser, postId);
+        homePageService.updatePostLikesCount(postId);
+    }
 }
