@@ -38,7 +38,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onAddPostClick }) => {
           </Link>
           <button 
             onClick={onAddPostClick}
-            className="p-2 text-zinc-600 hover:text-zinc-900 transition-colors dark:text-zinc-400 dark:hover:text-zinc-100"
+            className="p-2 text-zinc-600 hover:text-zinc-900 transition-colors dark:text-zinc-400 dark:hover:text-zinc-100 cursor-pointer"
           >
             <PlusSquare className="h-6 w-6" />
           </button>
@@ -55,7 +55,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onAddPostClick }) => {
           
           <div className="flex items-center gap-3">
             <Link to="/profile" className="flex flex-col items-end group">
-              <span className="text-sm font-medium text-zinc-900 group-hover:text-indigo-600 transition-colors dark:text-zinc-100 dark:group-hover:text-indigo-400">{user?.userName || 'User'}</span>
+              <span className="text-sm font-medium text-zinc-900 group-hover:text-indigo-600 transition-colors dark:text-zinc-100 dark:group-hover:text-indigo-400">{user?.userName || 'Пользователь'}</span>
               <span className="text-xs text-zinc-500 dark:text-zinc-400">{user?.email}</span>
             </Link>
             <button 

@@ -59,7 +59,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClos
             <div className="flex items-center justify-between p-4 border-b border-zinc-100 dark:border-zinc-800">
               <h3 className="text-lg font-semibold dark:text-zinc-100">Создать публикацию</h3>
               <button onClick={handleClose} className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors">
-                <X className="h-6 w-6 text-zinc-500" />
+                <X className="h-6 w-6 text-zinc-500 cursor-pointer" />
               </button>
             </div>
 
@@ -108,7 +108,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClos
 
               <Button 
                 type="submit" 
-                className="w-full py-6 text-base font-semibold"
+                className="w-full py-6 text-base font-semibold cursor-pointer"
                 disabled={!mediaPreview}
               >
                 <Upload className="mr-2 h-5 w-5" />

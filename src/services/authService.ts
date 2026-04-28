@@ -2,7 +2,7 @@ import axios from 'axios';
 import { User } from '../types/api';
 import { jwtDecode } from 'jwt-decode';
 
-
+// Используем относительный путь /api, который будет проксироваться на бэкенд
 const api = axios.create({
   baseURL: '/api',
 });
@@ -18,22 +18,20 @@ api.interceptors.request.use((config) => {
 export const authService = {
   login: async (data: any) => {
     // Путь: /api/users/signin
-    const response = await api.post<string>('/users/signin', {
+    const response = await api.post<{ accessToken: string, tokenType: string }>('/users/signin', {
       email: data.email,
       password: data.password,
     });
     
-    // Бэкенд возвращает строку: "Авторизация прошла успешно <token>"
-    const responseData = response.data;
-    const parts = responseData.split(' ');
-    const token = parts[parts.length - 1];
+    // Бэкенд возвращает JSON объект: { accessToken: "...", tokenType: "Bearer " }
+    const { accessToken } = response.data;
     
-    if (!token || token.length < 20) {
+    if (!accessToken) {
       throw new Error('Не удалось получить токен авторизации');
     }
 
     // Декодируем токен для получения данных пользователя
-    const decoded: any = jwtDecode(token);
+    const decoded: any = jwtDecode(accessToken);
     const user: User = {
       userId: decoded.userId,
       userName: decoded.userName || decoded.sub,
@@ -41,9 +39,9 @@ export const authService = {
     };
     
     return {
-      token,
+      token: accessToken,
       user,
-      message: parts.slice(0, -1).join(' ')
+      message: 'Авторизация прошла успешно'
     };
   },
   register: async (data: any) => {

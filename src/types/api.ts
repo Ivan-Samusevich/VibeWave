@@ -18,11 +18,13 @@ export interface Post {
   postId: number;
   userId: number;
   text: string;
+  likesCount?: number;
   location?: string;
   createdAt: string;
   updatedAt?: string;
   media?: Media[];
   user?: User; // Для отображения автора поста
+  comments?: Comment[];
 }
 
 export interface Media {
