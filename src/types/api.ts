@@ -22,7 +22,7 @@ export interface Post {
   createdAt: string;
   updatedAt?: string;
   media?: Media[];
-  user?: User; 
+  user?: User; // Для отображения автора поста
 }
 
 export interface Media {
