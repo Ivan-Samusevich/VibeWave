@@ -1,7 +1,9 @@
 package VibeWave.controller;
 
+import VibeWave.dto.CreateCommentDto;
 import VibeWave.dto.PostDto;
 import VibeWave.dto.UserDto;
+import VibeWave.dto.post.PostResponse;
 import VibeWave.entity.Post;
 import VibeWave.service.HomePageService;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +26,8 @@ public class HomePageController {
     }
 
     @GetMapping("/getPosts")
-    public List<Post> getPosts(){
-        return homePageService.getPosts();
+    public List<PostResponse> getPosts(@AuthenticationPrincipal UserDto currentUser){
+        return homePageService.getPosts(currentUser);
     }
 
     @PostMapping("/putLike/{postId}")
@@ -34,4 +36,12 @@ public class HomePageController {
         homePageService.putLike(currentUser, postId);
         homePageService.updatePostLikesCount(postId);
     }
+
+//    @PostMapping("/createComment/{postId}")  //todo получше подумать над путём
+//    public String createComment(@AuthenticationPrincipal UserDto currentUser,
+//                                @PathVariable Long postId,
+//                                @RequestBody CreateCommentDto commentDto){
+//        homePageService.createcomment(postId, currentUser.getUserName(), commentDto.getText());
+//        return "Comment is create"; //todo потом переделать
+//    }
 }

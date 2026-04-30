@@ -14,6 +14,7 @@ public class ChatService {
 
     private final MessageRepository messageRepository;
 
+    //todo в перспективе сделать PageAble(это для того, чтобы из бд брать условно по 10 сообщений, остальные по мере необходимости будут подгружаться)
     public List<Message> getMessages(Long myId, Long receiverId){
         return messageRepository.findChatMessages(myId, receiverId);
     }

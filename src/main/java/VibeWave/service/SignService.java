@@ -38,6 +38,7 @@ public class SignService implements SignImpl {
         String jwt = jwtTokenUtil.generateAccessToken(userDto);
 
         Map<String, String> response = new HashMap<>(); //todo Надо создать UserResponce, в котором будут храниться 2 токена. Этот объект потом передать на фронт
+        //todo добавить потом 2-ой токен
         response.put("accessToken", jwt);
         response.put("tokenType", "Bearer ");
         return ResponseEntity.ok(response); //todo На фронте пока получает строку

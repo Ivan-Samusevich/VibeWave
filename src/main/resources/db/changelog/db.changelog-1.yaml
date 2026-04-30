@@ -133,6 +133,7 @@ databaseChangeLog:
                 - column:
                     name: likes_count
                     type: int
+                    defaultValue: 0
                 - column:
                     name: created_at
                     type: timestamp
@@ -263,9 +264,9 @@ databaseChangeLog:
                     type: int
                     constraints:
                       nullable: false
-                - column:
-                    name: parent_id
-                    type: int
+#                - column:
+#                    name: parent_id
+#                    type: int
                 - column:
                     name: content
                     type: text
@@ -273,6 +274,11 @@ databaseChangeLog:
                       nullable: false
                 - column:
                     name: created_at
+                    type: timestamp
+                    constraints:
+                      nullable: false
+                - column:
+                    name: updated_at
                     type: timestamp
                     constraints:
                       nullable: false
@@ -288,12 +294,12 @@ databaseChangeLog:
               baseColumnNames: user_id
               referencedTableName: users
               referencedColumnNames: user_id
-          - addForeignKeyConstraint:
-              constraintName: fk_comments_comments
-              baseTableName: comments
-              baseColumnNames: parent_id
-              referencedTableName: comments
-              referencedColumnNames: comment_id
+#          - addForeignKeyConstraint:
+#              constraintName: fk_comments_comments
+#              baseTableName: comments
+#              baseColumnNames: parent_id
+#              referencedTableName: comments
+#              referencedColumnNames: comment_id
 
   - changeSet:
       id: create-messages-table
