@@ -46,7 +46,6 @@ export const useHomeForm = () => {
       setPosts(mappedPosts);
     } catch (error) {
       console.error('Failed to fetch posts:', error);
-      // Fallback к мок-данным если бэкенд пустой или упал
       if (posts.length === 0) {
         setPosts([
           {
@@ -80,17 +79,24 @@ export const useHomeForm = () => {
       console.error('Cannot like post: postId is undefined');
       return;
     }
+    
+    // Находим текущий пост, чтобы узнать его статус лайка
+    const post = posts.find(p => p.id === postId);
+    if (!post) return;
+
+    const newStatus = !post.isLiked;
+
     try {
-      await postService.putLike(postId);
-      setPosts(prev => prev.map(post => {
-        if (post.id === postId) {
+      await postService.toggleLike(postId, newStatus);
+      setPosts(prev => prev.map(p => {
+        if (p.id === postId) {
           return {
-            ...post,
-            isLiked: !post.isLiked,
-            likes: post.isLiked ? post.likes - 1 : post.likes + 1
+            ...p,
+            isLiked: newStatus,
+            likes: newStatus ? p.likes + 1 : p.likes - 1
           };
         }
-        return post;
+        return p;
       }));
     } catch (error) {
       console.error('Failed to like post:', error);
@@ -142,16 +148,14 @@ export const useHomeForm = () => {
     }));
   };
 
-  const handleAddPost = async (newPost: { text: string; mediaUrl: string; mediaType: 'image' | 'video' }) => {
+  const handleAddPost = async (newPost: { text: string; file: File | null; mediaUrl: string; mediaType: 'image' | 'video' }) => {
     if (!user) return;
 
     try {
-      await postService.createPost(newPost.text);
-      
+      await postService.createPost(newPost.text, newPost.file);
       fetchPosts();
     } catch (error) {
       console.error('Failed to create post:', error);
-      // Оптимистичное добавление на случай если работаем оффлайн/без бэкенда
       const post: PostData = {
         id: Date.now(),
         userName: user.userName,

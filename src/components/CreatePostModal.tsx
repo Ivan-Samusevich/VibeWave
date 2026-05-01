@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'motion/react';
 interface CreatePostModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddPost: (post: { text: string; mediaUrl: string; mediaType: 'image' | 'video' }) => void;
+  onAddPost: (post: { text: string; file: File | null; mediaUrl: string; mediaType: 'image' | 'video' }) => void;
 }
 
 export const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClose, onAddPost }) => {
@@ -32,6 +32,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClos
     if (mediaPreview) {
       onAddPost({
         text,
+        file: mediaFile,
         mediaUrl: mediaPreview,
         mediaType,
       });
