@@ -25,23 +25,24 @@ export const useHomeForm = () => {
   const fetchPosts = async () => {
     try {
       const backendPosts = await postService.getPosts();
-      // Преобразуем серверные данные в формат UI
-      const mappedPosts: PostData[] = backendPosts.map(p => ({
-        id: p.postId,
-        userName: p.user?.userName || `user_${p.userId}`,
-        likes: p.likesCount || 0,
-        isLiked: false, // Временно, так как бэкенд не возвращает статус лайка для текущего юзера
-        text: p.text,
-        timeAgo: new Date(p.createdAt || Date.now()).toLocaleDateString(),
-        createdAt: new Date(p.createdAt || Date.now()).getTime(),
-        mediaUrl: p.media?.[0]?.mediaUrl || `https://picsum.photos/seed/vibewave-${p.postId}/600/600`,
-        mediaType: (p.media?.[0]?.mediaType?.toLowerCase() as 'image' | 'video') || 'image',
-        comments: p.comments?.map(c => ({
-          id: c.commentId,
-          userName: c.user?.userName || `user_${c.userId}`,
-          text: c.content
-        })) || []
-      }));
+      
+      const mappedPosts: PostData[] = backendPosts.map((p: any) => {
+        // Java Entity это postId, а в DTO - id
+        const id = p.id || p.postId;
+        
+        return {
+          id: id,
+          userName: p.userName || 'Аноним',
+          likes: p.likesCount || 0,
+          isLiked: p.likeStatus || false,
+          text: p.text || '',
+          timeAgo: 'Только что', 
+          createdAt: Date.now(),
+          mediaUrl: p.imageURL || `https://picsum.photos/seed/vibewave-${id}/600/600`,
+          mediaType: 'image',
+          comments: [] 
+        };
+      });
       setPosts(mappedPosts);
     } catch (error) {
       console.error('Failed to fetch posts:', error);
@@ -75,6 +76,10 @@ export const useHomeForm = () => {
   const [expandedComments, setExpandedComments] = useState<{ [key: number]: boolean }>({});
 
   const toggleLike = async (postId: number) => {
+    if (!postId) {
+      console.error('Cannot like post: postId is undefined');
+      return;
+    }
     try {
       await postService.putLike(postId);
       setPosts(prev => prev.map(post => {
@@ -142,7 +147,7 @@ export const useHomeForm = () => {
 
     try {
       await postService.createPost(newPost.text);
-      // После создания поста перезагружаем список, чтобы увидеть новый пост с сервера
+      
       fetchPosts();
     } catch (error) {
       console.error('Failed to create post:', error);

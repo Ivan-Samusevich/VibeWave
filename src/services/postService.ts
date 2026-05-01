@@ -1,9 +1,9 @@
 import api from './authService';
-import { Post } from '../types/api';
+import { PostResponse } from '../types/api';
 
 export const postService = {
   getPosts: async () => {
-    const response = await api.get<Post[]>('/homePage/getPosts');
+    const response = await api.get<PostResponse[]>('/homePage/getPosts');
     return response.data;
   },
   createPost: async (text: string) => {
@@ -11,6 +11,9 @@ export const postService = {
     return response.data;
   },
   putLike: async (postId: number) => {
+    if (postId === undefined || postId === null) {
+      throw new Error('postId is required');
+    }
     await api.post(`/homePage/putLike/${postId}`);
   }
 };

@@ -14,17 +14,26 @@ export interface UserProfile {
   is_active: boolean;
 }
 
-export interface Post {
-  postId: number;
-  userId: number;
+// export interface Post {
+//   postId: number;
+//   userId: number;
+//   text: string;
+//   likesCount: number;
+//   likeStatus: boolean;
+//   imageURL: string;
+//   userName: string;
+//   createdAt: string;
+//   updatedAt?: string;
+//   user?: User;
+// }
+
+export interface PostResponse {
+  id: number;
+  userName: string;
   text: string;
-  likesCount?: number;
-  location?: string;
-  createdAt: string;
-  updatedAt?: string;
-  media?: Media[];
-  user?: User; // Для отображения автора поста
-  comments?: Comment[];
+  likesCount: number;
+  likeStatus: boolean;
+  imageURL: string;
 }
 
 export interface Media {
