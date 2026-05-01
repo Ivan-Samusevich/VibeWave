@@ -20,6 +20,7 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postId;
     private Long userId; //todo переделать на имя. В самом коде тогда потом переделать моменты с этим
+    private String fileName;
     private String text;
     private Long likesCount;
     //todo Добавить потом хэштеги.

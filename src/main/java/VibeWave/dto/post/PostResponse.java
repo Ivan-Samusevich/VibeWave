@@ -11,4 +11,5 @@ public class PostResponse {
     private String text;
     private Long likesCount;
     private boolean likeStatus;
+    private String imageURL;
 }

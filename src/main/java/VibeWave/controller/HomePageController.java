@@ -9,6 +9,7 @@ import VibeWave.service.HomePageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class HomePageController {
     private final HomePageService homePageService;
 
     @PostMapping("/createPost")
-    public String createPost(@AuthenticationPrincipal UserDto currentUser,
+    public String createPost(@AuthenticationPrincipal UserDto currentUser, //todo добавить сюда файл
                              @RequestBody PostDto postDto){
         return homePageService.createPost(currentUser, postDto);
     }
@@ -33,6 +34,8 @@ public class HomePageController {
     @PostMapping("/putLike/{postId}")
     public void putLike(@PathVariable Long postId,
                         @AuthenticationPrincipal UserDto currentUser){
+        System.out.println("Запросик");
+
         homePageService.putLike(currentUser, postId);
         homePageService.updatePostLikesCount(postId);
     }

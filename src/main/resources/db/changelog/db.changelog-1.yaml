@@ -126,6 +126,11 @@ databaseChangeLog:
                     constraints:
                       nullable: false
                 - column:
+                    name: file_name
+                    type: varchar(100)
+                    constraints:
+                      nullable: false
+                - column:
                     name: text
                     type: text
                     constraints:
