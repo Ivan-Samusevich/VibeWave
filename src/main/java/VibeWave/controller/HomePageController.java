@@ -31,13 +31,14 @@ public class HomePageController {
         return homePageService.getPosts(currentUser);
     }
 
-    @PostMapping("/putLike/{postId}")
+    @PostMapping("/toggleLike/{postId}/{likeStatus}")
     public void putLike(@PathVariable Long postId,
+                        @PathVariable boolean likeStaus,
                         @AuthenticationPrincipal UserDto currentUser){
         System.out.println("Запросик");
 
-        homePageService.putLike(currentUser, postId);
-        homePageService.updatePostLikesCount(postId);
+        homePageService.toggleLike(currentUser, postId);
+        homePageService.updatePostLikesCount(postId, likeStaus);
     }
 
 //    @PostMapping("/createComment/{postId}")  //todo получше подумать над путём

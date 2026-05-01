@@ -11,4 +11,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Modifying
     @Query("UPDATE Post p SET p.likesCount = p.likesCount + 1 WHERE p.id = :postId")
     void incrementLikesCount(@Param("postId") Long postId);
+
+    @Modifying
+    @Query("UPDATE Post p SET p.likesCount = p.likesCount - 1 WHERE p.id = :postId")
+    void decrementLikesCount(@Param("PostId") Long postId);
 }

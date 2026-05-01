@@ -55,7 +55,7 @@ public class HomePageService {
         return answer;
     }
 
-    public List<PostResponse> getPosts(UserDto currentUser){
+    public List<PostResponse> getPosts(UserDto currentUser){ //todo посмотреть тут списки.
         List<Post> posts = postRepository.findAll();
         List<PostResponse> postResponses = new java.util.ArrayList<>(List.of());
         for(Post post : posts){
@@ -79,7 +79,7 @@ public class HomePageService {
     }//todo здесь переделать id на имя
 
     @Transactional
-    public void putLike(UserDto currentUser, Long postId){
+    public void toggleLike(UserDto currentUser, Long postId){
         //todo разобраться с тем, как сделать так, чтобы отображался статус лайка(Есть он или нет)
         Like like = new Like();
         System.out.println("Запрос прилетел 1");
@@ -96,10 +96,16 @@ public class HomePageService {
     }
 
     @Transactional
-    public void updatePostLikesCount(Long postId){
+    public void updatePostLikesCount(Long postId, boolean likeStatus){
         // Одна операция в БД, без загрузки поста в память
-        postRepository.incrementLikesCount(postId);
-        System.out.println("Счётчик увеличен");
+        if(likeStatus) {
+            postRepository.incrementLikesCount(postId);
+            System.out.println("Счётчик увеличен");
+        }
+        else{
+            postRepository.decrementLikesCount(postId);
+            System.out.println("Счётчик уменьшен");
+        }
     }
 
     @Transactional
