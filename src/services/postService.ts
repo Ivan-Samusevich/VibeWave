@@ -23,7 +23,13 @@ export const postService = {
     if (postId === undefined || postId === null) {
       throw new Error('postId is required');
     }
-    // Отправляется статус лайка в теле запроса
     await api.post(`/homePage/toggleLike/${postId}/${ likeStatus }`);
+  },
+  toggleSave: async (postId: number, status: boolean) => {
+    if (postId === undefined || postId === null) {
+      throw new Error('postId is required');
+    }
+    // Предполагаемый эндпоинт для сохранения постов
+    await api.post(`/homePage/savePost/${postId}`, { status });
   }
 };

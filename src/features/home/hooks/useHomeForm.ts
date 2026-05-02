@@ -8,6 +8,7 @@ export interface PostData {
   userName: string;
   likes: number;
   isLiked: boolean;
+  isSaved: boolean;
   text: string;
   timeAgo: string;
   createdAt: number;
@@ -35,6 +36,7 @@ export const useHomeForm = () => {
           userName: p.userName || 'Аноним',
           likes: p.likesCount || 0,
           isLiked: p.likeStatus || false,
+          isSaved: p.isSaved || false,
           text: p.text || '',
           timeAgo: 'Только что', 
           createdAt: Date.now(),
@@ -53,6 +55,7 @@ export const useHomeForm = () => {
             userName: 'alex_vibe',
             likes: 1234,
             isLiked: false,
+            isSaved: false,
             text: 'Наслаждаюсь закатом на берегу океана. #nature #vibes',
             timeAgo: '2 ЧАСА НАЗАД',
             createdAt: Date.now() - 7200000,
@@ -80,7 +83,6 @@ export const useHomeForm = () => {
       return;
     }
     
-    // Находим текущий пост, чтобы узнать его статус лайка
     const post = posts.find(p => p.id === postId);
     if (!post) return;
 
@@ -100,6 +102,31 @@ export const useHomeForm = () => {
       }));
     } catch (error) {
       console.error('Failed to like post:', error);
+    }
+  };
+
+  const toggleSave = async (postId: number) => {
+    if (!postId) return;
+    const post = posts.find(p => p.id === postId);
+    if (!post) return;
+
+    const newStatus = !post.isSaved;
+
+    try {
+      setPosts(prev => prev.map(p => {
+        if (p.id === postId) {
+          return { ...p, isSaved: newStatus };
+        }
+        return p;
+      }));
+
+      try {
+        await postService.toggleSave(postId, newStatus);
+      } catch (e) {
+        console.warn('Backend save endpoint might not be ready yet');
+      }
+    } catch (error) {
+      console.error('Failed to save post:', error);
     }
   };
 
@@ -161,6 +188,7 @@ export const useHomeForm = () => {
         userName: user.userName,
         likes: 0,
         isLiked: false,
+        isSaved: false,
         text: newPost.text,
         timeAgo: 'ТОЛЬКО ЧТО',
         createdAt: Date.now(),
@@ -183,6 +211,7 @@ export const useHomeForm = () => {
     commentInputs,
     expandedComments,
     toggleLike,
+    toggleSave,
     toggleComments,
     handleCommentChange,
     addComment,

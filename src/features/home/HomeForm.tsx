@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from '../../components/Card';
 import { Input } from '../../components/Input';
-import { User, Heart, MessageCircle, Trash2 } from 'lucide-react';
+import { User, Heart, MessageCircle, Trash2, Bookmark, BookmarkCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Navbar } from '../../components/NavBar';
 import { CreatePostModal } from '../../components/CreatePostModal';
@@ -17,6 +17,7 @@ export const HomeForm: React.FC = () => {
     commentInputs,
     expandedComments,
     toggleLike,
+    toggleSave,
     toggleComments,
     handleCommentChange,
     addComment,
@@ -84,22 +85,36 @@ export const HomeForm: React.FC = () => {
                   </div>
 
                   <div className="p-4 space-y-3">
-                    <div className="flex items-center gap-4">
-                      <Heart 
-                        className={`h-6 w-6 cursor-pointer transition-colors ${
-                          post.isLiked ? 'text-red-500 fill-red-500' : 'text-zinc-700 dark:text-zinc-300 hover:text-red-500'
-                        }`} 
-                        onClick={() => toggleLike(post.id)}
-                      />
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <Heart 
+                          className={`h-6 w-6 cursor-pointer transition-colors ${
+                            post.isLiked ? 'text-red-500 fill-red-500' : 'text-zinc-700 dark:text-zinc-300 hover:text-red-500'
+                          }`} 
+                          onClick={() => toggleLike(post.id)}
+                        />
+                        <div 
+                          className="flex items-center gap-1.5 cursor-pointer group"
+                          onClick={() => toggleComments(post.id)}
+                        >
+                          <MessageCircle className="h-6 w-6 text-zinc-700 dark:text-zinc-300 group-hover:text-indigo-500 transition-colors" />
+                          {post.comments.length > 0 && (
+                            <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400 group-hover:text-indigo-500">
+                              {post.comments.length}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      
                       <div 
-                        className="flex items-center gap-1.5 cursor-pointer group"
-                        onClick={() => toggleComments(post.id)}
+                        className="cursor-pointer text-zinc-700 dark:text-zinc-300 hover:text-indigo-500 transition-colors"
+                        onClick={() => toggleSave(post.id)}
+                        title={post.isSaved ? "Удалить из сохраненного" : "Сохранить"}
                       >
-                        <MessageCircle className="h-6 w-6 text-zinc-700 dark:text-zinc-300 group-hover:text-indigo-500 transition-colors" />
-                        {post.comments.length > 0 && (
-                          <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400 group-hover:text-indigo-500">
-                            {post.comments.length}
-                          </span>
+                        {post.isSaved ? (
+                          <BookmarkCheck className="h-6 w-6 text-indigo-500 fill-indigo-500" />
+                        ) : (
+                          <Bookmark className="h-6 w-6" />
                         )}
                       </div>
                     </div>

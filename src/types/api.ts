@@ -34,6 +34,7 @@ export interface PostResponse {
   likesCount: number;
   likeStatus: boolean;
   imageURL: string;
+  isSaved?: boolean;
 }
 
 export interface Media {
