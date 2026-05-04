@@ -34,7 +34,14 @@ export interface PostResponse {
   likesCount: number;
   likeStatus: boolean;
   imageURL: string;
+  fileType: 'image' | 'video' | string;
   isSaved?: boolean;
+}
+
+export interface CommentResponse {
+  commentId: number;
+  userName: string;
+  text: string;
 }
 
 export interface Media {
@@ -45,15 +52,15 @@ export interface Media {
   createdAt: string;
 }
 
-export interface Comment {
-  commentId: number;
-  postId: number;
-  userId: number;
-  parentId?: number;
-  content: string;
-  createdAt: string;
-  user?: User;
-}
+// export interface Comment {
+//   commentId: number;
+//   postId: number;
+//   userId: number;
+//   parentId?: number;
+//   content: string;
+//   createdAt: string;
+//   user?: User;
+// }
 
 export interface Message {
   messageId: number;

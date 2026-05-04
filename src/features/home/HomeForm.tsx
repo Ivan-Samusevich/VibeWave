@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from '../../components/Card';
 import { Input } from '../../components/Input';
-import { User, Heart, MessageCircle, Trash2, Bookmark, BookmarkCheck } from 'lucide-react';
+import { User, Heart, MessageCircle, Trash2, Bookmark, BookmarkCheck, Edit2, Check, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Navbar } from '../../components/NavBar';
 import { CreatePostModal } from '../../components/CreatePostModal';
@@ -16,13 +16,19 @@ export const HomeForm: React.FC = () => {
     setIsModalOpen,
     commentInputs,
     expandedComments,
+    editingCommentId,
+    editCommentText,
+    setEditCommentText,
     toggleLike,
     toggleSave,
     toggleComments,
     handleCommentChange,
     addComment,
-    deletePost,
+    startEditComment,
+    cancelEditComment,
+    saveEditedComment,
     deleteComment,
+    deletePost,
     handleAddPost
   } = useHomeForm();
 
@@ -136,19 +142,53 @@ export const HomeForm: React.FC = () => {
                           className="space-y-2 pt-2 overflow-hidden"
                         >
                           {post.comments.map(comment => (
-                            <div key={comment.id} className="flex items-start justify-between group/comment">
-                              <p className="text-sm">
-                                <span className="font-semibold mr-2 dark:text-zinc-100">{comment.userName}</span>
-                                <span className="dark:text-zinc-400">{comment.text}</span>
-                              </p>
-                              {user?.userName === comment.userName && (
-                                <button 
-                                  onClick={() => deleteComment(post.id, comment.id)}
-                                  className="opacity-0 group-hover/comment:opacity-100 p-1 text-zinc-400 hover:text-red-500 transition-all cursor-pointer"
-                                  title="Удалить комментарий"
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </button>
+                            <div key={comment.id} className="flex items-start justify-between group/comment gap-2">
+                              {editingCommentId === comment.id ? (
+                                <div className="flex-1 flex items-center gap-2">
+                                  <Input
+                                    value={editCommentText}
+                                    onChange={(e) => setEditCommentText(e.target.value)}
+                                    className="h-7 text-xs py-1"
+                                    autoFocus
+                                  />
+                                  <button 
+                                    onClick={() => saveEditedComment(post.id, comment.id)}
+                                    className="text-green-600 hover:text-green-700 cursor-pointer"
+                                  >
+                                    <Check className="h-4 w-4" />
+                                  </button>
+                                  <button 
+                                    onClick={cancelEditComment}
+                                    className="text-red-600 hover:text-red-700 cursor-pointer"
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </button>
+                                </div>
+                              ) : (
+                                <>
+                                  <p className="text-sm">
+                                    <span className="font-semibold mr-2 dark:text-zinc-100">{comment.userName}</span>
+                                    <span className="dark:text-zinc-400">{comment.text}</span>
+                                  </p>
+                                  {user?.userName === comment.userName && (
+                                    <div className="flex items-center gap-1 opacity-0 group-hover/comment:opacity-100 transition-opacity">
+                                      <button 
+                                        onClick={() => startEditComment(comment.id, comment.text)}
+                                        className="p-1 text-zinc-400 hover:text-indigo-500 transition-colors cursor-pointer"
+                                        title="Редактировать комментарий"
+                                      >
+                                        <Edit2 className="h-3 w-3" />
+                                      </button>
+                                      <button 
+                                        onClick={() => deleteComment(post.id, comment.id)}
+                                        className="p-1 text-zinc-400 hover:text-red-500 transition-colors cursor-pointer"
+                                        title="Удалить комментарий"
+                                      >
+                                        <Trash2 className="h-3 w-3" />
+                                      </button>
+                                    </div>
+                                  )}
+                                </>
                               )}
                             </div>
                           ))}

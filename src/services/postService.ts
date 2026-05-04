@@ -1,5 +1,5 @@
 import api from './authService';
-import { PostResponse } from '../types/api';
+import { PostResponse, CommentResponse } from '../types/api';
 
 export const postService = {
   getPosts: async () => {
@@ -19,17 +19,31 @@ export const postService = {
     });
     return response.data;
   },
-  toggleLike: async (postId: number, likeStatus: boolean) => {
+  putLike: async (postId: number, status: boolean) => {
     if (postId === undefined || postId === null) {
       throw new Error('postId is required');
     }
-    await api.post(`/homePage/toggleLike/${postId}/${ likeStatus }`);
+    await api.post(`/homePage/toggleLike/${postId}/${status}`);
   },
   toggleSave: async (postId: number, status: boolean) => {
     if (postId === undefined || postId === null) {
       throw new Error('postId is required');
     }
-    // Предполагаемый эндпоинт для сохранения постов
     await api.post(`/homePage/savePost/${postId}`, { status });
+  },
+  // Комментарии
+  getComments: async (postId: number) => {
+    const response = await api.get<CommentResponse[]>(`/homePage/getComments/${postId}`);
+    return response.data;
+  },
+  addComment: async (postId: number, text: string) => {
+    const response = await api.post<string>(`/homePage/createComment/${postId}`, { text });
+    return response.data;
+  },
+  updateComment: async (commentId: number, text: string) => {
+    await api.put(`/homePage/updateComment/${commentId}`, { text });
+  },
+  deleteComment: async (commentId: number) => {
+    await api.delete(`/homePage/deleteComment/${commentId}`);
   }
 };

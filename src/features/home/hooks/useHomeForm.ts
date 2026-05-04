@@ -26,7 +26,6 @@ export const useHomeForm = () => {
   const fetchPosts = async () => {
     try {
       const backendPosts = await postService.getPosts();
-      
       const mappedPosts: PostData[] = backendPosts.map((p: any) => {
         // Java Entity это postId, а в DTO - id
         const id = p.id || p.postId;
@@ -41,7 +40,7 @@ export const useHomeForm = () => {
           timeAgo: 'Только что', 
           createdAt: Date.now(),
           mediaUrl: p.imageURL || `https://picsum.photos/seed/vibewave-${id}/600/600`,
-          mediaType: 'image',
+          mediaType: p.fileType === 'video' || (p.imageURL && p.imageURL.toLowerCase().includes('.mp4')) ? 'video' : 'image',
           comments: [] 
         };
       });
@@ -89,7 +88,7 @@ export const useHomeForm = () => {
     const newStatus = !post.isLiked;
 
     try {
-      await postService.toggleLike(postId, newStatus);
+      await postService.putLike(postId, newStatus);
       setPosts(prev => prev.map(p => {
         if (p.id === postId) {
           return {
@@ -119,7 +118,6 @@ export const useHomeForm = () => {
         }
         return p;
       }));
-
       try {
         await postService.toggleSave(postId, newStatus);
       } catch (e) {
@@ -130,49 +128,123 @@ export const useHomeForm = () => {
     }
   };
 
-  const toggleComments = (postId: number) => {
-    setExpandedComments(prev => ({ ...prev, [postId]: !prev[postId] }));
+  const toggleComments = async (postId: number) => {
+    const isExpanding = !expandedComments[postId];
+    setExpandedComments(prev => ({ ...prev, [postId]: isExpanding }));
+    
+    if (isExpanding) {
+      try {
+        const backendComments = await postService.getComments(postId);
+        setPosts(prev => prev.map(post => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              comments: backendComments.map((c) => ({
+                id: c.commentId,
+                userName: c.userName,
+                text: c.text
+              }))
+            };
+          }
+          return post;
+        }));
+      } catch (error) {
+        console.error('Failed to fetch comments:', error);
+      }
+    }
   };
 
   const handleCommentChange = (postId: number, value: string) => {
     setCommentInputs(prev => ({ ...prev, [postId]: value }));
   };
 
-  const addComment = (postId: number) => {
+  const addComment = async (postId: number) => {
     const text = commentInputs[postId];
     if (!text?.trim() || !user) return;
 
-    setPosts(prev => prev.map(post => {
-      if (post.id === postId) {
-        return {
-          ...post,
-          comments: [
-            ...post.comments,
-            { id: Date.now(), userName: user.userName, text: text.trim() }
-          ]
-        };
-      }
-      return post;
-    }));
+    try {
+      await postService.addComment(postId, text.trim());
+      
+      setCommentInputs(prev => ({ ...prev, [postId]: '' }));
+      const backendComments = await postService.getComments(postId);
+      
+      setPosts(prev => prev.map(post => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            comments: backendComments.map(c => ({
+              id: c.commentId,
+              userName: c.userName,
+              text: c.text
+            }))
+          };
+        }
+        return post;
+      }));
+      setExpandedComments(prev => ({ ...prev, [postId]: true }));
+    } catch (error) {
+      console.error('Failed to add comment:', error);
+    }
+  };
 
-    setCommentInputs(prev => ({ ...prev, [postId]: '' }));
-    setExpandedComments(prev => ({ ...prev, [postId]: true }));
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editCommentText, setEditCommentText] = useState<string>('');
+
+  const startEditComment = (commentId: number, text: string) => {
+    setEditingCommentId(commentId);
+    setEditCommentText(text);
+  };
+
+  const cancelEditComment = () => {
+    setEditingCommentId(null);
+    setEditCommentText('');
+  };
+
+  const saveEditedComment = async (postId: number, commentId: number) => {
+    if (!editCommentText.trim()) return;
+
+    try {
+      await postService.updateComment(commentId, editCommentText.trim());
+      
+      setPosts(prev => prev.map(post => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            comments: post.comments.map(c => 
+              c.id === commentId ? { ...c, text: editCommentText.trim() } : c
+            )
+          };
+        }
+        return post;
+      }));
+      
+      setEditingCommentId(null);
+      setEditCommentText('');
+    } catch (error) {
+      console.error('Failed to update comment:', error);
+    }
+  };
+
+  const deleteComment = async (postId: number, commentId: number) => {
+    try {
+      await postService.deleteComment(commentId);
+      
+      setPosts(prev => prev.map(post => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            comments: post.comments.filter(c => c.id !== commentId)
+          };
+        }
+        return post;
+      }));
+    } catch (error) {
+      console.error('Failed to delete comment:', error);
+    }
   };
 
   const deletePost = (postId: number) => {
     setPosts(prev => prev.filter(post => post.id !== postId));
-  };
-
-  const deleteComment = (postId: number, commentId: number) => {
-    setPosts(prev => prev.map(post => {
-      if (post.id === postId) {
-        return {
-          ...post,
-          comments: post.comments.filter(comment => comment.id !== commentId)
-        };
-      }
-      return post;
-    }));
   };
 
   const handleAddPost = async (newPost: { text: string; file: File | null; mediaUrl: string; mediaType: 'image' | 'video' }) => {
@@ -210,13 +282,19 @@ export const useHomeForm = () => {
     setIsModalOpen,
     commentInputs,
     expandedComments,
+    editingCommentId,
+    editCommentText,
+    setEditCommentText,
     toggleLike,
     toggleSave,
     toggleComments,
     handleCommentChange,
     addComment,
-    deletePost,
+    startEditComment,
+    cancelEditComment,
+    saveEditedComment,
     deleteComment,
+    deletePost,
     handleAddPost
   };
 };
