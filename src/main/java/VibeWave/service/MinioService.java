@@ -22,8 +22,7 @@ public class MinioService {
 
     public String uploadFileFromPost(MultipartFile file, Long postId){
         try{
-            String fileName = "post/${postId}" + UUID.randomUUID() + file.getOriginalFilename();
-
+            String fileName = "post/" + "Файлы к посту по номеру: " + postId + "/" + UUID.randomUUID() + file.getOriginalFilename();
             minioClient.putObject(
                     PutObjectArgs.builder()
                             .bucket(bucket)
@@ -39,6 +38,7 @@ public class MinioService {
             throw new RuntimeException("Ошибка загрузки файла");
         }
     }
+
 
     public String getFileURL(String fileName){
 

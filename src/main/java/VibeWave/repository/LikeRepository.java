@@ -8,4 +8,6 @@ import org.springframework.data.repository.query.Param;
 public interface LikeRepository extends JpaRepository<Like, Long> {
 
     boolean existsByUserIdAndPostId(Long userId, Long postId);
+
+    void deleteByUserIdAndPostId(Long userId, Long postId);
 }

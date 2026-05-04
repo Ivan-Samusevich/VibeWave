@@ -128,8 +128,6 @@ databaseChangeLog:
                 - column:
                     name: file_name
                     type: varchar(100)
-                    constraints:
-                      nullable: false
                 - column:
                     name: text
                     type: text
@@ -260,12 +258,12 @@ databaseChangeLog:
                       primaryKey: true
                       nullable: false
                 - column:
-                    name: post_id
+                    name: user_id
                     type: int
                     constraints:
                       nullable: false
                 - column:
-                    name: user_id
+                    name: post_id
                     type: int
                     constraints:
                       nullable: false
@@ -273,7 +271,7 @@ databaseChangeLog:
 #                    name: parent_id
 #                    type: int
                 - column:
-                    name: content
+                    name: text
                     type: text
                     constraints:
                       nullable: false

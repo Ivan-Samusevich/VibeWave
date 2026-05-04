@@ -17,7 +17,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentId;
 
-    private String userName;
+    private Long userId;
     private Long postId;
     //private Long parentId; //todo в перспективе это надо для написания комментария под комментарием
     private String text;

@@ -2,6 +2,8 @@ package VibeWave.service;
 
 import VibeWave.dto.PostDto;
 import VibeWave.dto.UserDto;
+import VibeWave.dto.comment.CommentResponse;
+import VibeWave.dto.comment.UpdateCommentRequest;
 import VibeWave.dto.post.PostResponse;
 import VibeWave.entity.Comment;
 import VibeWave.entity.Like;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,27 +32,28 @@ public class HomePageService {
     private final MinioService minioService;
 
     @Transactional
-    public String createPost(UserDto currentUser, PostDto postDto){
+    public String createPost(UserDto currentUser, String text, MultipartFile file){
         String answer = "Проверьте введённые данные";
-        if(checkPostData(postDto));
+        if(checkPostData(text));
         {
             Post post = new Post();
-            //String fileName = minioService.uploadFileFromPost(file, post.getPostId());
             post.setUserId(currentUser.getUserId());
-            post.setFileName("Кратос.png"); //todo временная мера
-            //System.out.println("Тут ошибка");
-            post.setText(postDto.getText());
+            post.setText(text);
             post.setLikesCount(0L);
             postRepository.save(post);
             answer = "Пост создан";
+            String fileName = minioService.uploadFileFromPost(file, post.getPostId());
+            post.setFileName(fileName);
+            postRepository.save(post);
         }
+
         return answer;
 
     }
 
-    private boolean checkPostData(PostDto postDto) {
+    private boolean checkPostData(String text) {
         boolean answer = true;
-        if(postDto.getText().isEmpty()){
+        if(text.isEmpty()){
             answer = false;
         }
         return answer;
@@ -60,7 +64,6 @@ public class HomePageService {
         List<PostResponse> postResponses = new java.util.ArrayList<>(List.of());
         for(Post post : posts){
             PostResponse postResponse = new PostResponse();
-            //todo создать репозиторий для поиска имени по id
             postResponse.setId(post.getPostId());
             postResponse.setUserName(userRepository.getUsernameById(post.getUserId()));
             postResponse.setText(post.getText());
@@ -68,35 +71,40 @@ public class HomePageService {
 
             boolean likeStatus = likeRepository.existsByUserIdAndPostId(currentUser.getUserId(), post.getPostId());
             postResponse.setLikeStatus(likeStatus);
+            postResponse.setImageURL(minioService.getFileURL(post.getFileName()));
+            postResponse.setFileType(fileTypeDetect(post.getFileName()));
+            System.out.println(postResponse.getFileType());
             postResponses.add(postResponse);
-            System.out.println(likeStatus);
-            System.out.println(userRepository.getUsernameById(post.getUserId()));
-            //postResponse.setImageURL(minioService.getFileURL(post.getFileName()));
-            System.out.println(post.getFileName());
-            System.out.println(minioService.getFileURL(post.getFileName()));
         }
         return postResponses;
     }//todo здесь переделать id на имя
+
+    private String fileTypeDetect(String fileName){
+        if(fileName.endsWith(".mp4")){
+            return "video";
+        } else if (fileName.endsWith(".jpg") || fileName.endsWith(".png")){
+            return "image";
+        }
+        else {
+            return "Тип файла не определён";
+        }
+    }
 
     @Transactional
     public void toggleLike(UserDto currentUser, Long postId){
         //todo разобраться с тем, как сделать так, чтобы отображался статус лайка(Есть он или нет)
         Like like = new Like();
-        System.out.println("Запрос прилетел 1");
         like.setUserId(currentUser.getUserId());
-        System.out.println("Запрос прилетел 2");
 
         like.setPostId(postId);
-        System.out.println("Запрос прилетел 3");
 
         likeRepository.save(like);
-        System.out.println("Запрос прилетел 4");
 
         System.out.println("Лайк поставлен");
     }
 
     @Transactional
-    public void updatePostLikesCount(Long postId, boolean likeStatus){
+    public void updatePostLikesCount(Long postId, boolean likeStatus, Long userId){
         // Одна операция в БД, без загрузки поста в память
         if(likeStatus) {
             postRepository.incrementLikesCount(postId);
@@ -104,19 +112,47 @@ public class HomePageService {
         }
         else{
             postRepository.decrementLikesCount(postId);
+            likeRepository.deleteByUserIdAndPostId(userId, postId);
             System.out.println("Счётчик уменьшен");
         }
     }
 
     @Transactional
-    public void createcomment(Long postId, String userName, String text){
+    public void createcomment(Long postId, Long userId, String text){
         Comment comment = new Comment();
         comment.setPostId(postId);
-        comment.setUserName(userName);
+        comment.setUserId(userId);
         comment.setText(text);
         commentRepository.save(comment);
     }
 
     //todo сделать функцию для получения всех комментиариев. Особенность в том, что мой коммент должен быть всегда вверху.
     //todo Надо сделать количество комментариев к посту(Пока что под вопросом).
+
+    public void updateComment(Long commentId, UpdateCommentRequest updateCommentRequest){
+        String text = updateCommentRequest.getText();
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Комментарий не найден"));
+        comment.setText(text);
+        commentRepository.save(comment);
+    }
+
+    public void deleteComment(Long commentId){
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Комментарий не найден"));
+        commentRepository.delete(comment);
+    }
+
+    public List<CommentResponse> getComments(Long postId){
+        List<Comment> comments = commentRepository.findAllByPostId(postId);
+        List<CommentResponse> commentResponses = new ArrayList<>();
+        for (Comment comment: comments){
+            CommentResponse commentResponse = new CommentResponse();
+            commentResponse.setText(comment.getText());
+            commentResponse.setUserName(userRepository.getUsernameById(comment.getUserId()));
+            commentResponses.add(commentResponse);
+        }
+
+        return commentResponses;
+    }
 }
