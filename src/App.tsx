@@ -19,7 +19,7 @@ export default function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/chat" element={<ChatPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
-            <Route path="/profile" element={<ProfilePage/>} />
+            <Route path="/profile/:username" element={<ProfilePage />} />
           </Routes>
         </Router>
       </ThemeProvider>

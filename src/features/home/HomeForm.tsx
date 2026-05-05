@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Card } from '../../components/Card';
 import { Input } from '../../components/Input';
 import { User, Heart, MessageCircle, Trash2, Bookmark, BookmarkCheck, Edit2, Check, X } from 'lucide-react';
@@ -53,12 +54,12 @@ export const HomeForm: React.FC = () => {
               >
                 <Card className="p-0 overflow-hidden border-zinc-200 dark:border-zinc-800">
                   <div className="flex items-center justify-between p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center">
+                    <Link to={`/profile/${post.userName}`} className="flex items-center gap-3 group">
+                      <div className="h-8 w-8 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center group-hover:ring-2 ring-indigo-500 transition-all">
                         <User className="h-5 w-5 text-zinc-500" />
                       </div>
-                      <span className="text-sm font-semibold dark:text-zinc-100">{post.userName}</span>
-                    </div>
+                      <span className="text-sm font-semibold dark:text-zinc-100 group-hover:text-indigo-500 transition-colors">{post.userName}</span>
+                    </Link>
                     {user?.userName === post.userName && (
                       <button 
                         onClick={() => deletePost(post.id)}
@@ -128,7 +129,7 @@ export const HomeForm: React.FC = () => {
                     <div className="space-y-1">
                       <p className="text-sm font-semibold dark:text-zinc-100">{post.likes.toLocaleString()} отметок «Нравится»</p>
                       <p className="text-sm dark:text-zinc-300">
-                        <span className="font-semibold mr-2 dark:text-zinc-100">{post.userName}</span>
+                        <Link to={`/profile/${post.userName}`} className="font-semibold mr-2 dark:text-zinc-100 hover:text-indigo-500 transition-colors">{post.userName}</Link>
                         {post.text}
                       </p>
                     </div>
@@ -167,7 +168,7 @@ export const HomeForm: React.FC = () => {
                               ) : (
                                 <>
                                   <p className="text-sm">
-                                    <span className="font-semibold mr-2 dark:text-zinc-100">{comment.userName}</span>
+                                    <Link to={`/profile/${comment.userName}`} className="font-semibold mr-2 dark:text-zinc-100 hover:text-indigo-500 transition-colors">{comment.userName}</Link>
                                     <span className="dark:text-zinc-400">{comment.text}</span>
                                   </p>
                                   {user?.userName === comment.userName && (

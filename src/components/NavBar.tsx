@@ -54,7 +54,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onAddPostClick }) => {
           <div className="h-8 w-px bg-zinc-200 mx-2 dark:bg-zinc-800" />
           
           <div className="flex items-center gap-3">
-            <Link to="/profile" className="flex flex-col items-end group">
+            <Link to={user ? `/profile/${user.userName}` : '/login'} className="flex flex-col items-end group">
               <span className="text-sm font-medium text-zinc-900 group-hover:text-indigo-600 transition-colors dark:text-zinc-100 dark:group-hover:text-indigo-400">{user?.userName || 'Пользователь'}</span>
               <span className="text-xs text-zinc-500 dark:text-zinc-400">{user?.email}</span>
             </Link>

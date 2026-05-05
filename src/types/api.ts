@@ -38,6 +38,15 @@ export interface PostResponse {
   isSaved?: boolean;
 }
 
+export interface ProfileData {
+  user: User;
+  profile: UserProfile;
+  postsCount: number;
+  followersCount: number;
+  followingCount: number;
+  isFollowing?: boolean;
+}
+
 export interface CommentResponse {
   commentId: number;
   userName: string;
