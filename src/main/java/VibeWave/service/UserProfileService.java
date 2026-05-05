@@ -54,7 +54,7 @@ public class UserProfileService {
 
     public List<PostResponse> showUserPosts(String userName){
         Long userId = userRepository.getIdByUsername(userName);
-        List<Post> posts = postRepository.findAllByUserid(userId);
+        List<Post> posts = postRepository.findAllByUserId(userId);
         List<PostResponse> postResponses = new ArrayList<>();
         for(Post post : posts){
             PostResponse postResponse = new PostResponse();
