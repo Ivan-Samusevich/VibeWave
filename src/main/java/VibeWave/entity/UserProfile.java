@@ -16,7 +16,11 @@ public class UserProfile {
     private Long userProfileId;
 
     private String description;
-    private String avatar_url;
-    private boolean is_active;
+    private String avatarFileName;
+
+    private Long postCount;
+    private Long followerCount;
+    private Long followingCount;
+    //private boolean isActive;
 
 }

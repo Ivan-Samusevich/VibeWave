@@ -1,4 +1,4 @@
 package VibeWave.dto.UserProfile;
 
-public class DeleteProfileRequest {
+public class DeleteUserProfileRequest {
 }

@@ -39,6 +39,26 @@ public class MinioService {
         }
     }
 
+    public String uploadFileFromUserProfile(MultipartFile file, Long userId){
+        try{
+            String fileName = "avatars/" + "Аватар пользователя по номеру: " + userId + file.getOriginalFilename();
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(bucket)
+                            .object(fileName)
+                            .stream(file.getInputStream(), file.getSize(), -1)
+                            .contentType(file.getContentType())
+                            .build()
+            );
+
+            return fileName;
+        }
+
+        catch (Exception e){
+            throw new RuntimeException("Ошибка загрузки файла");
+        }
+    }
+
 
     public String getFileURL(String fileName){
 

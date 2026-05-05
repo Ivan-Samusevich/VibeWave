@@ -57,8 +57,20 @@ databaseChangeLog:
                   name: description
                   type: text
               - column:
-                  name: avatar_url
-                  type: varchar(255)
+                  name: avatar_file_name
+                  type: varchar(100)
+              - column:
+                  name: post_count
+                  type: int
+                  defaultValue: 0
+              - column:
+                  name: follower_count
+                  type: int
+                  defaultValue: 0
+              - column:
+                  name: following_count
+                  type: int
+                  defaultValue: 0
               - column:
                   name: is_active
                   type: boolean
@@ -78,12 +90,12 @@ databaseChangeLog:
             tableName: follows
             columns:
               - column:
-                  name: follower_id
+                  name: follower_id  #Кто подписан на тебя
                   type: int
                   constraints:
                     nullable: false
               - column:
-                  name: following_id
+                  name: following_id # На кого подписан ты
                   type: int
                   constraints:
                     nullable: false

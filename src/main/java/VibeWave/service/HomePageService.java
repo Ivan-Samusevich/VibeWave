@@ -148,6 +148,7 @@ public class HomePageService {
         List<CommentResponse> commentResponses = new ArrayList<>();
         for (Comment comment: comments){
             CommentResponse commentResponse = new CommentResponse();
+            commentResponse.setCommentId(comment.getCommentId());
             commentResponse.setText(comment.getText());
             commentResponse.setUserName(userRepository.getUsernameById(comment.getUserId()));
             commentResponses.add(commentResponse);

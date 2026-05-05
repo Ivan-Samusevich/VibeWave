@@ -1,4 +1,13 @@
 package VibeWave.dto.UserProfile;
 
-public class UpdateProfileRequest {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@RequiredArgsConstructor
+public class UpdateUserProfileRequest {
+
+    private String description;
 }
