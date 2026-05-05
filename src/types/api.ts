@@ -27,6 +27,17 @@ export interface UserProfile {
 //   user?: User;
 // }
 
+export interface UserProfileResponse {
+  userName: string;
+  postCount: number;
+  followerCount: number;
+  followingCount: number;
+  description?: string;
+  avatarUrl?: string;
+  createdAt?: string;
+  isFollowing?: boolean;
+}
+
 export interface PostResponse {
   id: number;
   userName: string;
@@ -35,22 +46,15 @@ export interface PostResponse {
   likeStatus: boolean;
   imageURL: string;
   fileType: 'image' | 'video' | string;
+  userAvatarUrl?: string;
   isSaved?: boolean;
-}
-
-export interface ProfileData {
-  user: User;
-  profile: UserProfile;
-  postsCount: number;
-  followersCount: number;
-  followingCount: number;
-  isFollowing?: boolean;
 }
 
 export interface CommentResponse {
   commentId: number;
   userName: string;
   text: string;
+  userAvatarUrl?: string; // Preparation for avatar
 }
 
 export interface Media {
