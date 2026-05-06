@@ -34,11 +34,11 @@ public class UserProfileController {
     }
 
     @PutMapping("/changeUserProfile")
-    public void changeUserProfile(@RequestParam MultipartFile file,
-                                  @RequestBody UpdateUserProfileRequest updateUserProfileRequest,
+    public void changeUserProfile(@RequestParam String description,
+                                  @RequestParam MultipartFile file,
                                   @AuthenticationPrincipal UserDto currentUser){
         userProfileService.changeUserAvatarImage(currentUser.getUserId(), file);
-        userProfileService.changeUserDescription(updateUserProfileRequest.getDescription(), currentUser.getUserId());
+        userProfileService.changeUserDescription(description, currentUser.getUserId());
     }
 
     @PutMapping("/follow/{userName}")

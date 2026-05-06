@@ -253,6 +253,7 @@ databaseChangeLog:
               baseColumnNames: post_id
               referencedTableName: posts
               referencedColumnNames: post_id
+              onDelete: CASCADE
 
   - changeSet:
       id: create-comments-table
@@ -303,6 +304,7 @@ databaseChangeLog:
               baseColumnNames: post_id
               referencedTableName: posts
               referencedColumnNames: post_id
+              onDelete: CASCADE
           - addForeignKeyConstraint:
               constraintName: fk_comments_users
               baseTableName: comments

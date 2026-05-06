@@ -41,7 +41,7 @@ public class MinioService {
 
     public String uploadFileFromUserProfile(MultipartFile file, Long userId){
         try{
-            String fileName = "avatars/" + "Аватар пользователя по номеру: " + userId + file.getOriginalFilename();
+            String fileName = "avatars/" + "Аватар пользователя по номеру: " + userId + "/" + file.getOriginalFilename();
             minioClient.putObject(
                     PutObjectArgs.builder()
                             .bucket(bucket)

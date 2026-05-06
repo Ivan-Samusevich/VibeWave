@@ -45,6 +45,10 @@ public class UserProfileService {
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         UserProfileResponce userProfileResponce = new UserProfileResponce();
         userProfileResponce.setUserName(userRepository.getUsernameById(userId));
+        if(userProfile.getAvatarFileName() != null){
+            userProfileResponce.setFileURL(minioService.getFileURL(userProfile.getAvatarFileName()));
+        }
+        userProfileResponce.setDescription(userProfile.getDescription());
         userProfileResponce.setPostCount(userProfile.getPostCount());
         userProfileResponce.setFollowerCount(userProfile.getFollowerCount());
         userProfileResponce.setFollowingCount(userProfile.getFollowingCount());

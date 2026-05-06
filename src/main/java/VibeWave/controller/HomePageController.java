@@ -36,6 +36,11 @@ public class HomePageController {
         return homePageService.getPosts(currentUser);
     }
 
+    @DeleteMapping("/deletePost/{postId}")
+    public void deletePost(@PathVariable Long postId){
+        homePageService.deletePost(postId);
+    }
+
     @PostMapping("/toggleLike/{postId}/{likeStatus}")
     public void putLike(@PathVariable Long postId,
                         @PathVariable boolean likeStatus,

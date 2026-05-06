@@ -10,6 +10,8 @@ import lombok.Setter;
 public class UserProfileResponce {
 
     private String userName;
+    private String fileURL;
+    private String description;
     private Long postCount;
     private Long followerCount;
     private Long followingCount;

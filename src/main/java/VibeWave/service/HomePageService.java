@@ -8,10 +8,8 @@ import VibeWave.dto.post.PostResponse;
 import VibeWave.entity.Comment;
 import VibeWave.entity.Like;
 import VibeWave.entity.Post;
-import VibeWave.repository.CommentRepository;
-import VibeWave.repository.LikeRepository;
-import VibeWave.repository.PostRepository;
-import VibeWave.repository.UserRepository;
+import VibeWave.entity.UserProfile;
+import VibeWave.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +28,7 @@ public class HomePageService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final MinioService minioService;
+    private final UserProfileRepository userProfileRepository;
 
     @Transactional
     public String createPost(UserDto currentUser, String text, MultipartFile file){
@@ -46,7 +45,7 @@ public class HomePageService {
             post.setFileName(fileName);
             postRepository.save(post);
         }
-
+        userProfileRepository.incrementPostCount(currentUser.getUserId());
         return answer;
 
     }
@@ -78,6 +77,13 @@ public class HomePageService {
         }
         return postResponses;
     }//todo здесь переделать id на имя
+
+    @Transactional
+    public void deletePost(Long postId){
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Пост не найден"));
+        postRepository.delete(post);
+    }
 
     private String fileTypeDetect(String fileName){
         if(fileName.endsWith(".mp4")){
@@ -129,6 +135,7 @@ public class HomePageService {
     //todo сделать функцию для получения всех комментиариев. Особенность в том, что мой коммент должен быть всегда вверху.
     //todo Надо сделать количество комментариев к посту(Пока что под вопросом).
 
+    @Transactional
     public void updateComment(Long commentId, UpdateCommentRequest updateCommentRequest){
         String text = updateCommentRequest.getText();
         Comment comment = commentRepository.findById(commentId)
@@ -137,6 +144,7 @@ public class HomePageService {
         commentRepository.save(comment);
     }
 
+    @Transactional
     public void deleteComment(Long commentId){
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Комментарий не найден"));
