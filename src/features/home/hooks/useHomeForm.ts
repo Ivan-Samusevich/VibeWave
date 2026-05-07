@@ -6,6 +6,7 @@ import { postService } from '../../../services/postService';
 export interface PostData {
   id: number;
   userName: string;
+  userAvatarUrl?: string;
   likes: number;
   isLiked: boolean;
   isSaved: boolean;
@@ -14,7 +15,7 @@ export interface PostData {
   createdAt: number;
   mediaUrl: string;
   mediaType: 'image' | 'video';
-  comments: { id: number; userName: string; text: string }[];
+  comments: { id: number; userName: string; text: string; userAvatarUrl?: string }[];
 }
 
 export const useHomeForm = () => {
@@ -33,6 +34,7 @@ export const useHomeForm = () => {
         return {
           id: id,
           userName: p.userName || 'Аноним',
+          userAvatarUrl: p.userAvatarUrl,
           likes: p.likesCount || 0,
           isLiked: p.likeStatus || false,
           isSaved: p.isSaved || false,
@@ -118,6 +120,7 @@ export const useHomeForm = () => {
         }
         return p;
       }));
+
       try {
         await postService.toggleSave(postId, newStatus);
       } catch (e) {
@@ -142,7 +145,8 @@ export const useHomeForm = () => {
               comments: backendComments.map((c) => ({
                 id: c.commentId,
                 userName: c.userName,
-                text: c.text
+                text: c.text,
+                userAvatarUrl: c.userAvatarUrl
               }))
             };
           }
@@ -175,7 +179,8 @@ export const useHomeForm = () => {
             comments: backendComments.map(c => ({
               id: c.commentId,
               userName: c.userName,
-              text: c.text
+              text: c.text,
+              userAvatarUrl: c.userAvatarUrl
             }))
           };
         }
@@ -243,8 +248,13 @@ export const useHomeForm = () => {
     }
   };
 
-  const deletePost = (postId: number) => {
-    setPosts(prev => prev.filter(post => post.id !== postId));
+  const deletePost = async (postId: number) => {
+    try {
+      await postService.deletePost(postId);
+      setPosts(prev => prev.filter(post => post.id !== postId));
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+    }
   };
 
   const handleAddPost = async (newPost: { text: string; file: File | null; mediaUrl: string; mediaType: 'image' | 'video' }) => {

@@ -45,5 +45,8 @@ export const postService = {
   },
   deleteComment: async (commentId: number) => {
     await api.delete(`/homePage/deleteComment/${commentId}`);
+  },
+  deletePost: async (postId: number) => {
+    await api.delete(`/homePage/deletePost/${postId}`);
   }
 };

@@ -7,12 +7,12 @@ export interface User {
   updatedAt?: string;
 }
 
-export interface UserProfile {
-  userProfileId: number;
-  description?: string;
-  avatar_url?: string;
-  is_active: boolean;
-}
+// export interface UserProfile {
+//   userProfileId: number;
+//   description?: string;
+//   avatar_url?: string;
+//   is_active: boolean;
+// }
 
 // export interface Post {
 //   postId: number;
@@ -33,7 +33,7 @@ export interface UserProfileResponse {
   followerCount: number;
   followingCount: number;
   description?: string;
-  avatarUrl?: string;
+  fileURL?: string;
   createdAt?: string;
   isFollowing?: boolean;
 }
@@ -54,7 +54,7 @@ export interface CommentResponse {
   commentId: number;
   userName: string;
   text: string;
-  userAvatarUrl?: string; // Preparation for avatar
+  userAvatarUrl?: string; // Avatar
 }
 
 export interface Media {

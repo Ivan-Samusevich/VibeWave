@@ -9,17 +9,17 @@ export const useProfileForm = () => {
   const { username } = useParams<{ username: string }>();
   const { user: currentUser } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
-  
+
   const [profileData, setProfileData] = useState<UserProfileResponse | null>(null);
   const [userPosts, setUserPosts] = useState<PostResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'posts' | 'saved' | 'tagged'>('posts');
-  
+
   // Modals state
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostResponse | null>(null);
-  
+
   // Edit form state
   const [editDescription, setEditDescription] = useState('');
   const [editFile, setEditFile] = useState<File | null>(null);
@@ -39,7 +39,7 @@ export const useProfileForm = () => {
       const data = await userService.getProfile(targetUsername);
       setProfileData(data);
       setEditDescription(data.description || '');
-      
+
       const posts = await userService.getUserPosts(targetUsername);
       setUserPosts(posts);
     } catch (error) {

@@ -55,13 +55,23 @@ export const HomeForm: React.FC = () => {
                 <Card className="p-0 overflow-hidden border-zinc-200 dark:border-zinc-800">
                   <div className="flex items-center justify-between p-4">
                     <Link to={`/profile/${post.userName}`} className="flex items-center gap-3 group">
-                      <div className="h-8 w-8 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center group-hover:ring-2 ring-indigo-500 transition-all">
-                        <User className="h-5 w-5 text-zinc-500" />
+                      <div className="h-9 w-9 rounded-full bg-linear-to-tr from-indigo-500 to-purple-500 p-0.5 group-hover:scale-105 transition-transform duration-200">
+                        {post.userAvatarUrl ? (
+                          <img
+                            src={post.userAvatarUrl}
+                            alt={post.userName}
+                            className="h-full w-full rounded-full object-cover border-2 border-white dark:border-zinc-900"
+                          />
+                        ) : (
+                          <div className="h-full w-full rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                            <User className="h-5 w-5 text-zinc-400" />
+                          </div>
+                        )}
                       </div>
-                      <span className="text-sm font-semibold dark:text-zinc-100 group-hover:text-indigo-500 transition-colors">{post.userName}</span>
+                      <span className="text-sm font-bold dark:text-zinc-100 group-hover:text-indigo-500 transition-colors">{post.userName}</span>
                     </Link>
                     {user?.userName === post.userName && (
-                      <button 
+                      <button
                         onClick={() => deletePost(post.id)}
                         className="p-1 text-zinc-400 hover:text-red-500 transition-colors cursor-pointer"
                         title="Удалить публикацию"
@@ -70,21 +80,21 @@ export const HomeForm: React.FC = () => {
                       </button>
                     )}
                   </div>
-                  
+
                   <div className="aspect-square bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center overflow-hidden">
                     {post.mediaType === 'video' ? (
-                      <video 
-                        src={post.mediaUrl} 
-                        className="h-full w-full object-cover" 
-                        controls 
-                        autoPlay 
-                        muted 
-                        loop 
+                      <video
+                        src={post.mediaUrl}
+                        className="h-full w-full object-cover"
+                        controls
+                        autoPlay
+                        muted
+                        loop
                       />
                     ) : (
-                      <img 
-                        src={post.mediaUrl} 
-                        alt="Post content" 
+                      <img
+                        src={post.mediaUrl}
+                        alt="Post content"
                         className="h-full w-full object-cover"
                         referrerPolicy="no-referrer"
                       />
@@ -94,13 +104,12 @@ export const HomeForm: React.FC = () => {
                   <div className="p-4 space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <Heart 
-                          className={`h-6 w-6 cursor-pointer transition-colors ${
-                            post.isLiked ? 'text-red-500 fill-red-500' : 'text-zinc-700 dark:text-zinc-300 hover:text-red-500'
-                          }`} 
+                        <Heart
+                          className={`h-6 w-6 cursor-pointer transition-colors ${post.isLiked ? 'text-red-500 fill-red-500' : 'text-zinc-700 dark:text-zinc-300 hover:text-red-500'
+                            }`}
                           onClick={() => toggleLike(post.id)}
                         />
-                        <div 
+                        <div
                           className="flex items-center gap-1.5 cursor-pointer group"
                           onClick={() => toggleComments(post.id)}
                         >
@@ -112,8 +121,7 @@ export const HomeForm: React.FC = () => {
                           )}
                         </div>
                       </div>
-                      
-                      <div 
+                      <div
                         className="cursor-pointer text-zinc-700 dark:text-zinc-300 hover:text-indigo-500 transition-colors"
                         onClick={() => toggleSave(post.id)}
                         title={post.isSaved ? "Удалить из сохраненного" : "Сохранить"}
@@ -125,7 +133,7 @@ export const HomeForm: React.FC = () => {
                         )}
                       </div>
                     </div>
-                    
+
                     <div className="space-y-1">
                       <p className="text-sm font-semibold dark:text-zinc-100">{post.likes.toLocaleString()} отметок «Нравится»</p>
                       <p className="text-sm dark:text-zinc-300">
@@ -136,61 +144,72 @@ export const HomeForm: React.FC = () => {
 
                     <AnimatePresence>
                       {expandedComments[post.id] && post.comments.length > 0 && (
-                        <motion.div 
+                        <motion.div
                           initial={{ height: 0, opacity: 0 }}
                           animate={{ height: 'auto', opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
                           className="space-y-2 pt-2 overflow-hidden"
                         >
                           {post.comments.map(comment => (
-                            <div key={comment.id} className="flex items-start justify-between group/comment gap-2">
-                              {editingCommentId === comment.id ? (
-                                <div className="flex-1 flex items-center gap-2">
-                                  <Input
-                                    value={editCommentText}
-                                    onChange={(e) => setEditCommentText(e.target.value)}
-                                    className="h-7 text-xs py-1"
-                                    autoFocus
-                                  />
-                                  <button 
-                                    onClick={() => saveEditedComment(post.id, comment.id)}
-                                    className="text-green-600 hover:text-green-700 cursor-pointer"
-                                  >
-                                    <Check className="h-4 w-4" />
-                                  </button>
-                                  <button 
-                                    onClick={cancelEditComment}
-                                    className="text-red-600 hover:text-red-700 cursor-pointer"
-                                  >
-                                    <X className="h-4 w-4" />
-                                  </button>
-                                </div>
-                              ) : (
-                                <>
-                                  <p className="text-sm">
-                                    <Link to={`/profile/${comment.userName}`} className="font-semibold mr-2 dark:text-zinc-100 hover:text-indigo-500 transition-colors">{comment.userName}</Link>
-                                    <span className="dark:text-zinc-400">{comment.text}</span>
-                                  </p>
-                                  {user?.userName === comment.userName && (
-                                    <div className="flex items-center gap-1 opacity-0 group-hover/comment:opacity-100 transition-opacity">
-                                      <button 
-                                        onClick={() => startEditComment(comment.id, comment.text)}
-                                        className="p-1 text-zinc-400 hover:text-indigo-500 transition-colors cursor-pointer"
-                                        title="Редактировать комментарий"
-                                      >
-                                        <Edit2 className="h-3 w-3" />
-                                      </button>
-                                      <button 
-                                        onClick={() => deleteComment(post.id, comment.id)}
-                                        className="p-1 text-zinc-400 hover:text-red-500 transition-colors cursor-pointer"
-                                        title="Удалить комментарий"
-                                      >
-                                        <Trash2 className="h-3 w-3" />
-                                      </button>
-                                    </div>
-                                  )}
-                                </>
-                              )}
+                            <div key={comment.id} className="flex items-start gap-2 group/comment">
+                              <div className="h-7 w-7 rounded-full shrink-0 mt-0.5 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+                                {comment.userAvatarUrl ? (
+                                  <img src={comment.userAvatarUrl} alt={comment.userName} className="h-full w-full object-cover" />
+                                ) : (
+                                  <div className="h-full w-full flex items-center justify-center">
+                                    <User className="h-4 w-4 text-zinc-400" />
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex-1 flex items-start justify-between gap-2 overflow-hidden">
+                                {editingCommentId === comment.id ? (
+                                  <div className="flex-1 flex items-center gap-2">
+                                    <Input
+                                      value={editCommentText}
+                                      onChange={(e) => setEditCommentText(e.target.value)}
+                                      className="h-7 text-xs py-1"
+                                      autoFocus
+                                    />
+                                    <button
+                                      onClick={() => saveEditedComment(post.id, comment.id)}
+                                      className="text-green-600 hover:text-green-700 cursor-pointer"
+                                    >
+                                      <Check className="h-4 w-4" />
+                                    </button>
+                                    <button
+                                      onClick={cancelEditComment}
+                                      className="text-red-600 hover:text-red-700 cursor-pointer"
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <>
+                                    <p className="text-sm">
+                                      <Link to={`/profile/${comment.userName}`} className="font-semibold mr-2 dark:text-zinc-100 hover:text-indigo-500 transition-colors">{comment.userName}</Link>
+                                      <span className="dark:text-zinc-400">{comment.text}</span>
+                                    </p>
+                                    {user?.userName === comment.userName && (
+                                      <div className="flex items-center gap-1 opacity-0 group-hover/comment:opacity-100 transition-opacity">
+                                        <button
+                                          onClick={() => startEditComment(comment.id, comment.text)}
+                                          className="p-1 text-zinc-400 hover:text-indigo-500 transition-colors cursor-pointer"
+                                          title="Редактировать комментарий"
+                                        >
+                                          <Edit2 className="h-3 w-3" />
+                                        </button>
+                                        <button
+                                          onClick={() => deleteComment(post.id, comment.id)}
+                                          className="p-1 text-zinc-400 hover:text-red-500 transition-colors cursor-pointer"
+                                          title="Удалить комментарий"
+                                        >
+                                          <Trash2 className="h-3 w-3" />
+                                        </button>
+                                      </div>
+                                    )}
+                                  </>
+                                )}
+                              </div>
                             </div>
                           ))}
                         </motion.div>
@@ -198,7 +217,7 @@ export const HomeForm: React.FC = () => {
                     </AnimatePresence>
 
                     {!expandedComments[post.id] && post.comments.length > 0 && (
-                      <button 
+                      <button
                         onClick={() => toggleComments(post.id)}
                         className="text-sm text-zinc-500 dark:text-zinc-400 hover:underline cursor-pointer"
                       >
@@ -216,7 +235,7 @@ export const HomeForm: React.FC = () => {
                         onChange={(e) => handleCommentChange(post.id, e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && addComment(post.id)}
                       />
-                      <button 
+                      <button
                         className="text-indigo-600 font-semibold hover:bg-transparent disabled:opacity-50 text-sm cursor-pointer"
                         disabled={!commentInputs[post.id]?.trim()}
                         onClick={() => addComment(post.id)}
@@ -232,10 +251,10 @@ export const HomeForm: React.FC = () => {
         )}
       </main>
 
-      <CreatePostModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        onAddPost={handleAddPost} 
+      <CreatePostModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onAddPost={handleAddPost}
       />
     </div>
   );

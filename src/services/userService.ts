@@ -22,11 +22,11 @@ export const userService = {
   
   updateProfile: async (text: string, file?: File | null) => {
     const formData = new FormData();
+    formData.append('description', text);
     if (file) {
       formData.append('file', file);
     }
     const response = await api.put('/userProfile/changeUserProfile', formData, {
-      params: { description: text },
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
