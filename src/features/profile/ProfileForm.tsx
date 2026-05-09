@@ -17,6 +17,8 @@ import { Card } from "../../components/Card";
 import { Button } from "../../components/Button";
 import { useProfileForm } from "./hooks/useProfileForm";
 
+import { PostResponse, UserResponse } from "../../types/api";
+
 export const ProfileForm: React.FC = () => {
   const {
     username,
@@ -40,6 +42,12 @@ export const ProfileForm: React.FC = () => {
     formatDate,
     isOwnProfile,
     navigate,
+    isFollowModalOpen,
+    setIsFollowModalOpen,
+    followModalType,
+    followList,
+    isFollowListLoading,
+    openFollowModal
   } = useProfileForm();
 
   if (isLoading) {
@@ -154,7 +162,10 @@ export const ProfileForm: React.FC = () => {
                     публикаций
                   </span>
                 </div>
-                <div className="flex flex-col md:flex-row md:gap-1.5 items-center cursor-pointer group">
+                <div 
+                  className="flex flex-col md:flex-row md:gap-1.5 items-center cursor-pointer group"
+                  onClick={() => openFollowModal('followers')}
+                >
                   <span className="font-bold text-lg md:text-base text-zinc-900 dark:text-zinc-100 group-hover:text-indigo-600 transition-colors">
                     {profileData.followerCount || 0}
                   </span>
@@ -162,7 +173,10 @@ export const ProfileForm: React.FC = () => {
                     подписчиков
                   </span>
                 </div>
-                <div className="flex flex-col md:flex-row md:gap-1.5 items-center cursor-pointer group">
+                <div 
+                  className="flex flex-col md:flex-row md:gap-1.5 items-center cursor-pointer group"
+                  onClick={() => openFollowModal('following')}
+                >
                   <span className="font-bold text-lg md:text-base text-zinc-900 dark:text-zinc-100 group-hover:text-indigo-600 transition-colors">
                     {profileData.followingCount || 0}
                   </span>
@@ -471,6 +485,79 @@ export const ProfileForm: React.FC = () => {
           </div>
         )}
       </AnimatePresence>
+
+      <FollowListModal 
+        isOpen={isFollowModalOpen}
+        onClose={() => setIsFollowModalOpen(false)}
+        type={followModalType}
+        users={followList}
+        isLoading={isFollowListLoading}
+        onUserClick={(uname) => {
+          setIsFollowModalOpen(false);
+          navigate(`/profile/${uname}`);
+        }}
+      />
     </main>
   );
 };
+
+const ProfileAvatar: React.FC<{ url?: string; name?: string; className?: string; borderSize?: string }> = ({ url, name, className, borderSize = "border-2" }) => (
+  <div className={`${className} rounded-full bg-linear-to-tr from-indigo-500 via-purple-500 to-pink-500 p-1 flex items-center justify-center shadow-xl`}>
+    {url ? (
+      <img 
+        src={url} 
+        alt={name} 
+        className={`h-full w-full rounded-full ${borderSize} border-white dark:border-zinc-900 object-cover`} 
+        referrerPolicy="no-referrer"
+      />
+    ) : (
+      <div className={`h-full w-full rounded-full ${borderSize} border-white dark:border-zinc-900 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 dark:text-zinc-600 font-bold uppercase`}>
+        {name?.[0]}
+      </div>
+    )}
+  </div>
+);
+
+const FollowListModal: React.FC<{ 
+  isOpen: boolean; onClose: () => void; type: 'followers' | 'following'; users: UserResponse[]; isLoading: boolean; onUserClick: (uname: string) => void 
+}> = ({ isOpen, onClose, type, users, isLoading, onUserClick }) => (
+  <AnimatePresence>
+    {isOpen && (
+      <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+        <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative bg-white dark:bg-zinc-900 w-full max-w-sm rounded-2xl shadow-2xl p-0 overflow-hidden">
+          <div className="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+            <h2 className="text-lg font-bold dark:text-zinc-100 capitalize">
+              {type === 'followers' ? 'Подписчики' : 'Подписки'}
+            </h2>
+            <button onClick={onClose} className="text-zinc-500 hover:text-zinc-700 cursor-pointer"><X className="h-5 w-5" /></button>
+          </div>
+          
+          <div className="max-h-400px overflow-y-auto px-6 py-4">
+            {isLoading ? (
+              <div className="flex justify-center p-8">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
+              </div>
+            ) : users.length === 0 ? (
+              <div className="text-center py-8 text-zinc-500 dark:text-zinc-400">
+                {type === 'followers' ? 'Нет подписчиков' : 'Нет подписок'}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {users.map((user) => (
+                  <div key={user.userName} className="flex items-center justify-between group cursor-pointer" onClick={() => onUserClick(user.userName)}>
+                    <div className="flex items-center gap-3">
+                      <ProfileAvatar url={user.fileURL} name={user.userName} className="h-10 w-10 text-sm" />
+                      <span className="font-bold text-sm dark:text-zinc-100 group-hover:text-indigo-500 transition-colors">{user.userName}</span>
+                    </div>
+                    <Button variant="outline" size="sm" className="h-8 px-4 text-xs font-bold cursor-pointer">Профиль</Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </motion.div>
+      </div>
+    )}
+  </AnimatePresence>
+);

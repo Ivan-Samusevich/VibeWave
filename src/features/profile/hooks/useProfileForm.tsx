@@ -3,23 +3,29 @@ import { useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { RootState } from '../../../store';
 import { userService } from '../../../services/userService';
-import { UserProfileResponse, PostResponse } from '../../../types/api';
+import { UserProfileResponse, PostResponse, UserResponse } from '../../../types/api';
 
 export const useProfileForm = () => {
   const { username } = useParams<{ username: string }>();
   const { user: currentUser } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
-
+  
   const [profileData, setProfileData] = useState<UserProfileResponse | null>(null);
   const [userPosts, setUserPosts] = useState<PostResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'posts' | 'saved' | 'tagged'>('posts');
-
+  
   // Modals state
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PostResponse | null>(null);
-
+  
+  // Follow lists state
+  const [isFollowModalOpen, setIsFollowModalOpen] = useState(false);
+  const [followModalType, setFollowModalType] = useState<'followers' | 'following'>('followers');
+  const [followList, setFollowList] = useState<UserResponse[]>([]);
+  const [isFollowListLoading, setIsFollowListLoading] = useState(false);
+  
   // Edit form state
   const [editDescription, setEditDescription] = useState('');
   const [editFile, setEditFile] = useState<File | null>(null);
@@ -27,19 +33,13 @@ export const useProfileForm = () => {
 
   const isOwnProfile = currentUser?.userName === username;
 
-  useEffect(() => {
-    if (username) {
-      loadProfile(username);
-    }
-  }, [username]);
-
   const loadProfile = async (targetUsername: string) => {
     setIsLoading(true);
     try {
       const data = await userService.getProfile(targetUsername);
       setProfileData(data);
       setEditDescription(data.description || '');
-
+      
       const posts = await userService.getUserPosts(targetUsername);
       setUserPosts(posts);
     } catch (error) {
@@ -48,6 +48,28 @@ export const useProfileForm = () => {
       setIsLoading(false);
     }
   };
+
+  const openFollowModal = async (type: 'followers' | 'following') => {
+    setFollowModalType(type);
+    setIsFollowModalOpen(true);
+    setIsFollowListLoading(true);
+    try {
+      const data = type === 'followers' 
+        ? await userService.getFollowers() 
+        : await userService.getFollowing();
+      setFollowList(data);
+    } catch (error) {
+      console.error('Failed to load follow list:', error);
+    } finally {
+      setIsFollowListLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (username) {
+      loadProfile(username);
+    }
+  }, [username]);
 
   const handleUpdateProfile = async () => {
     try {
@@ -112,6 +134,12 @@ export const useProfileForm = () => {
     handleFollow,
     formatDate,
     isOwnProfile,
-    navigate
+    navigate,
+    isFollowModalOpen,
+    setIsFollowModalOpen,
+    followModalType,
+    followList,
+    isFollowListLoading,
+    openFollowModal
   };
 };

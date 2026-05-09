@@ -38,6 +38,11 @@ export interface UserProfileResponse {
   isFollowing?: boolean;
 }
 
+export interface UserResponse {
+  userName: string;
+  fileURL?: string;
+}
+
 export interface PostResponse {
   id: number;
   userName: string;
