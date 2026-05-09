@@ -2,13 +2,17 @@ package VibeWave.service;
 
 import VibeWave.dto.UserProfile.UserProfileResponce;
 import VibeWave.dto.post.PostResponse;
+import VibeWave.dto.user.UserResponse;
+import VibeWave.entity.Follow;
 import VibeWave.entity.Post;
 import VibeWave.entity.UserProfile;
+import VibeWave.repository.FollowRepository;
 import VibeWave.repository.PostRepository;
 import VibeWave.repository.UserProfileRepository;
 import VibeWave.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -22,12 +26,16 @@ public class UserProfileService {
     private final MinioService minioService;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final FollowRepository followRepository;
 
 
     //todo Надо будет объеденить 2 метода на изменение профиля
     public void changeUserAvatarImage(Long userId, MultipartFile file){
         UserProfile userProfile = userProfileRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        if(userProfile.getAvatarFileName() != null){
+            minioService.deleteFileFromMinio(userProfile.getAvatarFileName());
+        }
         String fileName = minioService.uploadFileFromUserProfile(file, userId);
         userProfile.setAvatarFileName(fileName);
         userProfileRepository.save(userProfile);
@@ -73,10 +81,40 @@ public class UserProfileService {
         return postResponses;
     }
 
-    public void followOnUser(String userName){
-
+    @Transactional
+    public void followOnUser(String userName, Long userId){
+        Long followingId = userRepository.getIdByUsername(userName);
+        Follow follow = new Follow();
+        follow.setFollowerId(userId);
+        follow.setFollowingId(followingId);
+        followRepository.save(follow);
+        userProfileRepository.incrementFollowingCount(userId);
+        userProfileRepository.incrementFollowerCount(followingId);
     }
 
+    public List<UserResponse> getFollower(Long userId){
+        List<Follow> follows = followRepository.findByFollowerId(userId);
+        List<UserResponse> followers = new ArrayList<>();
+        for(Follow follow : follows){
+            UserResponse response = new UserResponse();
+            response.setUserName(userRepository.getUsernameById(follow.getFollowerId()));
+            response.setFileURL(minioService.getFileURL(userProfileRepository.findAvatarFileNameByUserProfileId(follow.getFollowerId())));
+            followers.add(response);
+        }
+        return followers;
+    }
+
+    public List<UserResponse> getFollowing(Long userId){
+        List<Follow> follows = followRepository.findByFollowingId(userId);
+        List<UserResponse> followings = new ArrayList<>();
+        for(Follow follow : follows){
+            UserResponse response = new UserResponse();
+            response.setUserName(userRepository.getUsernameById(follow.getFollowingId()));
+            response.setFileURL(minioService.getFileURL(userProfileRepository.findAvatarFileNameByUserProfileId(follow.getFollowingId())));
+            followings.add(response);
+        }
+        return followings;
+    }
 
     private String fileTypeDetect(String fileName){
         if(fileName.endsWith(".mp4")){

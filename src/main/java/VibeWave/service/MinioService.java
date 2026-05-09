@@ -3,6 +3,7 @@ package VibeWave.service;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
+import io.minio.RemoveObjectArgs;
 import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,6 +76,18 @@ public class MinioService {
             throw new RuntimeException("Ошибка получения ссылки");
         }
 
+    }
+
+    public void deleteFileFromMinio(String fileName){
+        try {
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(bucket)
+                            .object(fileName)
+                            .build());
+        } catch (Exception e){
+            throw new RuntimeException("Ошибка удаления");
+        }
     }
 
 }

@@ -79,10 +79,12 @@ public class HomePageService {
     }//todo здесь переделать id на имя
 
     @Transactional
-    public void deletePost(Long postId){
+    public void deletePost(Long postId, Long userId){ //todo добавить удаление файла из хранилища
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Пост не найден"));
+        minioService.deleteFileFromMinio(post.getFileName());
         postRepository.delete(post);
+        userProfileRepository.decrementPostCount(userId);
     }
 
     private String fileTypeDetect(String fileName){

@@ -5,6 +5,8 @@ import VibeWave.dto.UserDto;
 import VibeWave.dto.UserProfile.UpdateUserProfileRequest;
 import VibeWave.dto.UserProfile.UserProfileResponce;
 import VibeWave.dto.post.PostResponse;
+import VibeWave.dto.user.UserResponse;
+import VibeWave.entity.User;
 import VibeWave.entity.UserProfile;
 import VibeWave.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,7 @@ public class UserProfileController {
 
 
     @GetMapping("/showUserProfile")
-    public UserProfileResponce showUserProfile(@AuthenticationPrincipal UserDto currentUser){
+    public UserProfileResponce showUserProfile(@AuthenticationPrincipal UserDto currentUser){ // todo переделать под ник, который отправляет фронт
         return userProfileService.showUserProfile(currentUser.getUserId());
     }
 
@@ -41,8 +43,19 @@ public class UserProfileController {
         userProfileService.changeUserDescription(description, currentUser.getUserId());
     }
 
-    @PutMapping("/follow/{userName}")
-    public void followOnUSer(@PathVariable String userName){
+    @PostMapping("/follow/{userName}")                       //todo потом переделать так, чтобы можно было с другой страницы смотреть его подписки.
+    public void followOnUSer(@PathVariable String userName,
+                             @AuthenticationPrincipal UserDto currentUser){
+        userProfileService.followOnUser(userName, currentUser.getUserId());
+    }
 
+    @GetMapping("/showFollowers")
+    public List<UserResponse> showfollowers(@AuthenticationPrincipal UserDto currentUser){
+        return userProfileService.getFollower(currentUser.getUserId());
+    }
+
+    @GetMapping("/showFollowing")
+    public List<UserResponse> showfollowing(@AuthenticationPrincipal UserDto currentUser){
+        return userProfileService.getFollowing(currentUser.getUserId());
     }
 }
