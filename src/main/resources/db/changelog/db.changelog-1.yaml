@@ -90,6 +90,13 @@ databaseChangeLog:
             tableName: follows
             columns:
               - column:
+                  name: follow_id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
                   name: follower_id  #Кто подписан на тебя
                   type: int
                   constraints:

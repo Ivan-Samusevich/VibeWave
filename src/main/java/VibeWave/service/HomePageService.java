@@ -72,7 +72,7 @@ public class HomePageService {
             postResponse.setLikeStatus(likeStatus);
             postResponse.setImageURL(minioService.getFileURL(post.getFileName()));
             postResponse.setFileType(fileTypeDetect(post.getFileName()));
-            System.out.println(postResponse.getFileType());
+            //System.out.println(postResponse.getFileType());
             postResponses.add(postResponse);
         }
         return postResponses;

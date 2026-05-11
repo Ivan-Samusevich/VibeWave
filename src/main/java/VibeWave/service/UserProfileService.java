@@ -83,7 +83,9 @@ public class UserProfileService {
 
     @Transactional
     public void followOnUser(String userName, Long userId){
+        System.out.println(userName);
         Long followingId = userRepository.getIdByUsername(userName);
+        System.out.println(followingId);
         Follow follow = new Follow();
         follow.setFollowerId(userId);
         follow.setFollowingId(followingId);
@@ -93,7 +95,7 @@ public class UserProfileService {
     }
 
     public List<UserResponse> getFollower(Long userId){
-        List<Follow> follows = followRepository.findByFollowerId(userId);
+        List<Follow> follows = followRepository.findByFollowingId(userId);
         List<UserResponse> followers = new ArrayList<>();
         for(Follow follow : follows){
             UserResponse response = new UserResponse();
@@ -105,7 +107,7 @@ public class UserProfileService {
     }
 
     public List<UserResponse> getFollowing(Long userId){
-        List<Follow> follows = followRepository.findByFollowingId(userId);
+        List<Follow> follows = followRepository.findByFollowerId(userId);
         List<UserResponse> followings = new ArrayList<>();
         for(Follow follow : follows){
             UserResponse response = new UserResponse();

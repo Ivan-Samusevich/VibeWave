@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface UserProfileRepository extends JpaRepository<UserProfile, Long> {
 
+    @Query("SELECT u.avatarFileName FROM UserProfile u WHERE u.id = :userProfileId")
     String findAvatarFileNameByUserProfileId(Long userProfileId);
 
     @Modifying
