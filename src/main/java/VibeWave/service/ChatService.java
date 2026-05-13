@@ -1,34 +1,74 @@
 package VibeWave.service;
 
+import VibeWave.dto.chat.ChatResponse;
+import VibeWave.entity.Chat;
 import VibeWave.entity.Message;
+import VibeWave.repository.ChatRepository;
 import VibeWave.repository.MessageRepository;
+import VibeWave.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ChatService {
 
-    private final MessageRepository messageRepository;
+    private final UserRepository userRepository;
+    private final ChatRepository chatRepository;
 
-    //todo в перспективе сделать PageAble(это для того, чтобы из бд брать условно по 10 сообщений, остальные по мере необходимости будут подгружаться)
-    public List<Message> getMessages(Long myId, Long receiverId){
-        return messageRepository.findChatMessages(myId, receiverId);
+//    todo в перспективе сделать PageAble(это для того, чтобы из бд брать условно по 10 сообщений, остальные по мере необходимости будут подгружаться)
+
+    public Chat getOrCreateChat(Long myId, Long secondUserId){
+
+        Long firstId = Math.min(myId, secondUserId);
+        Long secondId = Math.max(myId, secondUserId);
+
+        Optional<Chat> optionalChat = chatRepository.findByFirstUserIdAndSecondUserId(firstId, secondId);
+
+        if(optionalChat.isPresent()){
+            return optionalChat.get();
+        }
+
+        Chat chat = new Chat();
+        chat.setFirstUserId(firstId);
+        chat.setSecondUserId(secondId);
+        return chatRepository.save(chat);
     }
 
-    // todo позже жлбавить обработчик фото и видео
-    @Transactional
-    public Message sendMessage(Long myId, Long receiverId, String text){
+    public ChatResponse openChat(Long myId, String userName){
+        Long secondUserId = userRepository.getIdByUsername(userName);
+        Long firstId = Math.min(myId, secondUserId);
+        Long secondId = Math.max(myId, secondUserId);
 
-        Message message = new Message();
-        message.setReceiverId(receiverId);
-        message.setSenderId(myId);
-        message.setText(text);
-        messageRepository.save(message);
+        Optional<Chat> optionalChat = chatRepository.findByFirstUserIdAndSecondUserId(firstId, secondId);
+        if(optionalChat.isEmpty()){
+            return new ChatResponse(null, userName);
+        }
+        Chat chat = optionalChat.get();
+        return new ChatResponse(chat.getChatId(), userName);
+    }
 
-        return message;
+    public List<ChatResponse> getAllMyChats(Long myId){
+
+        List<Chat> chats = chatRepository.findByFirstUserIdOrSecondUserId(myId, myId);
+        List<ChatResponse> responses = new ArrayList<>();
+        String userName;
+        for(Chat chat: chats){
+            if(chat.getFirstUserId().equals(myId)){
+                userName = userRepository.getUsernameById(chat.getSecondUserId());
+            } else {
+                userName = userRepository.getUsernameById(chat.getFirstUserId());
+            }
+            ChatResponse response = new ChatResponse();
+            response.setChatId(chat.getChatId());
+            response.setUserName(userName);
+            responses.add(response);
+        }
+        return responses;
     }
 }

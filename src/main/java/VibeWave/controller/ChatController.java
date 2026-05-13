@@ -2,6 +2,7 @@ package VibeWave.controller;
 
 import VibeWave.dto.MessageDto;
 import VibeWave.dto.UserDto;
+import VibeWave.dto.chat.ChatResponse;
 import VibeWave.entity.Message;
 import VibeWave.service.ChatService;
 import lombok.RequiredArgsConstructor;
@@ -14,22 +15,22 @@ import java.nio.file.attribute.UserPrincipal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/messages")
+@RequestMapping("/api/chat")
 @RequiredArgsConstructor
 public class ChatController {
 
     private final ChatService chatService;
 
-    @GetMapping("/{userId}")
-    public List<Message> getMessage(@AuthenticationPrincipal UserDto currentUser,
-                                    @PathVariable Long userId){
-        return chatService.getMessages(currentUser.getUserId(), userId);
+    @GetMapping("/showChats")
+    public List<ChatResponse> getAllMyChats(@AuthenticationPrincipal UserDto currentUser){
+        return chatService.getAllMyChats(currentUser.getUserId());
     }
 
-    @PostMapping("/send/{receiverId}")
-    public Message sendMessage(@AuthenticationPrincipal UserDto currentUser,
-                               @PathVariable Long receiverId,
-                               @RequestBody MessageDto messageDto){
-        return chatService.sendMessage(currentUser.getUserId(), receiverId, messageDto.getText());
+    //todo добавить контроллер для openChat
+    @GetMapping("/openWith/{userName}")
+    public ChatResponse openChat(@PathVariable String userName,
+                                 @AuthenticationPrincipal UserDto currentUser){
+        return chatService.openChat(currentUser.getUserId(), userName);
     }
+
 }

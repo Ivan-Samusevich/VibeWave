@@ -99,7 +99,7 @@ public class UserProfileService {
         List<UserResponse> followers = new ArrayList<>();
         for(Follow follow : follows){
             UserResponse response = new UserResponse();
-            response.setUserName(userRepository.getUsernameById(follow.getFollowerId()));
+            response.setUserName(userRepository.getUsernameById(follow.getFollowerId())); //todo сделать проверку на наличие авы
             response.setFileURL(minioService.getFileURL(userProfileRepository.findAvatarFileNameByUserProfileId(follow.getFollowerId())));
             followers.add(response);
         }
@@ -111,7 +111,7 @@ public class UserProfileService {
         List<UserResponse> followings = new ArrayList<>();
         for(Follow follow : follows){
             UserResponse response = new UserResponse();
-            response.setUserName(userRepository.getUsernameById(follow.getFollowingId()));
+            response.setUserName(userRepository.getUsernameById(follow.getFollowingId()));//todo сделать проверку на наличие авы
             response.setFileURL(minioService.getFileURL(userProfileRepository.findAvatarFileNameByUserProfileId(follow.getFollowingId())));
             followings.add(response);
         }
