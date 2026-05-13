@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Message } from '../../types/api';
+import { MessageResponse } from '../../types/api';
 
 interface ChatState {
-  messages: Message[];
+  messages: MessageResponse[];
   isConnected: boolean;
 }
 
@@ -15,10 +15,10 @@ const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
-    addMessage: (state, action: PayloadAction<Message>) => {
+    addMessage: (state, action: PayloadAction<MessageResponse>) => {
       state.messages.push(action.payload);
     },
-    setMessages: (state, action: PayloadAction<Message[]>) => {
+    setMessages: (state, action: PayloadAction<MessageResponse[]>) => {
       state.messages = action.payload;
     },
     setConnected: (state, action: PayloadAction<boolean>) => {

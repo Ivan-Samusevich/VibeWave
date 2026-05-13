@@ -1,15 +1,24 @@
 import api from './authService';
-import { Message } from '../types/api';
+import { ChatResponse, MessageResponse, SendMessageRequest } from '../types/api';
 
 export const chatService = {
-  getMessages: async (userId: number) => {
-    const response = await api.get<Message[]>(`/messages/${userId}`);
+  getAllMyChats: async () => {
+    const response = await api.get<ChatResponse[]>('/chat/showChats');
     return response.data;
   },
-  sendMessage: async (receiverId: number, text: string) => {
-    const response = await api.post<Message>(`/messages/send/${receiverId}`, {
+  openChat: async (userName: string) => {
+    const response = await api.get<ChatResponse>(`/chat/openWith/${userName}`);
+    return response.data;
+  },
+  getMessages: async (chatId: number) => {
+    const response = await api.get<MessageResponse[]>(`/message/getMessages/${chatId}`);
+    return response.data;
+  },
+  sendMessage: async (receiverUserName: string, text: string) => {
+    const response = await api.post<void>('/message/sendMessage', {
+      receiverUserName,
       text
-    });
+    } as SendMessageRequest);
     return response.data;
   }
 };

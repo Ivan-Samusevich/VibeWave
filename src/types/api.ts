@@ -80,13 +80,31 @@ export interface Media {
 //   user?: User;
 // }
 
-export interface Message {
+export interface ChatResponse {
+  chatId: number;
+  userName: string;
+}
+
+export interface MessageResponse {
   messageId: number;
-  senderId: number;
-  receiverId: number;
+  userName: string;
   text: string;
   createdAt: string;
 }
+
+export interface SendMessageRequest {
+  receiverUserName: string;
+  text: string;
+}
+
+// export interface Message {
+//   messageId: number;
+//   senderId?: number;
+//   receiverId?: number;
+//   userName?: string;
+//   text: string;
+//   createdAt: string;
+// }
 
 export interface ApiError {
   message: string;
