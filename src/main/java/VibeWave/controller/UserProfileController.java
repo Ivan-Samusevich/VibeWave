@@ -25,8 +25,10 @@ public class UserProfileController {
 
 
     @GetMapping("/showUserProfile")
-    public UserProfileResponce showUserProfile(@AuthenticationPrincipal UserDto currentUser){ // todo переделать под ник, который отправляет фронт
-        return userProfileService.showUserProfile(currentUser.getUserId());
+    public UserProfileResponce showUserProfile(@AuthenticationPrincipal UserDto currentUser,
+                                               @RequestParam String userName){ // todo переделать под ник, который отправляет фронт
+        System.out.println(userName);
+        return userProfileService.showUserProfile(userName);
     }
 
     //todo переделывать

@@ -48,11 +48,12 @@ public class UserProfileService {
         userProfileRepository.save(userProfile);
     }
 
-    public UserProfileResponce showUserProfile(Long userId){
+    public UserProfileResponce showUserProfile(String userName){
+        Long userId = userRepository.getIdByUsername(userName);
         UserProfile userProfile = userProfileRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         UserProfileResponce userProfileResponce = new UserProfileResponce();
-        userProfileResponce.setUserName(userRepository.getUsernameById(userId));
+        userProfileResponce.setUserName(userName);
         if(userProfile.getAvatarFileName() != null){
             userProfileResponce.setFileURL(minioService.getFileURL(userProfile.getAvatarFileName()));
         }
