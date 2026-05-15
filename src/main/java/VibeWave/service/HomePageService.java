@@ -5,10 +5,7 @@ import VibeWave.dto.UserDto;
 import VibeWave.dto.comment.CommentResponse;
 import VibeWave.dto.comment.UpdateCommentRequest;
 import VibeWave.dto.post.PostResponse;
-import VibeWave.entity.Comment;
-import VibeWave.entity.Like;
-import VibeWave.entity.Post;
-import VibeWave.entity.UserProfile;
+import VibeWave.entity.*;
 import VibeWave.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +26,7 @@ public class HomePageService {
     private final UserRepository userRepository;
     private final MinioService minioService;
     private final UserProfileRepository userProfileRepository;
+    private final SavedPostRepository savedPostRepository;
 
     @Transactional
     public String createPost(UserDto currentUser, String text, MultipartFile file){
@@ -65,11 +63,15 @@ public class HomePageService {
             PostResponse postResponse = new PostResponse();
             postResponse.setId(post.getPostId());
             postResponse.setUserName(userRepository.getUsernameById(post.getUserId()));
+            postResponse.setAvatarURL(userProfileRepository.findAvatarFileNameByUserProfileId(post.getUserId()));
             postResponse.setText(post.getText());
             postResponse.setLikesCount(post.getLikesCount());
 
             boolean likeStatus = likeRepository.existsByUserIdAndPostId(currentUser.getUserId(), post.getPostId());
             postResponse.setLikeStatus(likeStatus);
+
+            boolean isSaved = savedPostRepository.existsByUserIdAndPostId(currentUser.getUserId(), post.getPostId());
+            postResponse.setSaved(isSaved);
             postResponse.setImageURL(minioService.getFileURL(post.getFileName()));
             postResponse.setFileType(fileTypeDetect(post.getFileName()));
             //System.out.println(postResponse.getFileType());
@@ -85,6 +87,18 @@ public class HomePageService {
         minioService.deleteFileFromMinio(post.getFileName());
         postRepository.delete(post);
         userProfileRepository.decrementPostCount(userId);
+    }
+
+    @Transactional
+    public void toggleSavedPost(Long userId, Long postId, boolean isSaved){
+        if(!isSaved){
+            SavedPost savedPost = new SavedPost();
+            savedPost.setUserId(userId);
+            savedPost.setPostId(postId);
+            savedPostRepository.save(savedPost);
+        } else {
+          savedPostRepository.deleteByUserIdAndPostId(userId, postId);
+        }
     }
 
     private String fileTypeDetect(String fileName){

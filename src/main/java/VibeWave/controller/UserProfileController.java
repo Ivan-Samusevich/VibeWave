@@ -37,6 +37,11 @@ public class UserProfileController {
         return userProfileService.showUserPosts(userName);
     }
 
+    @GetMapping("/showSavedPosts")
+    public List<PostResponse> showSavedPosts(@RequestParam String userName){
+        return userProfileService.showSavedPosts(userName);
+    }
+
     @PutMapping("/changeUserProfile")
     public void changeUserProfile(@RequestParam String description,
                                   @RequestParam MultipartFile file,
@@ -51,13 +56,13 @@ public class UserProfileController {
         userProfileService.followOnUser(userName, currentUser.getUserId());
     }
 
-    @GetMapping("/showFollowers")
-    public List<UserResponse> showfollowers(@AuthenticationPrincipal UserDto currentUser){
-        return userProfileService.getFollower(currentUser.getUserId());
+    @GetMapping("/showFollowers/{userName}")
+    public List<UserResponse> showfollowers(@PathVariable String userName){
+        return userProfileService.getFollower(userName);
     }
 
-    @GetMapping("/showFollowing")
-    public List<UserResponse> showfollowing(@AuthenticationPrincipal UserDto currentUser){
-        return userProfileService.getFollowing(currentUser.getUserId());
+    @GetMapping("/showFollowing/{userName}")
+    public List<UserResponse> showfollowing(@PathVariable String userName){
+        return userProfileService.getFollowing(userName);
     }
 }

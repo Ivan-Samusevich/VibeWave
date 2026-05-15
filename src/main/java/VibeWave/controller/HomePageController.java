@@ -52,6 +52,13 @@ public class HomePageController {
         homePageService.updatePostLikesCount(postId, likeStatus, currentUser.getUserId());
     }
 
+    @PostMapping("/toggleSavedPost/{postId}/{isSaved}")
+    public void putSavePost(@PathVariable Long postId,
+                            @PathVariable boolean isSaved,
+                            @AuthenticationPrincipal UserDto currentUser){
+        homePageService.toggleSavedPost(currentUser.getUserId(), postId, isSaved);
+    }
+
     @PostMapping("/createComment/{postId}")  //todo получше подумать над путём
     public String createComment(@AuthenticationPrincipal UserDto currentUser,
                                 @PathVariable Long postId,

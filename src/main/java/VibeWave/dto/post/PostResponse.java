@@ -10,9 +10,11 @@ import lombok.Setter;
 public class PostResponse {
     private Long id;
     private String userName;
+    private String avatarURL;
     private String text;
     private Long likesCount;
-    private boolean likeStatus;
+    private boolean likeStatus; // todo потом переделать проект под isLiked
+    private boolean isSaved;
     private String imageURL;
     private String fileType;
 }

@@ -5,11 +5,9 @@ import VibeWave.dto.post.PostResponse;
 import VibeWave.dto.user.UserResponse;
 import VibeWave.entity.Follow;
 import VibeWave.entity.Post;
+import VibeWave.entity.SavedPost;
 import VibeWave.entity.UserProfile;
-import VibeWave.repository.FollowRepository;
-import VibeWave.repository.PostRepository;
-import VibeWave.repository.UserProfileRepository;
-import VibeWave.repository.UserRepository;
+import VibeWave.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +25,7 @@ public class UserProfileService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final FollowRepository followRepository;
+    private final SavedPostRepository savedPostRepository;
 
 
     //todo Надо будет объеденить 2 метода на изменение профиля
@@ -82,6 +81,26 @@ public class UserProfileService {
         return postResponses;
     }
 
+    public List<PostResponse> showSavedPosts(String userName){
+        Long userId = userRepository.getIdByUsername(userName);
+        List<SavedPost> savedPosts = savedPostRepository.findAllByUserId(userId);
+        List<PostResponse> postResponses = new ArrayList<>();
+        for(SavedPost savedPost: savedPosts){
+            PostResponse postResponse = new PostResponse();
+            postResponse.setId(savedPost.getPostId());
+            Post post = postRepository.findById(savedPost.getPostId())
+                    .orElseThrow(() -> new RuntimeException("Пост не найден"));
+            postResponse.setUserName(userRepository.getUsernameById(savedPost.getUserId()));
+            postResponse.setAvatarURL(userProfileRepository.findAvatarFileNameByUserProfileId(post.getUserId()));
+            postResponse.setText(post.getText());
+            postResponse.setLikesCount(post.getLikesCount());
+            postResponse.setImageURL(minioService.getFileURL(post.getFileName()));
+            postResponse.setFileType(fileTypeDetect(post.getFileName()));
+            postResponses.add(postResponse);
+        }
+        return postResponses;
+    }
+
     @Transactional
     public void followOnUser(String userName, Long userId){
         System.out.println(userName);
@@ -95,7 +114,8 @@ public class UserProfileService {
         userProfileRepository.incrementFollowerCount(followingId);
     }
 
-    public List<UserResponse> getFollower(Long userId){
+    public List<UserResponse> getFollower(String userName){
+        Long userId = userRepository.getIdByUsername(userName);
         List<Follow> follows = followRepository.findByFollowingId(userId);
         List<UserResponse> followers = new ArrayList<>();
         for(Follow follow : follows){
@@ -107,7 +127,8 @@ public class UserProfileService {
         return followers;
     }
 
-    public List<UserResponse> getFollowing(Long userId){
+    public List<UserResponse> getFollowing(String userName){
+        Long userId = userRepository.getIdByUsername(userName);
         List<Follow> follows = followRepository.findByFollowerId(userId);
         List<UserResponse> followings = new ArrayList<>();
         for(Follow follow : follows){

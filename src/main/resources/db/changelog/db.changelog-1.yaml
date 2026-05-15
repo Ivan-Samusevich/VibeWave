@@ -406,3 +406,34 @@ databaseChangeLog:
                     type: timestamp
                     constraints:
                       nullable: false
+
+  - changeSet:
+      id: create-saved_posts-table
+      author: Ivan_Samusevich
+      comment: create saved_posts table
+      changes:
+          - createTable:
+              tableName: saved_posts
+              columns:
+                - column:
+                    name: saves_post_id
+                    type: int
+                    autoIncrement: true
+                    constraints:
+                      nullable: false
+                      primaryKey: true
+                - column:
+                    name: user_id
+                    type: int
+                    constraints:
+                      nullable: false
+                - column:
+                    name: post_id
+                    type: int
+                    constraints:
+                      nullable: false
+                - column:
+                    name: created_at
+                    type: timestamp
+                    constraints:
+                      nullable: false
