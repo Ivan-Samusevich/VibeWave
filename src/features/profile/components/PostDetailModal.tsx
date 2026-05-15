@@ -55,9 +55,9 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
               <div className="p-4 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-linear-to-tr from-indigo-500 to-purple-500 p-0.5">
-                    {selectedPost.userAvatarUrl || profileAvatar ? (
+                    {selectedPost.avatarURL || profileAvatar ? (
                       <img
-                        src={selectedPost.userAvatarUrl || profileAvatar}
+                        src={selectedPost.avatarURL || profileAvatar}
                         className="h-full w-full rounded-full object-cover border-2 border-white dark:border-zinc-900"
                       />
                     ) : (
@@ -81,9 +81,9 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
               <div className="flex-1 p-4 overflow-y-auto space-y-4">
                 <div className="flex gap-3">
                   <div className="h-8 w-8 rounded-full shrink-0">
-                    {selectedPost.userAvatarUrl || profileAvatar ? (
+                    {selectedPost.avatarURL || profileAvatar ? (
                       <img
-                        src={selectedPost.userAvatarUrl || profileAvatar}
+                        src={selectedPost.avatarURL || profileAvatar}
                         className="h-full w-full rounded-full object-cover"
                       />
                     ) : (

@@ -14,6 +14,7 @@ export const ProfileForm: React.FC = () => {
   const {
     profileData,
     userPosts,
+    savedPosts,
     isLoading,
     activeTab,
     setActiveTab,
@@ -112,8 +113,8 @@ export const ProfileForm: React.FC = () => {
       </div>
 
       <PostGrid
-        posts={userPosts}
-        isOwnProfile={isOwnProfile}
+        posts={activeTab === 'posts' ? userPosts : savedPosts}
+        isOwnProfile={isOwnProfile && activeTab === 'posts'}
         onPostClick={(post) => {
           setSelectedPost(post);
           setIsPostModalOpen(true);

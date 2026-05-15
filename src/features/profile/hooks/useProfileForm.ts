@@ -12,6 +12,7 @@ export const useProfileForm = () => {
   
   const [profileData, setProfileData] = useState<UserProfileResponse | null>(null);
   const [userPosts, setUserPosts] = useState<PostResponse[]>([]);
+  const [savedPosts, setSavedPosts] = useState<PostResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'posts' | 'saved' | 'tagged'>('posts');
   
@@ -42,6 +43,11 @@ export const useProfileForm = () => {
       
       const posts = await userService.getUserPosts(targetUsername);
       setUserPosts(posts);
+
+      if (isOwnProfile) {
+        const saved = await userService.getSavedPosts(targetUsername);
+        setSavedPosts(saved);
+      }
     } catch (error) {
       console.error('Error loading profile:', error);
     } finally {
@@ -50,13 +56,14 @@ export const useProfileForm = () => {
   };
 
   const openFollowModal = async (type: 'followers' | 'following') => {
+    if (!username) return;
     setFollowModalType(type);
     setIsFollowModalOpen(true);
     setIsFollowListLoading(true);
     try {
       const data = type === 'followers' 
-        ? await userService.getFollowers() 
-        : await userService.getFollowing();
+        ? await userService.getFollowers(username) 
+        : await userService.getFollowing(username);
       setFollowList(data);
     } catch (error) {
       console.error('Failed to load follow list:', error);
@@ -117,6 +124,7 @@ export const useProfileForm = () => {
     currentUser,
     profileData,
     userPosts,
+    savedPosts,
     isLoading,
     activeTab,
     setActiveTab,

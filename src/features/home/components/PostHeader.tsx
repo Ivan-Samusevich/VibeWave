@@ -4,19 +4,19 @@ import { User, Trash2 } from 'lucide-react';
 
 interface PostHeaderProps {
   userName: string;
-  userAvatarUrl?: string;
+  avatarURL?: string;
   isOwner: boolean;
   onDelete: () => void;
 }
 
-export const PostHeader: React.FC<PostHeaderProps> = ({ userName, userAvatarUrl, isOwner, onDelete }) => {
+export const PostHeader: React.FC<PostHeaderProps> = ({ userName, avatarURL, isOwner, onDelete }) => {
   return (
     <div className="flex items-center justify-between p-4">
       <Link to={`/profile/${userName}`} className="flex items-center gap-3 group">
         <div className="h-9 w-9 rounded-full bg-linear-to-tr from-indigo-500 to-purple-500 p-0.5 group-hover:scale-105 transition-transform duration-200">
-          {userAvatarUrl ? (
+          {avatarURL ? (
             <img 
-              src={userAvatarUrl} 
+              src={avatarURL} 
               alt={userName}
               className="h-full w-full rounded-full object-cover border-2 border-white dark:border-zinc-900"
             />

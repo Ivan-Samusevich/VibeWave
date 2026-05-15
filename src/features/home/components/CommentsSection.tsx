@@ -7,7 +7,7 @@ import { Input } from '../../../components/Input';
 interface Comment {
   id: number;
   userName: string;
-  userAvatarUrl?: string;
+  avatarURL?: string;
   text: string;
 }
 
@@ -59,8 +59,8 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
             {comments.map(comment => (
               <div key={comment.id} className="flex items-start gap-2 group/comment">
                 <div className="h-7 w-7 rounded-full shrink-0 mt-0.5 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                  {comment.userAvatarUrl ? (
-                    <img src={comment.userAvatarUrl} alt={comment.userName} className="h-full w-full object-cover" />
+                  {comment.avatarURL ? (
+                    <img src={comment.avatarURL} alt={comment.userName} className="h-full w-full object-cover" />
                   ) : (
                     <div className="h-full w-full flex items-center justify-center">
                       <User className="h-4 w-4 text-zinc-400" />

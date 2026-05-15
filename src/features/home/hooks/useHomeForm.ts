@@ -6,7 +6,7 @@ import { postService } from '../../../services/postService';
 export interface PostData {
   id: number;
   userName: string;
-  userAvatarUrl?: string;
+  avatarURL?: string;
   likes: number;
   isLiked: boolean;
   isSaved: boolean;
@@ -15,7 +15,7 @@ export interface PostData {
   createdAt: number;
   mediaUrl: string;
   mediaType: 'image' | 'video';
-  comments: { id: number; userName: string; text: string; userAvatarUrl?: string }[];
+  comments: { id: number; userName: string; text: string; avatarURL?: string }[];
 }
 
 export const useHomeForm = () => {
@@ -34,7 +34,7 @@ export const useHomeForm = () => {
         return {
           id: id,
           userName: p.userName || 'Аноним',
-          userAvatarUrl: p.userAvatarUrl,
+          avatarURL: p.avatarURL,
           likes: p.likesCount || 0,
           isLiked: p.likeStatus || false,
           isSaved: p.isSaved || false,
@@ -120,7 +120,6 @@ export const useHomeForm = () => {
         }
         return p;
       }));
-
       try {
         await postService.toggleSave(postId, newStatus);
       } catch (e) {
@@ -146,7 +145,7 @@ export const useHomeForm = () => {
                 id: c.commentId,
                 userName: c.userName,
                 text: c.text,
-                userAvatarUrl: c.userAvatarUrl
+                avatarURL: c.userAvatarUrl
               }))
             };
           }
@@ -180,7 +179,7 @@ export const useHomeForm = () => {
               id: c.commentId,
               userName: c.userName,
               text: c.text,
-              userAvatarUrl: c.userAvatarUrl
+              avatarURL: c.userAvatarUrl
             }))
           };
         }

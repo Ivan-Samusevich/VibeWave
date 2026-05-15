@@ -51,7 +51,7 @@ export interface PostResponse {
   likeStatus: boolean;
   imageURL: string;
   fileType: 'image' | 'video' | string;
-  userAvatarUrl?: string;
+  avatarURL?: string;
   isSaved?: boolean;
 }
 

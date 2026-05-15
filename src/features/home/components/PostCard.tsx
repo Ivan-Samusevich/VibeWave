@@ -10,14 +10,14 @@ import { CommentsSection } from './CommentsSection';
 interface Comment {
   id: number;
   userName: string;
-  userAvatarUrl?: string;
+  avatarURL?: string;
   text: string;
 }
 
 interface Post {
   id: number;
   userName: string;
-  userAvatarUrl?: string;
+  avatarURL?: string;
   mediaUrl: string;
   mediaType: string;
   text: string;
@@ -76,7 +76,7 @@ export const PostCard: React.FC<PostCardProps> = ({
       <Card className="p-0 overflow-hidden border-zinc-200 dark:border-zinc-800">
         <PostHeader 
           userName={post.userName}
-          userAvatarUrl={post.userAvatarUrl}
+          avatarURL={post.avatarURL}
           isOwner={currentUser?.userName === post.userName}
           onDelete={() => onDeletePost(post.id)}
         />

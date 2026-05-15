@@ -11,7 +11,7 @@ export const useChatForm = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const targetUserName = searchParams.get('user');
-  
+
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { messages } = useSelector((state: RootState) => state.chat);
   const [chats, setChats] = useState<ChatResponse[]>([]);
@@ -39,7 +39,7 @@ export const useChatForm = () => {
       fetchChats();
     }
   }, [isAuthenticated]);
-  
+
   useEffect(() => {
     const initChat = async () => {
       if (!targetUserName || !isAuthenticated) {
@@ -123,9 +123,9 @@ export const useChatForm = () => {
     setInput,
     loading,
     scrollRef,
-    navigate,
     fetchMessages,
     handleSendMessage,
-    fetchChats
+    fetchChats,
+    navigate
   };
 };

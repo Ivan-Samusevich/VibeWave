@@ -25,11 +25,11 @@ export const postService = {
     }
     await api.post(`/homePage/toggleLike/${postId}/${status}`);
   },
-  toggleSave: async (postId: number, status: boolean) => {
+  toggleSave: async (postId: number, isSaved: boolean) => {
     if (postId === undefined || postId === null) {
       throw new Error('postId is required');
     }
-    await api.post(`/homePage/savePost/${postId}`, { status });
+    await api.post(`/homePage/toggleSavedPost/${postId}/${isSaved}`);
   },
   // Комментарии
   getComments: async (postId: number) => {
