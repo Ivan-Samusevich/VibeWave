@@ -5,8 +5,9 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { HomePage } from './pages/HomePage';
 import { ChatPage } from './pages/ChatPage';
-import { ThemeProvider } from './context/ThemeContext';
 import { ProfilePage } from './pages/ProfilePage';
+import { ThemeProvider } from './context/ThemeContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 export default function App() {
   return (
@@ -14,12 +15,16 @@ export default function App() {
       <ThemeProvider>
         <Router>
           <Routes>
-            <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/chat" element={<ChatPage />} />
+            
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/chat" element={<ChatPage />} />
+              <Route path="/profile/:username" element={<ProfilePage />} />
+            </Route>
+
             <Route path="*" element={<Navigate to="/" replace />} />
-            <Route path="/profile/:username" element={<ProfilePage />} />
           </Routes>
         </Router>
       </ThemeProvider>

@@ -48,7 +48,7 @@ export const LoginForm: React.FC = () => {
             {...register('password')}
             error={errors.password?.message}
           />
-          <Button type="submit" className="w-full" isLoading={isSubmitting}>
+          <Button type="submit" className="w-full cursor-pointer" isLoading={isSubmitting}>
             <LogIn className="mr-2 h-4 w-4" />
             Войти
           </Button>
