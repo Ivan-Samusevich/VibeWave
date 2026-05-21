@@ -1,31 +1,27 @@
 package VibeWave.service;
 
-import VibeWave.dto.PostDto;
 import VibeWave.dto.UserDto;
-import VibeWave.dto.comment.CommentResponse;
-import VibeWave.dto.comment.UpdateCommentRequest;
 import VibeWave.dto.post.PostResponse;
-import VibeWave.entity.*;
+import VibeWave.entity.Like;
+import VibeWave.entity.Post;
+import VibeWave.entity.SavedPost;
 import VibeWave.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class HomePageService {
+public class PostService {
 
     private final PostRepository postRepository;
-    private final LikeRepository likeRepository;
-    private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
     private final MinioService minioService;
     private final UserProfileRepository userProfileRepository;
+    private final UserRepository userRepository;
+    private final LikeRepository likeRepository;
     private final SavedPostRepository savedPostRepository;
 
     @Transactional
@@ -63,7 +59,8 @@ public class HomePageService {
             PostResponse postResponse = new PostResponse();
             postResponse.setId(post.getPostId());
             postResponse.setUserName(userRepository.getUsernameById(post.getUserId()));
-            postResponse.setAvatarURL(userProfileRepository.findAvatarFileNameByUserProfileId(post.getUserId()));
+            String avatarName = userProfileRepository.findAvatarFileNameByUserProfileId(post.getUserId());
+            postResponse.setAvatarURL(minioService.getFileURL(avatarName));
             postResponse.setText(post.getText());
             postResponse.setLikesCount(post.getLikesCount());
 
@@ -74,14 +71,13 @@ public class HomePageService {
             postResponse.setSaved(isSaved);
             postResponse.setImageURL(minioService.getFileURL(post.getFileName()));
             postResponse.setFileType(fileTypeDetect(post.getFileName()));
-            //System.out.println(postResponse.getFileType());
             postResponses.add(postResponse);
         }
         return postResponses;
     }//todo здесь переделать id на имя
 
     @Transactional
-    public void deletePost(Long postId, Long userId){ //todo добавить удаление файла из хранилища
+    public void deletePost(Long postId, Long userId){
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Пост не найден"));
         minioService.deleteFileFromMinio(post.getFileName());
@@ -91,13 +87,13 @@ public class HomePageService {
 
     @Transactional
     public void toggleSavedPost(Long userId, Long postId, boolean isSaved){
-        if(!isSaved){
+        if(isSaved){
             SavedPost savedPost = new SavedPost();
             savedPost.setUserId(userId);
             savedPost.setPostId(postId);
             savedPostRepository.save(savedPost);
         } else {
-          savedPostRepository.deleteByUserIdAndPostId(userId, postId);
+            savedPostRepository.deleteByUserIdAndPostId(userId, postId);
         }
     }
 
@@ -121,8 +117,6 @@ public class HomePageService {
         like.setPostId(postId);
 
         likeRepository.save(like);
-
-        System.out.println("Лайк поставлен");
     }
 
     @Transactional
@@ -130,54 +124,10 @@ public class HomePageService {
         // Одна операция в БД, без загрузки поста в память
         if(likeStatus) {
             postRepository.incrementLikesCount(postId);
-            System.out.println("Счётчик увеличен");
         }
         else{
             postRepository.decrementLikesCount(postId);
             likeRepository.deleteByUserIdAndPostId(userId, postId);
-            System.out.println("Счётчик уменьшен");
         }
-    }
-
-    @Transactional
-    public void createcomment(Long postId, Long userId, String text){
-        Comment comment = new Comment();
-        comment.setPostId(postId);
-        comment.setUserId(userId);
-        comment.setText(text);
-        commentRepository.save(comment);
-    }
-
-    //todo сделать функцию для получения всех комментиариев. Особенность в том, что мой коммент должен быть всегда вверху.
-    //todo Надо сделать количество комментариев к посту(Пока что под вопросом).
-
-    @Transactional
-    public void updateComment(Long commentId, UpdateCommentRequest updateCommentRequest){
-        String text = updateCommentRequest.getText();
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Комментарий не найден"));
-        comment.setText(text);
-        commentRepository.save(comment);
-    }
-
-    @Transactional
-    public void deleteComment(Long commentId){
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Комментарий не найден"));
-        commentRepository.delete(comment);
-    }
-
-    public List<CommentResponse> getComments(Long postId){
-        List<Comment> comments = commentRepository.findAllByPostId(postId);
-        List<CommentResponse> commentResponses = new ArrayList<>();
-        for (Comment comment: comments){
-            CommentResponse commentResponse = new CommentResponse();
-            commentResponse.setCommentId(comment.getCommentId());
-            commentResponse.setText(comment.getText());
-            commentResponse.setUserName(userRepository.getUsernameById(comment.getUserId()));
-            commentResponses.add(commentResponse);
-        }
-
-        return commentResponses;
     }
 }

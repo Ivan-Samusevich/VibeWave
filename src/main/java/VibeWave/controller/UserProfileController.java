@@ -2,18 +2,14 @@ package VibeWave.controller;
 
 
 import VibeWave.dto.UserDto;
-import VibeWave.dto.UserProfile.UpdateUserProfileRequest;
 import VibeWave.dto.UserProfile.UserProfileResponce;
 import VibeWave.dto.post.PostResponse;
 import VibeWave.dto.user.UserResponse;
-import VibeWave.entity.User;
-import VibeWave.entity.UserProfile;
 import VibeWave.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 
 @RestController
@@ -25,8 +21,7 @@ public class UserProfileController {
 
 
     @GetMapping("/showUserProfile")
-    public UserProfileResponce showUserProfile(@AuthenticationPrincipal UserDto currentUser,
-                                               @RequestParam String userName){ // todo переделать под ник, который отправляет фронт
+    public UserProfileResponce showUserProfile(@RequestParam String userName){ //todo переделать под pathVariable
         System.out.println(userName);
         return userProfileService.showUserProfile(userName);
     }
@@ -50,19 +45,19 @@ public class UserProfileController {
         userProfileService.changeUserDescription(description, currentUser.getUserId());
     }
 
-    @PostMapping("/follow/{userName}")                       //todo потом переделать так, чтобы можно было с другой страницы смотреть его подписки.
+    @PostMapping("/follow/{userName}")
     public void followOnUSer(@PathVariable String userName,
                              @AuthenticationPrincipal UserDto currentUser){
         userProfileService.followOnUser(userName, currentUser.getUserId());
     }
 
     @GetMapping("/showFollowers/{userName}")
-    public List<UserResponse> showfollowers(@PathVariable String userName){
+    public List<UserResponse> showFollowers(@PathVariable String userName){
         return userProfileService.getFollower(userName);
     }
 
     @GetMapping("/showFollowing/{userName}")
-    public List<UserResponse> showfollowing(@PathVariable String userName){
+    public List<UserResponse> showFollowing(@PathVariable String userName){
         return userProfileService.getFollowing(userName);
     }
 }

@@ -2,14 +2,10 @@ package VibeWave.service;
 
 import VibeWave.dto.chat.ChatResponse;
 import VibeWave.entity.Chat;
-import VibeWave.entity.Message;
 import VibeWave.repository.ChatRepository;
-import VibeWave.repository.MessageRepository;
 import VibeWave.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

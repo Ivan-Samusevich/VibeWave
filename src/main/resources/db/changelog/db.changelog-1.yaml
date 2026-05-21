@@ -416,7 +416,7 @@ databaseChangeLog:
               tableName: saved_posts
               columns:
                 - column:
-                    name: saves_post_id
+                    name: save_post_id
                     type: int
                     autoIncrement: true
                     constraints:
