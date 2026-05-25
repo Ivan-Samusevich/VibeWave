@@ -3,7 +3,7 @@ import { PostResponse, CommentResponse } from '../types/api';
 
 export const postService = {
   getPosts: async () => {
-    const response = await api.get<PostResponse[]>('/homePage/getPosts');
+    const response = await api.get<PostResponse[]>('/posts/getPosts');
     return response.data;
   },
   createPost: async (text: string, file: File | null) => {
@@ -12,7 +12,7 @@ export const postService = {
     if (file) {
       formData.append('file', file);
     }
-    const response = await api.post<string>('/homePage/createPost', formData, {
+    const response = await api.post<string>('/posts/createPost', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -23,30 +23,30 @@ export const postService = {
     if (postId === undefined || postId === null) {
       throw new Error('postId is required');
     }
-    await api.post(`/homePage/toggleLike/${postId}/${status}`);
+    await api.post(`/posts/toggleLike/${postId}/${status}`);
   },
   toggleSave: async (postId: number, isSaved: boolean) => {
     if (postId === undefined || postId === null) {
       throw new Error('postId is required');
     }
-    await api.post(`/homePage/toggleSavedPost/${postId}/${isSaved}`);
+    await api.post(`/posts/toggleSavedPost/${postId}/${isSaved}`);
   },
   // Комментарии
   getComments: async (postId: number) => {
-    const response = await api.get<CommentResponse[]>(`/homePage/getComments/${postId}`);
+    const response = await api.get<CommentResponse[]>(`/comments/getComments/${postId}`);
     return response.data;
   },
   addComment: async (postId: number, text: string) => {
-    const response = await api.post<string>(`/homePage/createComment/${postId}`, { text });
+    const response = await api.post<string>(`/comments/createComment/${postId}`, { text });
     return response.data;
   },
   updateComment: async (commentId: number, text: string) => {
-    await api.put(`/homePage/updateComment/${commentId}`, { text });
+    await api.put(`/comments/updateComment/${commentId}`, { text });
   },
   deleteComment: async (commentId: number) => {
-    await api.delete(`/homePage/deleteComment/${commentId}`);
+    await api.delete(`/comments/deleteComment/${commentId}`);
   },
   deletePost: async (postId: number) => {
-    await api.delete(`/homePage/deletePost/${postId}`);
+    await api.delete(`/posts/deletePost/${postId}`);
   }
 };
