@@ -3,6 +3,7 @@ package VibeWave.controller;
 
 import VibeWave.dto.UserDto;
 import VibeWave.dto.UserProfile.UserProfileResponce;
+import VibeWave.dto.follow.FollowResponse;
 import VibeWave.dto.post.PostResponse;
 import VibeWave.dto.user.UserResponse;
 import VibeWave.service.UserProfileService;
@@ -22,7 +23,6 @@ public class UserProfileController {
 
     @GetMapping("/showUserProfile")
     public UserProfileResponce showUserProfile(@RequestParam String userName){ //todo переделать под pathVariable
-        System.out.println(userName);
         return userProfileService.showUserProfile(userName);
     }
 
@@ -52,12 +52,12 @@ public class UserProfileController {
     }
 
     @GetMapping("/showFollowers/{userName}")
-    public List<UserResponse> showFollowers(@PathVariable String userName){
+    public List<FollowResponse> showFollowers(@PathVariable String userName){
         return userProfileService.getFollower(userName);
     }
 
     @GetMapping("/showFollowing/{userName}")
-    public List<UserResponse> showFollowing(@PathVariable String userName){
+    public List<FollowResponse> showFollowing(@PathVariable String userName){
         return userProfileService.getFollowing(userName);
     }
 }

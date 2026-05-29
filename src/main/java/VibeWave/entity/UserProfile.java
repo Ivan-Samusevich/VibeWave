@@ -1,8 +1,6 @@
 package VibeWave.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,6 +19,11 @@ public class UserProfile {
     private Long postCount = 0L;
     private Long followerCount = 0L;
     private Long followingCount = 0L;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_profile_id")
+    private User user;
+
     //private boolean isActive;
 
 }

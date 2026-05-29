@@ -1,12 +1,10 @@
 package VibeWave.service;
 
 import VibeWave.dto.UserProfile.UserProfileResponce;
+import VibeWave.dto.follow.FollowResponse;
 import VibeWave.dto.post.PostResponse;
-import VibeWave.dto.user.UserResponse;
-import VibeWave.entity.Follow;
-import VibeWave.entity.Post;
-import VibeWave.entity.SavedPost;
-import VibeWave.entity.UserProfile;
+
+import VibeWave.entity.*;
 import VibeWave.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -48,9 +46,8 @@ public class UserProfileService {
     }
 
     public UserProfileResponce showUserProfile(String userName){
-        Long userId = userRepository.getIdByUsername(userName);
-        UserProfile userProfile = userProfileRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        User user = userRepository.findByUserName(userName);
+        UserProfile userProfile = user.getUserProfile();
         UserProfileResponce userProfileResponce = new UserProfileResponce();
         userProfileResponce.setUserName(userName);
         if(userProfile.getAvatarFileName() != null){
@@ -65,13 +62,13 @@ public class UserProfileService {
     }
 
     public List<PostResponse> showUserPosts(String userName){
-        Long userId = userRepository.getIdByUsername(userName);
-        List<Post> posts = postRepository.findAllByUserId(userId);
+        User user = userRepository.findByUserName(userName);
+        List<Post> posts = postRepository.findAllByUser(user);
         List<PostResponse> postResponses = new ArrayList<>();
         for(Post post : posts){
             PostResponse postResponse = new PostResponse();
             postResponse.setId(post.getPostId());
-            postResponse.setUserName(userRepository.getUsernameById(post.getUserId()));
+            postResponse.setUserName(userName);
             postResponse.setText(post.getText());
             postResponse.setLikesCount(post.getLikesCount());
             postResponse.setImageURL(minioService.getFileURL(post.getFileName()));
@@ -82,16 +79,16 @@ public class UserProfileService {
     }
 
     public List<PostResponse> showSavedPosts(String userName){
-        Long userId = userRepository.getIdByUsername(userName);
-        List<SavedPost> savedPosts = savedPostRepository.findAllByUserId(userId);
+        User user = userRepository.findByUserName(userName);
+        List<SavedPost> savedPosts = savedPostRepository.findAllSavedPostsByUser(user); //todo Будет ли показывать чужие сохранения
         List<PostResponse> postResponses = new ArrayList<>();
         for(SavedPost savedPost: savedPosts){
             PostResponse postResponse = new PostResponse();
-            postResponse.setId(savedPost.getPostId());
-            Post post = postRepository.findById(savedPost.getPostId())
+            postResponse.setId(savedPost.getPost().getPostId());
+            Post post = postRepository.findById(savedPost.getPost().getPostId())
                     .orElseThrow(() -> new RuntimeException("Пост не найден"));
-            postResponse.setUserName(userRepository.getUsernameById(savedPost.getUserId()));
-            postResponse.setAvatarURL(userProfileRepository.findAvatarFileNameByUserProfileId(post.getUserId()));
+            postResponse.setUserName(userRepository.getUsernameById(savedPost.getUser().getUserId()));
+            postResponse.setAvatarURL(userProfileRepository.findAvatarFileNameByUserProfileId(post.getUser().getUserId()));
             postResponse.setText(post.getText());
             postResponse.setLikesCount(post.getLikesCount());
             postResponse.setImageURL(minioService.getFileURL(post.getFileName()));
@@ -103,38 +100,43 @@ public class UserProfileService {
 
     @Transactional
     public void followOnUser(String userName, Long userId){
-        System.out.println(userName);
-        Long followingId = userRepository.getIdByUsername(userName);
-        System.out.println(followingId);
+        User follower = userRepository.findByUserId(userId);
+        User following = userRepository.findByUserName(userName);
         Follow follow = new Follow();
-        follow.setFollowerId(userId);
-        follow.setFollowingId(followingId);
+        follow.setFollower(follower);
+        follow.setFollowing(following);
         followRepository.save(follow);
         userProfileRepository.incrementFollowingCount(userId);
-        userProfileRepository.incrementFollowerCount(followingId);
+        userProfileRepository.incrementFollowerCount(following.getUserId());
     }
 
-    public List<UserResponse> getFollower(String userName){
-        Long userId = userRepository.getIdByUsername(userName);
-        List<Follow> follows = followRepository.findByFollowingId(userId);
-        List<UserResponse> followers = new ArrayList<>();
+    public List<FollowResponse> getFollower(String userName){
+        User user = userRepository.findByUserName(userName);
+        List<Follow> follows = followRepository.findAllByFollowing(user);
+        List<FollowResponse> followers = new ArrayList<>();
         for(Follow follow : follows){
-            UserResponse response = new UserResponse();
-            response.setUserName(userRepository.getUsernameById(follow.getFollowerId())); //todo сделать проверку на наличие авы
-            response.setFileURL(minioService.getFileURL(userProfileRepository.findAvatarFileNameByUserProfileId(follow.getFollowerId())));
+            FollowResponse response = new FollowResponse();
+            response.setUserName(follow.getFollower().getUserName()); //todo сделать проверку на наличие авы
+            String avatarFileName = follow.getFollower().getUserProfile().getAvatarFileName();
+            if(avatarFileName != null) {
+                response.setFileURL(avatarFileName);
+            }
             followers.add(response);
         }
         return followers;
     }
 
-    public List<UserResponse> getFollowing(String userName){
-        Long userId = userRepository.getIdByUsername(userName);
-        List<Follow> follows = followRepository.findByFollowerId(userId);
-        List<UserResponse> followings = new ArrayList<>();
+    public List<FollowResponse> getFollowing(String userName){
+        User user = userRepository.findByUserName(userName);
+        List<Follow> follows = followRepository.findAllByFollower(user);
+        List<FollowResponse> followings = new ArrayList<>();
         for(Follow follow : follows){
-            UserResponse response = new UserResponse();
-            response.setUserName(userRepository.getUsernameById(follow.getFollowingId()));//todo сделать проверку на наличие авы
-            response.setFileURL(minioService.getFileURL(userProfileRepository.findAvatarFileNameByUserProfileId(follow.getFollowingId())));
+            FollowResponse response = new FollowResponse();
+            response.setUserName(follow.getFollowing().getUserName());//todo сделать проверку на наличие авы
+            String avatarFileName = follow.getFollowing().getUserProfile().getAvatarFileName();
+            if(avatarFileName != null) {
+                response.setFileURL(avatarFileName);
+            }
             followings.add(response);
         }
         return followings;

@@ -22,7 +22,7 @@ public class CommentController {
     public String createComment(@AuthenticationPrincipal UserDto currentUser,
                                 @PathVariable Long postId,
                                 @RequestBody CreateCommentRequest commentRequest){
-        commentService.createcomment(postId, currentUser.getUserId(), commentRequest.getText());
+        commentService.createComment(postId, currentUser.getUserId(), commentRequest.getText());
         return "Comment is create"; //todo потом переделать
     }
 
@@ -33,7 +33,7 @@ public class CommentController {
 
     @PutMapping("/updateComment/{commentId}")
     public void updateComment(@PathVariable Long commentId,
-                              @RequestBody UpdateCommentRequest updateCommentRequest){
+                              @RequestBody UpdateCommentRequest updateCommentRequest){ // todo переделать id в request не получать из PathVariable
         commentService.updateComment(commentId, updateCommentRequest);
     }
 

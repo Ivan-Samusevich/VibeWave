@@ -11,5 +11,6 @@ public class CommentResponse {
 
     private Long commentId;
     private String userName;
+    private String avatarURL;
     private String text;
 }

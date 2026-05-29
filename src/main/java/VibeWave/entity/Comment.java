@@ -17,8 +17,14 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentId;
 
-    private Long userId;
-    private Long postId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
+
     //private Long parentId; //todo в перспективе это надо для написания комментария под комментарием
     private String text;
 
@@ -30,6 +36,4 @@ public class Comment {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // todo Сделать dto для отправки комментов. В дто будет ник, в комменте id. Приполучении списка будем переделывать каждый коммент в dto.
-    //todo Сделать request и responce для комментов
 }

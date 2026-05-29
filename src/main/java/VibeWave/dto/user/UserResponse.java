@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @RequiredArgsConstructor
 public class UserResponse {
-    private String userName;
-    private String fileURL;
+    private String accessToken;
+    private String refreshToken;
 }

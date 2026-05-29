@@ -13,8 +13,10 @@ public class PostResponse {
     private String avatarURL;
     private String text;
     private Long likesCount;
-    private boolean likeStatus; // todo потом переделать проект под isLiked
+    private Long commentsCount;
+    private boolean isLiked;
     private boolean isSaved;
+    private Long score;
     private String imageURL;
     private String fileType;
 }

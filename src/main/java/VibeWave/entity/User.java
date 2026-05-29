@@ -7,6 +7,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,6 +24,12 @@ public class User {
     private String userName;
     private String email;
     private String password;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private UserProfile userProfile;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Post> posts = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

@@ -3,7 +3,10 @@ package VibeWave.service;
 import VibeWave.dto.comment.CommentResponse;
 import VibeWave.dto.comment.UpdateCommentRequest;
 import VibeWave.entity.Comment;
+import VibeWave.entity.Post;
+import VibeWave.entity.User;
 import VibeWave.repository.CommentRepository;
+import VibeWave.repository.PostRepository;
 import VibeWave.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,18 +21,21 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final MinioService minioService;
 
     @Transactional
-    public void createcomment(Long postId, Long userId, String text){
+    public void createComment(Long postId, Long userId, String text){
+        User user = userRepository.findByUserId(userId);
+        Post post = postRepository.findByPostId(postId);
         Comment comment = new Comment();
-        comment.setPostId(postId);
-        comment.setUserId(userId);
+        comment.setPost(post);
+        comment.setUser(user);
         comment.setText(text);
         commentRepository.save(comment);
     }
 
     //todo сделать функцию для получения всех комментиариев. Особенность в том, что мой коммент должен быть всегда вверху.
-    //todo Надо сделать количество комментариев к посту(Пока что под вопросом).
 
     @Transactional
     public void updateComment(Long commentId, UpdateCommentRequest updateCommentRequest){
@@ -47,14 +53,19 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
-    public List<CommentResponse> getComments(Long postId){ //todo Добавить передачу аватарок на фронт
-        List<Comment> comments = commentRepository.findAllByPostId(postId);
+    public List<CommentResponse> getComments(Long postId){
+        Post post = postRepository.findByPostId(postId);
+        List<Comment> comments = commentRepository.findAllByPost(post);
         List<CommentResponse> commentResponses = new ArrayList<>();
         for (Comment comment: comments){
             CommentResponse commentResponse = new CommentResponse();
             commentResponse.setCommentId(comment.getCommentId());
             commentResponse.setText(comment.getText());
-            commentResponse.setUserName(userRepository.getUsernameById(comment.getUserId()));
+            commentResponse.setUserName(comment.getUser().getUserName());
+            String avatarFileName = comment.getUser().getUserProfile().getAvatarFileName();
+            if(avatarFileName != null) {
+                commentResponse.setAvatarURL(minioService.getFileURL(avatarFileName));
+            }
             commentResponses.add(commentResponse);
         }
 

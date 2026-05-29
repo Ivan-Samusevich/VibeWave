@@ -16,8 +16,13 @@ public class Follow {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long followId;
 
-    private Long followerId;
-    private Long followingId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "follower_id")
+    private User follower;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "following_id")
+    private User following;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

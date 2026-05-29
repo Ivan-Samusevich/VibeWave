@@ -5,13 +5,14 @@ import VibeWave.dto.post.PostResponse;
 import VibeWave.entity.Like;
 import VibeWave.entity.Post;
 import VibeWave.entity.SavedPost;
+import VibeWave.entity.User;
 import VibeWave.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +28,14 @@ public class PostService {
     @Transactional
     public String createPost(UserDto currentUser, String text, MultipartFile file){
         String answer = "Проверьте введённые данные";
-        if(checkPostData(text));
+        User user = userRepository.findByUserId(currentUser.getUserId());
+        if(checkPostData(text))
         {
             Post post = new Post();
-            post.setUserId(currentUser.getUserId());
+            post.setUser(user);
             post.setText(text);
             post.setLikesCount(0L);
+            post.setCommentsCount(0L);
             postRepository.save(post);
             answer = "Пост создан";
             String fileName = minioService.uploadFileFromPost(file, post.getPostId());
@@ -52,29 +55,35 @@ public class PostService {
         return answer;
     }
 
-    public List<PostResponse> getPosts(UserDto currentUser){ //todo посмотреть тут списки.
-        List<Post> posts = postRepository.findAll();
-        List<PostResponse> postResponses = new java.util.ArrayList<>(List.of());
+    public List<PostResponse> getPosts(UserDto currentUser){
+        List<Post> posts = postRepository.findAllPosts();
+        List<PostResponse> postResponses = new ArrayList<>();
+        Set<Long> likedPosts = likeRepository.findLikedPostIds(currentUser.getUserId());
+        Set<Long> savedPosts = savedPostRepository.findSavedPostIds(currentUser.getUserId());
         for(Post post : posts){
             PostResponse postResponse = new PostResponse();
             postResponse.setId(post.getPostId());
-            postResponse.setUserName(userRepository.getUsernameById(post.getUserId()));
-            String avatarName = userProfileRepository.findAvatarFileNameByUserProfileId(post.getUserId());
-            postResponse.setAvatarURL(minioService.getFileURL(avatarName));
+            postResponse.setUserName(post.getUser().getUserName());
+            String avatarFileName = post.getUser().getUserProfile().getAvatarFileName();
+            if(avatarFileName != null) {
+                postResponse.setAvatarURL(minioService.getFileURL(avatarFileName));
+            }
             postResponse.setText(post.getText());
             postResponse.setLikesCount(post.getLikesCount());
+            postResponse.setCommentsCount(post.getCommentsCount());
 
-            boolean likeStatus = likeRepository.existsByUserIdAndPostId(currentUser.getUserId(), post.getPostId());
-            postResponse.setLikeStatus(likeStatus);
+            postResponse.setLiked(likedPosts.contains(post.getPostId()));//todo напомнить Вале про то, что надо в его коде поменять на Liked
 
-            boolean isSaved = savedPostRepository.existsByUserIdAndPostId(currentUser.getUserId(), post.getPostId());
-            postResponse.setSaved(isSaved);
+
+            postResponse.setSaved(savedPosts.contains(post.getPostId()));
             postResponse.setImageURL(minioService.getFileURL(post.getFileName()));
             postResponse.setFileType(fileTypeDetect(post.getFileName()));
+            postResponse.setScore(post.getLikesCount() * 2 + post.getCommentsCount() * 5); // Лайк - 2 очка, комментарий - 4 очка
             postResponses.add(postResponse);
         }
+        postResponses.sort(Comparator.comparing(PostResponse::getScore).reversed());
         return postResponses;
-    }//todo здесь переделать id на имя
+    }
 
     @Transactional
     public void deletePost(Long postId, Long userId){
@@ -89,8 +98,13 @@ public class PostService {
     public void toggleSavedPost(Long userId, Long postId, boolean isSaved){
         if(isSaved){
             SavedPost savedPost = new SavedPost();
-            savedPost.setUserId(userId);
-            savedPost.setPostId(postId);
+            //todo разобраться с тем, как сделать так, чтобы отображался статус сохранения(Есть он или нет)
+
+            User user = userRepository.findByUserId(userId);
+            savedPost.setUser(user);
+
+            Post post = postRepository.findByPostId(postId);
+            savedPost.setPost(post);
             savedPostRepository.save(savedPost);
         } else {
             savedPostRepository.deleteByUserIdAndPostId(userId, postId);
@@ -112,16 +126,19 @@ public class PostService {
     public void toggleLike(UserDto currentUser, Long postId){
         //todo разобраться с тем, как сделать так, чтобы отображался статус лайка(Есть он или нет)
         Like like = new Like();
-        like.setUserId(currentUser.getUserId());
 
-        like.setPostId(postId);
+        User user = userRepository.findByUserId(currentUser.getUserId());
+        like.setUser(user);
+
+        Post post = postRepository.findByPostId(postId);
+        like.setPost(post);
 
         likeRepository.save(like);
     }
 
     @Transactional
     public void updatePostLikesCount(Long postId, boolean likeStatus, Long userId){
-        // Одна операция в БД, без загрузки поста в память
+        // todo потом переделать так, чтобы бэк сам проверял наличие лайка
         if(likeStatus) {
             postRepository.incrementLikesCount(postId);
         }

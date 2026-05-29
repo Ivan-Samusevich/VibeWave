@@ -1,4 +1,4 @@
-package VibeWave.dto;
+package VibeWave.dto.follow;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -7,12 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class PostDto {
-
-    private String author;
-
-    //private String url;
-
-    private String text;
-
+public class FollowResponse {
+    private String userName;
+    private String fileURL;
 }

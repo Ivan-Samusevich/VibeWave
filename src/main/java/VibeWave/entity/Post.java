@@ -19,12 +19,15 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postId;
-    private Long userId; //todo переделать на имя. В самом коде тогда потом переделать моменты с этим
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     private String fileName;
     private String text;
     private Long likesCount;
     //todo Добавить потом хэштеги.
-    //todo также добавить счётчик комментариев.
+    private Long commentsCount;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
