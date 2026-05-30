@@ -10,7 +10,36 @@ interface AuthState {
   error: string | null;
 }
 
+const isTokenValid = (token: string | null): boolean => {
+  if (!token) return false;
+  try {
+    const decoded: any = jwtDecode(token);
+    if (!decoded || !decoded.exp) return true;
+    const currentTime = Date.now() / 1000;
+    return decoded.exp > currentTime;
+  } catch (e) {
+    return false;
+  }
+};
+
+const getInitialToken = (): string | null => {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+  if (!isTokenValid(token)) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    return null;
+  }
+  return token;
+};
+
 const getInitialUser = (): User | null => {
+  const token = localStorage.getItem('token');
+  if (!isTokenValid(token)) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    return null;
+  }
   const user = localStorage.getItem('user');
   if (!user) return null;
   try {
@@ -20,10 +49,12 @@ const getInitialUser = (): User | null => {
   }
 };
 
+const tokenVal = getInitialToken();
+
 const initialState: AuthState = {
   user: getInitialUser(),
-  token: localStorage.getItem('token'),
-  isAuthenticated: !!localStorage.getItem('token'),
+  token: tokenVal,
+  isAuthenticated: !!tokenVal,
   loading: false,
   error: null,
 };
@@ -36,9 +67,6 @@ const authSlice = createSlice({
       state,
       action: PayloadAction<{ user: User; token: string }>
     ) => {
-
-      console.log('Setting credentials with user:', action.payload.user);
-
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.isAuthenticated = true;

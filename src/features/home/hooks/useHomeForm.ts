@@ -36,7 +36,7 @@ export const useHomeForm = () => {
           userName: p.userName || 'Аноним',
           avatarURL: p.avatarURL,
           likes: p.likesCount || 0,
-          isLiked: p.likeStatus || false,
+          isLiked: p.isLiked !== undefined ? p.isLiked : (p.likeStatus || false),
           isSaved: p.isSaved || false,
           text: p.text || '',
           timeAgo: 'Только что', 
@@ -120,6 +120,7 @@ export const useHomeForm = () => {
         }
         return p;
       }));
+
       try {
         await postService.toggleSave(postId, newStatus);
       } catch (e) {

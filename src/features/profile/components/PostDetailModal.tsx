@@ -106,7 +106,7 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
               <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 space-y-3">
                 <div className="flex items-center gap-4">
                   <Heart
-                    className={`h-6 w-6 ${selectedPost.likeStatus ? "text-red-500 fill-red-500" : "dark:text-zinc-100"}`}
+                    className={`h-6 w-6 ${(selectedPost.isLiked || selectedPost.likeStatus) ? "text-red-500 fill-red-500" : "dark:text-zinc-100"}`}
                   />
                   <MessageCircle className="h-6 w-6 dark:text-zinc-100" />
                 </div>
