@@ -24,6 +24,7 @@ public class JwtTokenUtil {
                 .setSubject(userDto.getUserName())
                 .claim("userId", userDto.getUserId())
                 .claim("userName", userDto.getUserName())
+                .claim("type", "access")
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + AccessExpirationTime))
                 .signWith(SignatureAlgorithm.HS256, SecretKey)
@@ -35,6 +36,7 @@ public class JwtTokenUtil {
                 .setSubject(userDto.getUserName())
                 .claim("userId", userDto.getUserId())
                 .claim("userName", userDto.getUserName())
+                .claim("type", "refresh")
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + RefreshExpirationTime))
                 .signWith(SignatureAlgorithm.HS256, SecretKey)
@@ -70,5 +72,19 @@ public class JwtTokenUtil {
         Claims claims = validateToken(token);
         return claims.get("userName", String.class);
 
+    }
+
+    public boolean isRefreshToken(String refreshToken){
+        Claims claims = validateToken(refreshToken);
+
+        return "refresh".equals(claims.get("type", String.class));
+    }
+
+    public String generateAccessTokenFromRefreshToken(String refreshToken){
+        Long userId = getUserIdFromToken(refreshToken);
+        String userName = getUserNameFromToken(refreshToken);
+        UserDto userDto = new UserDto(userId, userName);
+        String accessToken = generateAccessToken(userDto);
+        return accessToken;
     }
 }

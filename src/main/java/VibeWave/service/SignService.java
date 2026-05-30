@@ -1,6 +1,8 @@
 package VibeWave.service;
 
 import VibeWave.config.JwtTokenUtil;
+import VibeWave.dto.AuthResponse;
+import VibeWave.dto.SignResult;
 import VibeWave.dto.UserDto;
 import VibeWave.entity.User;
 import VibeWave.entity.UserProfile;
@@ -29,19 +31,26 @@ public class SignService implements SignImpl {
     private final PasswordEncoder encoder;
     private final JwtTokenUtil jwtTokenUtil;
 
-    public ResponseEntity<?> signIn(User user){
+    public SignResult signIn(User user){ // todo переделать получаемый тип данных. Получаю не user, а UserRequest например
         checkSignIn(user);
 
         user = userRepository.findByEmail(user.getEmail());
         UserDto userDto = new UserDto(user.getUserId(), user.getUserName());
 
-        String jwt = jwtTokenUtil.generateAccessToken(userDto);
-
-        Map<String, String> response = new HashMap<>(); //todo Надо создать UserResponce, в котором будут храниться 2 токена. Этот объект потом передать на фронт
-        //todo добавить потом 2-ой токен
-        response.put("accessToken", jwt);
-        response.put("tokenType", "Bearer ");
-        return ResponseEntity.ok(response); //todo На фронте пока получает строку
+        String accessToken = jwtTokenUtil.generateAccessToken(userDto);
+        String refreshToken = jwtTokenUtil.generateRefreshToken(userDto);
+        AuthResponse authResponse = new AuthResponse();
+        authResponse.setUserId(userDto.getUserId());
+        authResponse.setUserName(user.getUserName());
+        authResponse.setAccessToken(accessToken);
+        SignResult result = new SignResult();
+        result.setAuthResponse(authResponse);
+        result.setRefreshToken(refreshToken);
+//        Map<String, String> response = new HashMap<>(); //todo Надо создать UserResponce, в котором будут храниться 2 токена. Этот объект потом передать на фронт
+//        //todo добавить потом 2-ой токен
+//        response.put("accessToken", jwt);
+//        response.put("tokenType", "Bearer ");
+        return result; //todo На фронте пока получает строку
     }
 
     private void checkSignIn(User user) {
@@ -109,5 +118,17 @@ public class SignService implements SignImpl {
         userProfileRepository.save(userProfile);
     }
 
-
+    public AuthResponse refresh(String refreshToken){
+        if(!jwtTokenUtil.isRefreshToken(refreshToken)){
+            throw new RuntimeException("Это не refreshToken");
+        }
+        AuthResponse authResponse = new AuthResponse();
+        Long userId = jwtTokenUtil.getUserIdFromToken(refreshToken);
+        String userName = jwtTokenUtil.getUserNameFromToken(refreshToken);
+        String accessToken = jwtTokenUtil.generateAccessTokenFromRefreshToken(refreshToken);
+        authResponse.setUserId(userId);
+        authResponse.setUserName(userName);
+        authResponse.setAccessToken(accessToken);
+        return authResponse;
+    }
 }

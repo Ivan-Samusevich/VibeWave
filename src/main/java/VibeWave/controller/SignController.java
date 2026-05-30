@@ -1,21 +1,50 @@
 package VibeWave.controller;
 
+import VibeWave.config.JwtTokenUtil;
+import VibeWave.dto.AuthResponse;
+import VibeWave.dto.SignResult;
+import VibeWave.dto.UserDto;
 import VibeWave.entity.User;
 import VibeWave.service.SignService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Duration;
 
 
 @RestController
 @RequestMapping("api/users")
+@RequiredArgsConstructor
 public class SignController {
     private final SignService signService;
 
-    public SignController(SignService signService){this.signService = signService;}
-
     @PostMapping("/signin")
-    public ResponseEntity<?> signIn(@RequestBody User user){return signService.signIn(user);}
+    public ResponseEntity<AuthResponse> signIn(@RequestBody User user){
+        SignResult result = signService.signIn(user);
+
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", result.getRefreshToken())
+                .httpOnly(true)
+                .secure(false) //  потом поменять на true
+                .path("/")
+                .maxAge(Duration.ofDays(7))
+                .build();
+
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.SET_COOKIE,
+                        cookie.toString()
+                )
+                .body(result.getAuthResponse());
+    }
 
     @PostMapping("/signup")
     public String signUp(@RequestBody User user){return signService.signUp(user);}
+
+    @PostMapping("/refresh")
+    public AuthResponse refresh(@CookieValue("refreshToken") String refreshToken){
+        return signService.refresh(refreshToken);
+    }
 }
