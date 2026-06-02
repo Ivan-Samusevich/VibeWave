@@ -1,8 +1,9 @@
 import axios from 'axios';
-import { User } from '../types/api';
+import { User, AuthResponse } from '../types/api';
 import { jwtDecode } from 'jwt-decode';
+import { store } from '../store';
+import { setCredentials, logout } from '../features/auth/authSlice';
 
-// Используем относительный путь /api, который будет проксироваться на бэкенд
 const api = axios.create({
   baseURL: '/api',
   withCredentials: true,
@@ -16,6 +17,15 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+async function refreshAccessToken(): Promise<AuthResponse> {
+  const response = await axios.post<AuthResponse>(
+    '/api/users/refresh',
+    null,
+    { withCredentials: true }
+  );
+  return response.data;
+}
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -23,20 +33,39 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
-        const refreshResponse = await axios.post<{ accessToken: string, userId: number, userName: string }>(
-          '/api/users/refresh',
-          null,
-          { withCredentials: true }
-        );
-        const { accessToken } = refreshResponse.data;
+        const refreshResponse = await refreshAccessToken();
+        const { accessToken, userId, userName } = refreshResponse;
+        
         if (accessToken) {
           localStorage.setItem('token', accessToken);
+          
+          const storedUser = localStorage.getItem('user');
+          let currentUser = null;
+          if (storedUser) {
+            try {
+              currentUser = JSON.parse(storedUser);
+            } catch (e) {
+              console.error('Failed to parse user from localStorage', e);
+            }
+          }
+          if (currentUser && userId && userName) {
+            store.dispatch(setCredentials({
+              token: accessToken,
+              user: {
+                userId: userId,
+                userName: userName,
+                email: currentUser.email || ''
+              }
+            }));
+          }
           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
           return api(originalRequest);
         }
       } catch (refreshError) {
+        console.error('Token refresh failed:', refreshError);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        store.dispatch(logout());
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
@@ -47,19 +76,18 @@ api.interceptors.response.use(
 
 export const authService = {
   login: async (data: any) => {
-    // Путь: /api/users/signin
-    const response = await api.post<{ accessToken: string, userId: number, userName: string }>('/users/signin', {
+    const response = await api.post<AuthResponse>('/users/signin', {
       email: data.email,
       password: data.password,
     });
     
-    const { accessToken, userId, userName } = response.data;
+    const authResponse = response.data;
+    const { accessToken, userId, userName } = authResponse;
     
     if (!accessToken) {
       throw new Error('Не удалось получить токен авторизации');
     }
 
-    // Декодируем токен для получения данных пользователя или используем готовые данные
     let decoded: any = {};
     try {
       decoded = jwtDecode(accessToken);
@@ -79,8 +107,10 @@ export const authService = {
       message: 'Авторизация прошла успешно'
     };
   },
+  refreshToken: async (): Promise<AuthResponse> => {
+    return refreshAccessToken();
+  },
   register: async (data: any) => {
-    // Путь: /api/users/signup
     const response = await api.post<string>('/users/signup', {
       email: data.email,
       password: data.password,

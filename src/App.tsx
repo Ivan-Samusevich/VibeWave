@@ -8,11 +8,13 @@ import { ChatPage } from './pages/ChatPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { ThemeProvider } from './context/ThemeContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { TokenRefresher } from './components/TokenRefreshManager';
 
 export default function App() {
   return (
     <Provider store={store}>
       <ThemeProvider>
+        <TokenRefresher />
         <Router>
           <Routes>
             <Route path="/login" element={<LoginPage />} />

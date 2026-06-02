@@ -25,6 +25,12 @@ export interface UserResponse {
   refreshToken?: string;
 }
 
+export interface AuthResponse {
+  userId: number;
+  userName: string;
+  accessToken: string;
+}
+
 export interface FollowResponse {
   userName: string;
   fileURL?: string;
