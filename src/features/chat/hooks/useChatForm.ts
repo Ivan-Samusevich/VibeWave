@@ -5,6 +5,7 @@ import { RootState } from '../../../store';
 import { addMessage, setMessages } from '../chatSlice';
 import { chatService } from '../../../services/chatService';
 import { ChatResponse } from '../../../types/api';
+import { Client } from '@stomp/stompjs';
 
 export const useChatForm = () => {
   const dispatch = useDispatch();
@@ -20,6 +21,94 @@ export const useChatForm = () => {
   const [loading, setLoading] = useState(false);
   const [chatId, setChatId] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const stompClientRef = useRef<Client | null>(null);
+  const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    if (!isAuthenticated || !token) {
+      setIsConnected(false);
+      return;
+    }
+
+    // const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    // const host = window.location.host;
+    const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:8080/ws';
+
+    console.log('[WebSocket] Connecting Client to:', wsUrl);
+
+    const client = new Client({
+      brokerURL: wsUrl,
+      connectHeaders: {
+        Authorization: `Bearer ${token}`
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+      onConnect: (frame) => {
+        console.log('[WebSocket] STOMP connected:', frame);
+        setIsConnected(true);
+      },
+      onDisconnect: () => {
+        console.log('[WebSocket] STOMP disconnected');
+        setIsConnected(false);
+      },
+      onStompError: (frame) => {
+        console.error('[WebSocket] STOMP broker error:', frame);
+      },
+      onWebSocketError: (err) => {
+        console.error('[WebSocket] underlying websocket error:', err);
+      }
+    });
+
+    client.activate();
+    stompClientRef.current = client;
+
+    return () => {
+      console.log('[WebSocket] Cleaning up and deactivating...');
+      client.deactivate();
+      stompClientRef.current = null;
+      setIsConnected(false);
+    };
+  }, [isAuthenticated, token]);
+
+  useEffect(() => {
+    const client = stompClientRef.current;
+    if (!client || !isConnected || chatId === null) return;
+
+    const topic = `/topic/chat/${chatId}`;
+    console.log('[WebSocket] Subscribing to:', topic);
+
+    const subscription = client.subscribe(topic, (message) => {
+      try {
+        const receivedMessage = JSON.parse(message.body);
+        console.log('[WebSocket] Message received:', receivedMessage);
+
+        const editedMessagesStr = localStorage.getItem('edited_messages') || '{}';
+        const deletedMessagesStr = localStorage.getItem('deleted_messages') || '[]';
+        const editedMessages = JSON.parse(editedMessagesStr);
+        const deletedMessages = JSON.parse(deletedMessagesStr);
+
+        if (deletedMessages.includes(receivedMessage.messageId)) {
+          return;
+        }
+
+        let processed = { ...receivedMessage };
+        if (editedMessages[receivedMessage.messageId]) {
+          processed.text = editedMessages[receivedMessage.messageId];
+        }
+
+        dispatch(addMessage(processed));
+      } catch (err) {
+        console.error('[WebSocket] Parsing received message failed:', err);
+      }
+    });
+
+    return () => {
+      console.log('[WebSocket] Unsubscribing from:', topic);
+      subscription.unsubscribe();
+    };
+  }, [chatId, isConnected, dispatch]);
 
   const fetchChats = async () => {
     if (!isAuthenticated) return;
@@ -120,8 +209,6 @@ export const useChatForm = () => {
 
     if (chatId !== null) {
       fetchMessages();
-      const interval = setInterval(fetchMessages, 3000);
-      return () => clearInterval(interval);
     }
   }, [isAuthenticated, navigate, chatId]);
 
@@ -140,12 +227,32 @@ export const useChatForm = () => {
     setLoading(true);
 
     try {
-      await chatService.sendMessage(targetUserName, text);
-      if (chatId === null) {
+      let currentChatId = chatId;
+
+      if (currentChatId === null) {
+        console.log('[WebSocket] Chat ID is null. Querying backend for chatInfo...');
         const chatInfo = await chatService.openChat(targetUserName);
-        if (chatInfo.chatId) setChatId(chatInfo.chatId);
+        if (chatInfo.chatId) {
+          currentChatId = chatInfo.chatId;
+          setChatId(chatInfo.chatId);
+        }
       }
-      fetchMessages();
+
+      const client = stompClientRef.current;
+      if (client && isConnected) {
+        const payload = {
+          receiverUserName: targetUserName,
+          chatId: currentChatId !== null ? currentChatId : undefined,
+          text: text
+        };
+        console.log('[WebSocket] Publishing send message payload:', payload);
+        client.publish({
+          destination: '/app/chat.send',
+          body: JSON.stringify(payload)
+        });
+      } else {
+        console.error('[WebSocket] Client not connected. Cannot send message.');
+      }
     } catch (error) {
       console.error('Failed to send message:', error);
     } finally {

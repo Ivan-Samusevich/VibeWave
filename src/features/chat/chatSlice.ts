@@ -16,7 +16,10 @@ const chatSlice = createSlice({
   initialState,
   reducers: {
     addMessage: (state, action: PayloadAction<MessageResponse>) => {
-      state.messages.push(action.payload);
+      const exists = state.messages.some(m => m.messageId === action.payload.messageId);
+      if (!exists) {
+        state.messages.push(action.payload);
+      }
     },
     setMessages: (state, action: PayloadAction<MessageResponse[]>) => {
       state.messages = action.payload;

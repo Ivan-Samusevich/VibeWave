@@ -80,6 +80,7 @@ export interface MessageResponse {
 
 export interface SendMessageRequest {
   receiverUserName: string;
+  chatId?: number;
   text: string;
 }
 
