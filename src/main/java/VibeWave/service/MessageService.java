@@ -8,6 +8,7 @@ import VibeWave.repository.MessageRepository;
 import VibeWave.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,18 +35,27 @@ public class MessageService {
         return responses;
     }
 
-    public void sendMessage(SendMessageRequest request, Long myId){
+    @Transactional
+    public MessageResponse sendMessage(SendMessageRequest request, Long myId){
         Long secondUserId = userRepository.getIdByUsername(request.getReceiverUserName());
 
-        Long firstId = Math.min(myId, secondUserId);
-        Long secondId = Math.max(myId, secondUserId);
+        Long firstId = Math.min(1L, 2L);
+        Long secondId = Math.max(1L, 2L);
 
         Chat chat = chatService.getOrCreateChat(firstId, secondId);
 
         Message message = new Message();
         message.setChatId(chat.getChatId());
-        message.setSenderId(myId);
+        message.setSenderId(2L);
         message.setText(request.getText());
         messageRepository.save(message);
+
+        return MessageResponse.builder()
+                .messageId(message.getMessageId())
+                .chatId(message.getChatId())
+                .userName(userRepository.getUsernameById(message.getSenderId()))
+                .text(message.getText())
+                .createdAt(message.getCreatedAt())
+                .build();
     }
 }

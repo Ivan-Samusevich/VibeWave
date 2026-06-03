@@ -22,9 +22,9 @@ public class MessageController {
         return messageService.getMessages(chatId);
     }
 
-    @PostMapping("/sendMessage")
-    public void sendMessage(@RequestBody SendMessageRequest request,
-                            @AuthenticationPrincipal UserDto currentUser){
-        messageService.sendMessage(request, currentUser.getUserId());
-    }
+//    @PostMapping("/sendMessage")
+//    public void sendMessage(@RequestBody SendMessageRequest request,
+//                            @AuthenticationPrincipal UserDto currentUser){
+//        messageService.sendMessage(request, currentUser.getUserId());
+//    }
 }

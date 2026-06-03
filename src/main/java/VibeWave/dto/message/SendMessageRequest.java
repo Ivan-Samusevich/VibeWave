@@ -10,5 +10,6 @@ import lombok.Setter;
 public class SendMessageRequest {
 
     private String receiverUserName;
+    private Long chatId;
     private String text;
 }
