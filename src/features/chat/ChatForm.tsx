@@ -21,6 +21,8 @@ export const ChatForm: React.FC = () => {
     scrollRef,
     fetchMessages,
     handleSendMessage,
+    handleEditMessage,
+    handleDeleteMessage,
     navigate
   } = useChatForm();
 
@@ -64,6 +66,8 @@ export const ChatForm: React.FC = () => {
                 messages={messages}
                 currentUser={user}
                 scrollRef={scrollRef}
+                onEditMessage={handleEditMessage}
+                onDeleteMessage={handleDeleteMessage}
               />
 
               <ChatInput 

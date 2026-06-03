@@ -26,6 +26,7 @@ interface Post {
   isSaved: boolean;
   timeAgo: string;
   comments: Comment[];
+  commentsCount?: number;
 }
 
 interface PostCardProps {
@@ -90,7 +91,7 @@ export const PostCard: React.FC<PostCardProps> = ({
           <PostActions 
             isLiked={post.isLiked}
             isSaved={post.isSaved}
-            commentsCount={post.comments.length}
+            commentsCount={post.commentsCount !== undefined ? post.commentsCount : post.comments.length}
             onLike={() => onToggleLike(post.id)}
             onToggleComments={() => onToggleComments(post.id)}
             onSave={() => onToggleSave(post.id)}
@@ -110,20 +111,11 @@ export const PostCard: React.FC<PostCardProps> = ({
 
           <CommentsSection 
             postId={post.id}
-            comments={post.comments}
-            isExpanded={isExpanded}
-            currentUser={currentUser}
+            commentsCount={post.commentsCount !== undefined ? post.commentsCount : post.comments.length}
             commentInput={commentInput}
-            editingCommentId={editingCommentId}
-            editCommentText={editCommentText}
             onCommentChange={(text) => onCommentChange(post.id, text)}
             onAddComment={() => onAddComment(post.id)}
             onToggleComments={() => onToggleComments(post.id)}
-            onStartEdit={onStartEditComment}
-            onCancelEdit={onCancelEditComment}
-            onSaveEdit={(commentId) => onSaveEditedComment(post.id, commentId)}
-            onDeleteComment={(commentId) => onDeleteComment(post.id, commentId)}
-            setEditCommentText={setEditCommentText}
           />
 
           <p className="text-[10px] text-zinc-400 uppercase tracking-wider">{post.timeAgo}</p>

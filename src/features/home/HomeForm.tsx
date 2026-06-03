@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Navbar } from '../../components/NavBar';
 import { CreatePostModal } from '../../components/CreatePostModal';
 import { useHomeForm } from './hooks/useHomeForm';
 import { PostCard } from './components/PostCard';
+import { CommentsModal } from './components/CommentsModal';
 
 export const HomeForm: React.FC = () => {
   const {
@@ -29,6 +30,17 @@ export const HomeForm: React.FC = () => {
     handleAddPost
   } = useHomeForm();
 
+  const [commentsModalPostId, setCommentsModalPostId] = useState<number | null>(null);
+
+  const handleOpenCommentsModal = (postId: number) => {
+    setCommentsModalPostId(postId);
+    if (!expandedComments[postId]) {
+      toggleComments(postId);
+    }
+  };
+
+  const selectedPostForComments = posts.find(p => p.id === commentsModalPostId) || null;
+
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 transition-colors duration-200">
       <Navbar onAddPostClick={() => setIsModalOpen(true)} />
@@ -53,7 +65,7 @@ export const HomeForm: React.FC = () => {
                 onDeletePost={deletePost}
                 onToggleLike={toggleLike}
                 onToggleSave={toggleSave}
-                onToggleComments={toggleComments}
+                onToggleComments={handleOpenCommentsModal}
                 onCommentChange={handleCommentChange}
                 onAddComment={addComment}
                 onStartEditComment={startEditComment}
@@ -71,6 +83,23 @@ export const HomeForm: React.FC = () => {
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         onAddPost={handleAddPost} 
+      />
+
+      <CommentsModal
+        isOpen={commentsModalPostId !== null}
+        onClose={() => setCommentsModalPostId(null)}
+        post={selectedPostForComments}
+        currentUser={user}
+        commentInput={commentsModalPostId ? (commentInputs[commentsModalPostId] || '') : ''}
+        editingCommentId={editingCommentId}
+        editCommentText={editCommentText}
+        onCommentChange={(text) => commentsModalPostId && handleCommentChange(commentsModalPostId, text)}
+        onAddComment={() => commentsModalPostId && addComment(commentsModalPostId)}
+        onStartEdit={startEditComment}
+        onCancelEdit={cancelEditComment}
+        onSaveEdit={(commentId) => commentsModalPostId && saveEditedComment(commentsModalPostId, commentId)}
+        onDeleteComment={(commentId) => commentsModalPostId && deleteComment(commentsModalPostId, commentId)}
+        setEditCommentText={setEditCommentText}
       />
     </div>
   );

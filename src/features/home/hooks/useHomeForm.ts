@@ -16,6 +16,7 @@ export interface PostData {
   mediaUrl: string;
   mediaType: 'image' | 'video';
   comments: { id: number; userName: string; text: string; avatarURL?: string }[];
+  commentsCount: number;
 }
 
 export const useHomeForm = () => {
@@ -43,7 +44,8 @@ export const useHomeForm = () => {
           createdAt: Date.now(),
           mediaUrl: p.imageURL || `https://picsum.photos/seed/vibewave-${id}/600/600`,
           mediaType: p.fileType === 'video' || (p.imageURL && p.imageURL.toLowerCase().includes('.mp4')) ? 'video' : 'image',
-          comments: [] 
+          comments: [],
+          commentsCount: p.commentsCount !== undefined ? p.commentsCount : 0
         };
       });
       setPosts(mappedPosts);
@@ -62,7 +64,8 @@ export const useHomeForm = () => {
             createdAt: Date.now() - 7200000,
             mediaUrl: 'https://picsum.photos/seed/vibewave-1/600/600',
             mediaType: 'image',
-            comments: [{ id: 1, userName: 'maria_sky', text: 'Это просто невероятно! 😍' }]
+            comments: [{ id: 1, userName: 'maria_sky', text: 'Это просто невероятно! 😍' }],
+            commentsCount: 1
           }
         ]);
       }
@@ -120,7 +123,6 @@ export const useHomeForm = () => {
         }
         return p;
       }));
-
       try {
         await postService.toggleSave(postId, newStatus);
       } catch (e) {
@@ -142,6 +144,7 @@ export const useHomeForm = () => {
           if (post.id === postId) {
             return {
               ...post,
+              commentsCount: backendComments.length,
               comments: backendComments.map((c) => ({
                 id: c.commentId,
                 userName: c.userName,
@@ -176,6 +179,7 @@ export const useHomeForm = () => {
         if (post.id === postId) {
           return {
             ...post,
+            commentsCount: backendComments.length,
             comments: backendComments.map(c => ({
               id: c.commentId,
               userName: c.userName,
@@ -236,9 +240,11 @@ export const useHomeForm = () => {
       
       setPosts(prev => prev.map(post => {
         if (post.id === postId) {
+          const updatedComments = post.comments.filter(c => c.id !== commentId);
           return {
             ...post,
-            comments: post.comments.filter(c => c.id !== commentId)
+            commentsCount: updatedComments.length,
+            comments: updatedComments
           };
         }
         return post;
@@ -277,6 +283,7 @@ export const useHomeForm = () => {
         mediaUrl: newPost.mediaUrl,
         mediaType: newPost.mediaType,
         comments: [],
+        commentsCount: 0,
       };
       setPosts(prev => [post, ...prev]);
     }

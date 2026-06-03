@@ -11,7 +11,7 @@ export const useChatForm = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const targetUserName = searchParams.get('user');
-
+  
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
   const { messages } = useSelector((state: RootState) => state.chat);
   const [chats, setChats] = useState<ChatResponse[]>([]);
@@ -39,7 +39,7 @@ export const useChatForm = () => {
       fetchChats();
     }
   }, [isAuthenticated]);
-
+  
   useEffect(() => {
     const initChat = async () => {
       if (!targetUserName || !isAuthenticated) {
@@ -66,9 +66,49 @@ export const useChatForm = () => {
     if (chatId === null) return;
     try {
       const data = await chatService.getMessages(chatId);
-      dispatch(setMessages(data));
+      const editedMessagesStr = localStorage.getItem('edited_messages') || '{}';
+      const deletedMessagesStr = localStorage.getItem('deleted_messages') || '[]';
+      const editedMessages = JSON.parse(editedMessagesStr);
+      const deletedMessages = JSON.parse(deletedMessagesStr);
+      
+      const filteredAndEdited = data
+        .filter((msg: any) => !deletedMessages.includes(msg.messageId))
+        .map((msg: any) => {
+          if (editedMessages[msg.messageId]) {
+            return { ...msg, text: editedMessages[msg.messageId] };
+          }
+          return msg;
+        });
+
+      dispatch(setMessages(filteredAndEdited));
     } catch (error) {
       console.error('Failed to fetch messages:', error);
+    }
+  };
+
+  const handleEditMessage = (messageId: number, newText: string) => {
+    try {
+      const editedMessagesStr = localStorage.getItem('edited_messages') || '{}';
+      const editedMessages = JSON.parse(editedMessagesStr);
+      editedMessages[messageId] = newText;
+      localStorage.setItem('edited_messages', JSON.stringify(editedMessages));
+      fetchMessages();
+    } catch (e) {
+      console.error('Failed to edit message:', e);
+    }
+  };
+
+  const handleDeleteMessage = (messageId: number) => {
+    try {
+      const deletedMessagesStr = localStorage.getItem('deleted_messages') || '[]';
+      const deletedMessages = JSON.parse(deletedMessagesStr);
+      if (!deletedMessages.includes(messageId)) {
+        deletedMessages.push(messageId);
+      }
+      localStorage.setItem('deleted_messages', JSON.stringify(deletedMessages));
+      fetchMessages();
+    } catch (e) {
+      console.error('Failed to delete message:', e);
     }
   };
 
@@ -125,6 +165,8 @@ export const useChatForm = () => {
     scrollRef,
     fetchMessages,
     handleSendMessage,
+    handleEditMessage,
+    handleDeleteMessage,
     fetchChats,
     navigate
   };

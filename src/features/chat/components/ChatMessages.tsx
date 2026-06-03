@@ -7,9 +7,17 @@ interface ChatMessagesProps {
   messages: MessageResponse[];
   currentUser: UserResponse | null;
   scrollRef: React.RefObject<HTMLDivElement | null>;
+  onEditMessage: (messageId: number, text: string) => void;
+  onDeleteMessage: (messageId: number) => void;
 }
 
-export const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, currentUser, scrollRef }) => {
+export const ChatMessages: React.FC<ChatMessagesProps> = ({ 
+  messages, 
+  currentUser, 
+  scrollRef,
+  onEditMessage,
+  onDeleteMessage
+}) => {
   return (
     <div 
       ref={scrollRef}
@@ -22,7 +30,13 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({ messages, currentUse
           </div>
         ) : (
           messages.map((msg) => (
-            <ChatMessageItem key={msg.messageId} message={msg} currentUser={currentUser} />
+            <ChatMessageItem 
+              key={msg.messageId} 
+              message={msg} 
+              currentUser={currentUser} 
+              onEdit={onEditMessage}
+              onDelete={onDeleteMessage}
+            />
           ))
         )}
       </AnimatePresence>
