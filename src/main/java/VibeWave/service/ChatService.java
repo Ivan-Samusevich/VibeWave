@@ -41,11 +41,8 @@ public class ChatService {
         Long firstId = Math.min(myId, secondUserId);
         Long secondId = Math.max(myId, secondUserId);
 
-        Optional<Chat> optionalChat = chatRepository.findByFirstUserIdAndSecondUserId(firstId, secondId);
-        if(optionalChat.isEmpty()){
-            return new ChatResponse(null, userName);
-        }
-        Chat chat = optionalChat.get();
+
+        Chat chat = getOrCreateChat(firstId, secondId);
         return new ChatResponse(chat.getChatId(), userName);
     }
 

@@ -7,9 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class SendMessageRequest {
-
-    private Long senderId;
-    private Long chatId;
-    private String text;
+public class UpdateMessageRequest {
+    private Long messageId;
+    private String newText;
 }

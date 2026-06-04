@@ -2,7 +2,7 @@ package VibeWave.service;
 
 import VibeWave.dto.message.SendMessageRequest;
 import VibeWave.dto.message.MessageResponse;
-import VibeWave.entity.Chat;
+import VibeWave.dto.message.UpdateMessageRequest;
 import VibeWave.entity.Message;
 import VibeWave.repository.MessageRepository;
 import VibeWave.repository.UserRepository;
@@ -28,25 +28,22 @@ public class MessageService {
             MessageResponse response = new MessageResponse();
             response.setMessageId(message.getMessageId());
             response.setUserName(userRepository.getUsernameById(message.getSenderId()));
+            response.setChatId(message.getChatId());
             response.setText(message.getText());
             response.setCreatedAt(message.getCreatedAt());
+            response.setUpdatedAt(message.getUpdatedAt());
             responses.add(response);
         }
         return responses;
     }
 
     @Transactional
-    public MessageResponse sendMessage(SendMessageRequest request, Long myId){
-        Long secondUserId = userRepository.getIdByUsername(request.getReceiverUserName());
+    public MessageResponse sendMessage(SendMessageRequest request){
 
-        Long firstId = Math.min(1L, 2L);
-        Long secondId = Math.max(1L, 2L);
-
-        Chat chat = chatService.getOrCreateChat(firstId, secondId);
 
         Message message = new Message();
-        message.setChatId(chat.getChatId());
-        message.setSenderId(2L);
+        message.setChatId(request.getChatId());
+        message.setSenderId(request.getSenderId());
         message.setText(request.getText());
         messageRepository.save(message);
 
@@ -57,5 +54,21 @@ public class MessageService {
                 .text(message.getText())
                 .createdAt(message.getCreatedAt())
                 .build();
+    }
+
+    @Transactional
+    public void updateMessage(UpdateMessageRequest request){
+        String newText = request.getNewText();
+        Message message = messageRepository.findById(request.getMessageId())
+                .orElseThrow(() -> new RuntimeException("Сообщение не найдено"));
+        message.setText(newText);
+        messageRepository.save(message);
+    }
+
+    @Transactional
+    public void deleteMessage(Long messageId){
+        Message message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new RuntimeException("Сообщение не найдено"));
+        messageRepository.delete(message);
     }
 }

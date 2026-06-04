@@ -36,19 +36,16 @@ public class PostController {
         postService.deletePost(postId, currentUser.getUserId());
     }
 
-    @PostMapping("/toggleLike/{postId}/{likeStatus}")
+    @PostMapping("/toggleLike/{postId}/{likeStatus}")//todo убрать получение статуса, когда сообщу Вале
     public void putLike(@PathVariable Long postId,
-                        @PathVariable boolean likeStatus,
                         @AuthenticationPrincipal UserDto currentUser){
 
-        postService.toggleLike(currentUser, postId);
-        postService.updatePostLikesCount(postId, likeStatus, currentUser.getUserId());
+        postService.toggleLike(currentUser.getUserId(), postId);
     }
 
-    @PostMapping("/toggleSavedPost/{postId}/{isSaved}")
+    @PostMapping("/toggleSavedPost/{postId}/{isSaved}") //todo убрать получение статуса, когда сообщу Вале
     public void putSavePost(@PathVariable Long postId,
-                            @PathVariable boolean isSaved,
                             @AuthenticationPrincipal UserDto currentUser){
-        postService.toggleSavedPost(currentUser.getUserId(), postId, isSaved);
+        postService.toggleSavedPost(currentUser.getUserId(), postId);
     }
 }

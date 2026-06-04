@@ -38,7 +38,7 @@ public class CommentService {
     //todo сделать функцию для получения всех комментиариев. Особенность в том, что мой коммент должен быть всегда вверху.
 
     @Transactional
-    public void updateComment(Long commentId, UpdateCommentRequest updateCommentRequest){
+    public void updateComment(Long commentId, UpdateCommentRequest updateCommentRequest){ //todo перекинуть id в request
         String text = updateCommentRequest.getText();
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Комментарий не найден"));
@@ -66,6 +66,7 @@ public class CommentService {
             if(avatarFileName != null) {
                 commentResponse.setAvatarURL(minioService.getFileURL(avatarFileName));
             }
+            commentResponse.setCreatedAt(comment.getCreatedAt());
             commentResponses.add(commentResponse);
         }
 

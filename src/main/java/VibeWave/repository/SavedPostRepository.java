@@ -1,5 +1,6 @@
 package VibeWave.repository;
 
+import VibeWave.entity.Post;
 import VibeWave.entity.SavedPost;
 import VibeWave.entity.User;
 import jakarta.persistence.ManyToOne;
@@ -30,4 +31,7 @@ public interface SavedPostRepository extends JpaRepository<SavedPost, Long> {
             WHERE sp.user.userId = :userId
             """)
     Set<Long> findSavedPostIds(@Param("userId") Long userId);
+
+
+    boolean existsByUserAndPost(User user, Post post);
 }

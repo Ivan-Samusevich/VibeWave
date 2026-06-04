@@ -15,4 +15,5 @@ public class MessageResponse {
     private Long chatId;
     private String text;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

@@ -57,7 +57,7 @@ public class UserProfileService {
         userProfileResponce.setPostCount(userProfile.getPostCount());
         userProfileResponce.setFollowerCount(userProfile.getFollowerCount());
         userProfileResponce.setFollowingCount(userProfile.getFollowingCount());
-
+        userProfileResponce.setCreatedAt(user.getCreatedAt());
         return userProfileResponce;
     }
 

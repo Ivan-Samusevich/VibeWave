@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Setter
 @Getter
 @RequiredArgsConstructor
@@ -19,4 +21,5 @@ public class PostResponse {
     private Long score;
     private String imageURL;
     private String fileType;
+    private LocalDateTime createdAt;
 }

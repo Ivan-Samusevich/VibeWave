@@ -72,13 +72,14 @@ public class PostService {
             postResponse.setLikesCount(post.getLikesCount());
             postResponse.setCommentsCount(post.getCommentsCount());
 
-            postResponse.setLiked(likedPosts.contains(post.getPostId()));//todo напомнить Вале про то, что надо в его коде поменять на Liked
+            postResponse.setLiked(likedPosts.contains(post.getPostId()));
 
 
             postResponse.setSaved(savedPosts.contains(post.getPostId()));
             postResponse.setImageURL(minioService.getFileURL(post.getFileName()));
             postResponse.setFileType(fileTypeDetect(post.getFileName()));
             postResponse.setScore(post.getLikesCount() * 2 + post.getCommentsCount() * 5); // Лайк - 2 очка, комментарий - 4 очка
+            postResponse.setCreatedAt(post.getCreatedAt());
             postResponses.add(postResponse);
         }
         postResponses.sort(Comparator.comparing(PostResponse::getScore).reversed());
@@ -95,15 +96,17 @@ public class PostService {
     }
 
     @Transactional
-    public void toggleSavedPost(Long userId, Long postId, boolean isSaved){
-        if(isSaved){
+    public void toggleSavedPost(Long userId, Long postId){
+        User user = userRepository.findByUserId(userId);
+        Post post = postRepository.findByPostId(postId);
+
+        boolean isSaved = savedPostRepository.existsByUserAndPost(user, post);
+        if(!isSaved){
             SavedPost savedPost = new SavedPost();
             //todo разобраться с тем, как сделать так, чтобы отображался статус сохранения(Есть он или нет)
 
-            User user = userRepository.findByUserId(userId);
             savedPost.setUser(user);
 
-            Post post = postRepository.findByPostId(postId);
             savedPost.setPost(post);
             savedPostRepository.save(savedPost);
         } else {
@@ -123,28 +126,26 @@ public class PostService {
     }
 
     @Transactional
-    public void toggleLike(UserDto currentUser, Long postId){
+    public void toggleLike(Long userId, Long postId){
         //todo разобраться с тем, как сделать так, чтобы отображался статус лайка(Есть он или нет)
-        Like like = new Like();
-
-        User user = userRepository.findByUserId(currentUser.getUserId());
-        like.setUser(user);
-
+        User user = userRepository.findByUserId(userId);
         Post post = postRepository.findByPostId(postId);
-        like.setPost(post);
 
-        likeRepository.save(like);
-    }
+        boolean isLiked = likeRepository.existsByUserAndPost(user, post);
 
-    @Transactional
-    public void updatePostLikesCount(Long postId, boolean likeStatus, Long userId){
-        // todo потом переделать так, чтобы бэк сам проверял наличие лайка
-        if(likeStatus) {
+        if(!isLiked){
+            Like like = new Like();
+            like.setUser(user);
+            like.setPost(post);
+            likeRepository.save(like);
             postRepository.incrementLikesCount(postId);
+
         }
         else{
             postRepository.decrementLikesCount(postId);
             likeRepository.deleteByUserIdAndPostId(userId, postId);
         }
+
     }
+
 }

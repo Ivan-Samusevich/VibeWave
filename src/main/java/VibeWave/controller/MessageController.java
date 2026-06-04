@@ -1,11 +1,9 @@
 package VibeWave.controller;
 
-import VibeWave.dto.UserDto;
-import VibeWave.dto.message.SendMessageRequest;
 import VibeWave.dto.message.MessageResponse;
+import VibeWave.dto.message.UpdateMessageRequest;
 import VibeWave.service.MessageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,9 +20,13 @@ public class MessageController {
         return messageService.getMessages(chatId);
     }
 
-//    @PostMapping("/sendMessage")
-//    public void sendMessage(@RequestBody SendMessageRequest request,
-//                            @AuthenticationPrincipal UserDto currentUser){
-//        messageService.sendMessage(request, currentUser.getUserId());
-//    }
+    @PutMapping("/updateMessage")
+    public void updateMessage(@RequestBody UpdateMessageRequest request){
+        messageService.updateMessage(request);
+    }
+
+    @DeleteMapping("/deleteMessage/{messageId}")
+    public void deleteMessage(@PathVariable Long messageId){
+        messageService.deleteMessage(messageId);
+    }
 }
