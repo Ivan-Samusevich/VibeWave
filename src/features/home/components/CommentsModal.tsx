@@ -4,12 +4,14 @@ import { X, User, Edit2, Trash2, Check, X as CancelIcon, MessageCircle } from 'l
 import { Link } from 'react-router-dom';
 import { Input } from '../../../components/Input';
 import { Button } from '../../../components/Button';
+import { formatCommentDate } from '../../../utils/date';
 
 interface Comment {
   id: number;
   userName: string;
   avatarURL?: string;
   text: string;
+  createdAt?: string;
 }
 
 interface PostData {
@@ -228,6 +230,11 @@ export const CommentsModal: React.FC<CommentsModalProps> = ({
                                 <span className="text-zinc-700 dark:text-zinc-300 wrap-break-word font-normal">
                                   {comment.text}
                                 </span>
+                                {comment.createdAt && (
+                                  <span className="block text-[10.5px] text-zinc-400 dark:text-zinc-500 mt-1 select-none font-normal">
+                                    {formatCommentDate(comment.createdAt)}
+                                  </span>
+                                )}
                               </div>
 
                               {currentUser?.userName === comment.userName && (

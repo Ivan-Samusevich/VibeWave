@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
 import { postService } from '../../../services/postService';
+import { formatPostDate } from '../../../utils/date';
 
 export interface PostData {
   id: number;
@@ -15,7 +16,7 @@ export interface PostData {
   createdAt: number;
   mediaUrl: string;
   mediaType: 'image' | 'video';
-  comments: { id: number; userName: string; text: string; avatarURL?: string }[];
+  comments: { id: number; userName: string; text: string; avatarURL?: string; createdAt?: string }[];
   commentsCount: number;
 }
 
@@ -40,8 +41,8 @@ export const useHomeForm = () => {
           isLiked: p.liked !== undefined ? p.liked : (p.likeStatus || false),
           isSaved: p.saved || false,
           text: p.text || '',
-          timeAgo: 'Только что', 
-          createdAt: Date.now(),
+          timeAgo: p.createdAt ? formatPostDate(p.createdAt) : 'Только что', 
+          createdAt: p.createdAt ? new Date(p.createdAt).getTime() : Date.now(),
           mediaUrl: p.imageURL || `https://picsum.photos/seed/vibewave-${id}/600/600`,
           mediaType: p.fileType === 'video' || (p.imageURL && p.imageURL.toLowerCase().includes('.mp4')) ? 'video' : 'image',
           comments: [],
@@ -123,6 +124,7 @@ export const useHomeForm = () => {
         }
         return p;
       }));
+
       try {
         await postService.toggleSave(postId, newStatus);
       } catch (e) {
@@ -149,7 +151,8 @@ export const useHomeForm = () => {
                 id: c.commentId,
                 userName: c.userName,
                 text: c.text,
-                avatarURL: c.userAvatarUrl
+                avatarURL: c.userAvatarUrl,
+                createdAt: c.createdAt
               }))
             };
           }
@@ -184,7 +187,8 @@ export const useHomeForm = () => {
               id: c.commentId,
               userName: c.userName,
               text: c.text,
-              avatarURL: c.userAvatarUrl
+              avatarURL: c.userAvatarUrl,
+              createdAt: c.createdAt
             }))
           };
         }

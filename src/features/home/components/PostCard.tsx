@@ -12,6 +12,7 @@ interface Comment {
   userName: string;
   avatarURL?: string;
   text: string;
+  createdAt?: string;
 }
 
 interface Post {

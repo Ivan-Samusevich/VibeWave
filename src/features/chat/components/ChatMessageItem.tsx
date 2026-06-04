@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { MessageResponse, UserResponse } from '../../../types/api';
 import { Edit2, Trash2, Check, X } from 'lucide-react';
+import { formatMessageTime, formatMessageDateTime } from '../../../utils/date';
 
 interface ChatMessageItemProps {
   message: MessageResponse;
@@ -17,6 +18,11 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
   onDelete
 }) => {
   const isOwn = message.userName === currentUser?.userName;
+  const isEdited = !!(
+    message.updatedAt &&
+    message.createdAt &&
+    Math.abs(new Date(message.updatedAt).getTime() - new Date(message.createdAt).getTime()) > 1000
+  );
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(message.text);
 
@@ -98,7 +104,12 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
             <span className={`text-[10px] mt-1 block text-right select-none ${
               isOwn ? 'text-indigo-200/80' : 'text-zinc-400 dark:text-zinc-500'
             }`}>
-              {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              {formatMessageTime(message.createdAt)}
+              {isEdited && (
+                <span className="ml-1 opacity-80" title={`Изменено: ${formatMessageDateTime(message.updatedAt)}`}>
+                  (изм. {formatMessageTime(message.updatedAt)})
+                </span>
+              )}
             </span>
           </>
         )}

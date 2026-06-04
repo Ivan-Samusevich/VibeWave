@@ -48,6 +48,7 @@ export interface PostResponse {
   avatarURL?: string;
   isSaved?: boolean;
   commentsCount?: number;
+  createdAt?: string;
 }
 
 export interface CommentResponse {
@@ -56,6 +57,7 @@ export interface CommentResponse {
   text: string;
   avatarURL?: string;
   userAvatarUrl?: string;
+  createdAt?: string;
 }
 
 export interface Media {
@@ -76,12 +78,18 @@ export interface MessageResponse {
   userName: string;
   text: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface SendMessageRequest {
-  receiverUserName: string;
-  chatId?: number;
+  senderId?: number;
+  chatId: number;
   text: string;
+}
+
+export interface UpdateMessageRequest {
+  messageId: number;
+  newText: string;
 }
 
 export interface ApiError {

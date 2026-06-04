@@ -31,8 +31,7 @@ export const useChatForm = () => {
       return;
     }
 
-    // const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    // const host = window.location.host;
+    
     const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:8080/ws';
 
     console.log('[WebSocket] Connecting Client to:', wsUrl);
@@ -83,22 +82,7 @@ export const useChatForm = () => {
       try {
         const receivedMessage = JSON.parse(message.body);
         console.log('[WebSocket] Message received:', receivedMessage);
-
-        const editedMessagesStr = localStorage.getItem('edited_messages') || '{}';
-        const deletedMessagesStr = localStorage.getItem('deleted_messages') || '[]';
-        const editedMessages = JSON.parse(editedMessagesStr);
-        const deletedMessages = JSON.parse(deletedMessagesStr);
-
-        if (deletedMessages.includes(receivedMessage.messageId)) {
-          return;
-        }
-
-        let processed = { ...receivedMessage };
-        if (editedMessages[receivedMessage.messageId]) {
-          processed.text = editedMessages[receivedMessage.messageId];
-        }
-
-        dispatch(addMessage(processed));
+        dispatch(addMessage(receivedMessage));
       } catch (err) {
         console.error('[WebSocket] Parsing received message failed:', err);
       }
@@ -155,46 +139,24 @@ export const useChatForm = () => {
     if (chatId === null) return;
     try {
       const data = await chatService.getMessages(chatId);
-      const editedMessagesStr = localStorage.getItem('edited_messages') || '{}';
-      const deletedMessagesStr = localStorage.getItem('deleted_messages') || '[]';
-      const editedMessages = JSON.parse(editedMessagesStr);
-      const deletedMessages = JSON.parse(deletedMessagesStr);
-      
-      const filteredAndEdited = data
-        .filter((msg: any) => !deletedMessages.includes(msg.messageId))
-        .map((msg: any) => {
-          if (editedMessages[msg.messageId]) {
-            return { ...msg, text: editedMessages[msg.messageId] };
-          }
-          return msg;
-        });
-
-      dispatch(setMessages(filteredAndEdited));
+      dispatch(setMessages(data));
     } catch (error) {
       console.error('Failed to fetch messages:', error);
     }
   };
 
-  const handleEditMessage = (messageId: number, newText: string) => {
+  const handleEditMessage = async (messageId: number, newText: string) => {
     try {
-      const editedMessagesStr = localStorage.getItem('edited_messages') || '{}';
-      const editedMessages = JSON.parse(editedMessagesStr);
-      editedMessages[messageId] = newText;
-      localStorage.setItem('edited_messages', JSON.stringify(editedMessages));
+      await chatService.updateMessage(messageId, newText);
       fetchMessages();
     } catch (e) {
       console.error('Failed to edit message:', e);
     }
   };
 
-  const handleDeleteMessage = (messageId: number) => {
+  const handleDeleteMessage = async (messageId: number) => {
     try {
-      const deletedMessagesStr = localStorage.getItem('deleted_messages') || '[]';
-      const deletedMessages = JSON.parse(deletedMessagesStr);
-      if (!deletedMessages.includes(messageId)) {
-        deletedMessages.push(messageId);
-      }
-      localStorage.setItem('deleted_messages', JSON.stringify(deletedMessages));
+      await chatService.deleteMessage(messageId);
       fetchMessages();
     } catch (e) {
       console.error('Failed to delete message:', e);
@@ -239,10 +201,10 @@ export const useChatForm = () => {
       }
 
       const client = stompClientRef.current;
-      if (client && isConnected) {
+      if (client && isConnected && currentChatId !== null) {
         const payload = {
-          receiverUserName: targetUserName,
-          chatId: currentChatId !== null ? currentChatId : undefined,
+          senderId: user.userId,
+          chatId: currentChatId,
           text: text
         };
         console.log('[WebSocket] Publishing send message payload:', payload);
