@@ -116,10 +116,10 @@ public class UserProfileService {
         List<FollowResponse> followers = new ArrayList<>();
         for(Follow follow : follows){
             FollowResponse response = new FollowResponse();
-            response.setUserName(follow.getFollower().getUserName()); //todo сделать проверку на наличие авы
+            response.setUserName(follow.getFollower().getUserName());
             String avatarFileName = follow.getFollower().getUserProfile().getAvatarFileName();
             if(avatarFileName != null) {
-                response.setFileURL(avatarFileName);
+                response.setFileURL(minioService.getFileURL(avatarFileName));
             }
             followers.add(response);
         }
@@ -132,10 +132,10 @@ public class UserProfileService {
         List<FollowResponse> followings = new ArrayList<>();
         for(Follow follow : follows){
             FollowResponse response = new FollowResponse();
-            response.setUserName(follow.getFollowing().getUserName());//todo сделать проверку на наличие авы
+            response.setUserName(follow.getFollowing().getUserName());
             String avatarFileName = follow.getFollowing().getUserProfile().getAvatarFileName();
             if(avatarFileName != null) {
-                response.setFileURL(avatarFileName);
+                response.setFileURL(minioService.getFileURL(avatarFileName));
             }
             followings.add(response);
         }

@@ -29,4 +29,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             LEFT JOIN FETCH u.userProfile
             """)
     List<Post> findAllPosts();
+
+    @Modifying
+    @Query("UPDATE Post p Set p.commentsCount = p.commentsCount + 1 WHERE p.id = :postId")
+    void incrementCommentsCount(@Param("postId") Long postId);
+
+    @Modifying
+    @Query("UPDATE Post p Set p.commentsCount = p.commentsCount - 1 WHERE p.id = :postId")
+    void decrementCommentsCount(@Param("postId") Long postId);
 }

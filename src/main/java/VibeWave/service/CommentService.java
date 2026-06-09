@@ -33,6 +33,7 @@ public class CommentService {
         comment.setUser(user);
         comment.setText(text);
         commentRepository.save(comment);
+        postRepository.incrementCommentsCount(postId);
     }
 
     //todo сделать функцию для получения всех комментиариев. Особенность в том, что мой коммент должен быть всегда вверху.
@@ -50,6 +51,7 @@ public class CommentService {
     public void deleteComment(Long commentId){
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Комментарий не найден"));
+        postRepository.decrementCommentsCount(comment.getPost().getPostId());
         commentRepository.delete(comment);
     }
 
