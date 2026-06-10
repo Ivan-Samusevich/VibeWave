@@ -10,7 +10,7 @@ interface PostActionsProps {
   onSave: () => void;
 }
 
-export const PostActions: React.FC<PostActionsProps> = ({
+export const PostActions: React.FC<PostActionsProps> = React.memo(({
   isLiked,
   isSaved,
   commentsCount,
@@ -53,4 +53,6 @@ export const PostActions: React.FC<PostActionsProps> = ({
       </div>
     </div>
   );
-};
+});
+
+PostActions.displayName = 'PostActions';

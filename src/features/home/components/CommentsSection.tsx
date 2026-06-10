@@ -10,7 +10,7 @@ interface CommentsSectionProps {
   onToggleComments: () => void;
 }
 
-export const CommentsSection: React.FC<CommentsSectionProps> = ({
+export const CommentsSection: React.FC<CommentsSectionProps> = React.memo(({
   postId,
   commentsCount,
   commentInput,
@@ -51,4 +51,6 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
       </div>
     </div>
   );
-};
+});
+
+CommentsSection.displayName = 'CommentsSection';

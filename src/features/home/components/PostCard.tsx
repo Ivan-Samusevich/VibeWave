@@ -37,12 +37,12 @@ interface PostCardProps {
   isExpanded: boolean;
   editingCommentId: number | null;
   editCommentText: string;
-  onDeletePost: (id: number) => void;
-  onToggleLike: (id: number) => void;
-  onToggleSave: (id: number) => void;
-  onToggleComments: (id: number) => void;
-  onCommentChange: (id: number, text: string) => void;
-  onAddComment: (id: number) => void;
+  onDeletePost: (posId: number) => void;
+  onToggleLike: (postId: number) => void;
+  onToggleSave: (postId: number) => void;
+  onToggleComments: (postId: number) => void;
+  onCommentChange: (postId: number, text: string) => void;
+  onAddComment: (postId: number) => void;
   onStartEditComment: (commentId: number, text: string) => void;
   onCancelEditComment: () => void;
   onSaveEditedComment: (postId: number, commentId: number) => void;
@@ -50,7 +50,7 @@ interface PostCardProps {
   setEditCommentText: (text: string) => void;
 }
 
-export const PostCard: React.FC<PostCardProps> = ({
+export const PostCard: React.FC<PostCardProps> = React.memo(({
   post,
   currentUser,
   commentInput,
@@ -124,4 +124,6 @@ export const PostCard: React.FC<PostCardProps> = ({
       </Card>
     </motion.div>
   );
-};
+});
+
+PostCard.displayName = 'PostCard';

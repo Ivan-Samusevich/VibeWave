@@ -9,7 +9,7 @@ interface PostHeaderProps {
   onDelete: () => void;
 }
 
-export const PostHeader: React.FC<PostHeaderProps> = ({ userName, avatarURL, isOwner, onDelete }) => {
+export const PostHeader: React.FC<PostHeaderProps> = React.memo(({ userName, avatarURL, isOwner, onDelete }) => {
   return (
     <div className="flex items-center justify-between p-4">
       <Link to={`/profile/${userName}`} className="flex items-center gap-3 group">
@@ -41,4 +41,6 @@ export const PostHeader: React.FC<PostHeaderProps> = ({ userName, avatarURL, isO
       )}
     </div>
   );
-};
+});
+
+PostHeader.displayName = 'PostHeader';

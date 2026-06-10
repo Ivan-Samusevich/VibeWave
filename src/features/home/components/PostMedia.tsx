@@ -5,7 +5,7 @@ interface PostMediaProps {
   mediaType: 'image' | 'video' | string;
 }
 
-export const PostMedia: React.FC<PostMediaProps> = ({ mediaUrl, mediaType }) => {
+export const PostMedia: React.FC<PostMediaProps> = React.memo(({ mediaUrl, mediaType }) => {
   return (
     <div className="aspect-square bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center overflow-hidden">
       {mediaType === 'video' ? (
@@ -27,4 +27,6 @@ export const PostMedia: React.FC<PostMediaProps> = ({ mediaUrl, mediaType }) => 
       )}
     </div>
   );
-};
+});
+
+PostMedia.displayName = 'PostMedia';
