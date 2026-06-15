@@ -7,22 +7,57 @@ export interface User {
   updatedAt?: string;
 }
 
-export interface UserProfile {
-  userProfileId: number;
+export interface UserProfileResponse {
+  userName: string;
+  postCount: number;
+  followerCount: number;
+  followingCount: number;
   description?: string;
-  avatar_url?: string;
-  is_active: boolean;
+  fileURL?: string;
+  createdAt?: string;
+  isFollowing?: boolean;
 }
 
-export interface Post {
-  postId: number;
+export interface UserResponse {
+  userName: string;
+  fileURL?: string;
+  accessToken?: string;
+  refreshToken?: string;
+}
+
+export interface AuthResponse {
   userId: number;
-  caption: string;
-  location?: string;
-  createdAt: string;
-  updatedAt?: string;
-  media?: Media[];
-  user?: User;
+  userName: string;
+  accessToken: string;
+}
+
+export interface FollowResponse {
+  userName: string;
+  fileURL?: string;
+}
+
+export interface PostResponse {
+  id: number;
+  userName: string;
+  text: string;
+  likesCount: number;
+  likeStatus?: boolean;
+  isLiked?: boolean;
+  imageURL: string;
+  fileType: 'image' | 'video' | string;
+  avatarURL?: string;
+  isSaved?: boolean;
+  commentsCount?: number;
+  createdAt?: string;
+}
+
+export interface CommentResponse {
+  commentId: number;
+  userName: string;
+  text: string;
+  avatarURL?: string;
+  userAvatarUrl?: string;
+  createdAt?: string;
 }
 
 export interface Media {
@@ -33,14 +68,28 @@ export interface Media {
   createdAt: string;
 }
 
-export interface Comment {
-  commentId: number;
-  postId: number;
-  userId: number;
-  parentId?: number;
-  content: string;
+export interface ChatResponse {
+  chatId: number;
+  userName: string;
+}
+
+export interface MessageResponse {
+  messageId: number;
+  userName: string;
+  text: string;
   createdAt: string;
-  user?: User;
+  updatedAt?: string;
+}
+
+export interface SendMessageRequest {
+  senderId?: number;
+  chatId: number;
+  text: string;
+}
+
+export interface UpdateMessageRequest {
+  messageId: number;
+  newText: string;
 }
 
 export interface ApiError {

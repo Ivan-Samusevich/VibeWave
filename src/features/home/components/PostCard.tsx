@@ -1,0 +1,129 @@
+import React from 'react';
+import { motion } from 'motion/react';
+import { Link } from 'react-router-dom';
+import { Card } from '../../../components/Card';
+import { PostHeader } from './PostHeader';
+import { PostMedia } from './PostMedia';
+import { PostActions } from './PostActions';
+import { CommentsSection } from './CommentsSection';
+
+interface Comment {
+  id: number;
+  userName: string;
+  avatarURL?: string;
+  text: string;
+  createdAt?: string;
+}
+
+interface Post {
+  id: number;
+  userName: string;
+  avatarURL?: string;
+  mediaUrl: string;
+  mediaType: string;
+  text: string;
+  likes: number;
+  isLiked: boolean;
+  isSaved: boolean;
+  timeAgo: string;
+  comments: Comment[];
+  commentsCount?: number;
+}
+
+interface PostCardProps {
+  post: Post;
+  currentUser: { userName: string } | null;
+  commentInput: string;
+  isExpanded: boolean;
+  editingCommentId: number | null;
+  editCommentText: string;
+  onDeletePost: (posId: number) => void;
+  onToggleLike: (postId: number) => void;
+  onToggleSave: (postId: number) => void;
+  onToggleComments: (postId: number) => void;
+  onCommentChange: (postId: number, text: string) => void;
+  onAddComment: (postId: number) => void;
+  onStartEditComment: (commentId: number, text: string) => void;
+  onCancelEditComment: () => void;
+  onSaveEditedComment: (postId: number, commentId: number) => void;
+  onDeleteComment: (postId: number, commentId: number) => void;
+  setEditCommentText: (text: string) => void;
+}
+
+export const PostCard: React.FC<PostCardProps> = React.memo(({
+  post,
+  currentUser,
+  commentInput,
+  isExpanded,
+  editingCommentId,
+  editCommentText,
+  onDeletePost,
+  onToggleLike,
+  onToggleSave,
+  onToggleComments,
+  onCommentChange,
+  onAddComment,
+  onStartEditComment,
+  onCancelEditComment,
+  onSaveEditedComment,
+  onDeleteComment,
+  setEditCommentText,
+}) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <Card className="p-0 overflow-hidden border-zinc-200 dark:border-zinc-800">
+        <PostHeader 
+          userName={post.userName}
+          avatarURL={post.avatarURL}
+          isOwner={currentUser?.userName === post.userName}
+          onDelete={() => onDeletePost(post.id)}
+        />
+        
+        <PostMedia 
+          mediaUrl={post.mediaUrl}
+          mediaType={post.mediaType}
+        />
+
+        <div className="p-4 space-y-3">
+          <PostActions 
+            isLiked={post.isLiked}
+            isSaved={post.isSaved}
+            commentsCount={post.commentsCount !== undefined ? post.commentsCount : post.comments.length}
+            onLike={() => onToggleLike(post.id)}
+            onToggleComments={() => onToggleComments(post.id)}
+            onSave={() => onToggleSave(post.id)}
+          />
+          
+          <div className="space-y-1">
+            <p className="text-sm font-semibold dark:text-zinc-100">
+              {post.likes.toLocaleString()} отметок «Нравится»
+            </p>
+            <p className="text-sm dark:text-zinc-300">
+              <Link to={`/profile/${post.userName}`} className="font-semibold mr-2 dark:text-zinc-100 hover:text-indigo-500 transition-colors">
+                {post.userName}
+              </Link>
+              {post.text}
+            </p>
+          </div>
+
+          <CommentsSection 
+            postId={post.id}
+            commentsCount={post.commentsCount !== undefined ? post.commentsCount : post.comments.length}
+            commentInput={commentInput}
+            onCommentChange={(text) => onCommentChange(post.id, text)}
+            onAddComment={() => onAddComment(post.id)}
+            onToggleComments={() => onToggleComments(post.id)}
+          />
+
+          <p className="text-[10px] text-zinc-400 uppercase tracking-wider">{post.timeAgo}</p>
+        </div>
+      </Card>
+    </motion.div>
+  );
+});
+
+PostCard.displayName = 'PostCard';

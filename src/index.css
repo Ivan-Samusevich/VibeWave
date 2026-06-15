@@ -6,6 +6,31 @@
   --font-display: "Outfit", sans-serif;
 }
 
-body {
-  @apply bg-zinc-50 text-zinc-900 antialiased;
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* CSS переменные для тем */
+:root {
+  --bg-primary: #fafafa; 
+  --text-primary: #18181b; 
+  color-scheme: light;
+}
+
+.dark {
+  --bg-primary: #09090b; 
+  --text-primary: #fafafa; 
+  color-scheme: dark;
+}
+
+/* Базовые стили */
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.2s, color 0.2s;
+  }
 }
