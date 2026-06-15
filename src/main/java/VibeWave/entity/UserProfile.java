@@ -23,7 +23,4 @@ public class UserProfile {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_profile_id")
     private User user;
-
-    //private boolean isActive;
-
 }

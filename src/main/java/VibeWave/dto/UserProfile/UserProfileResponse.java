@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class UserProfileResponce {
+public class UserProfileResponse {
 
     private String userName;
     private String fileURL;

@@ -7,9 +7,9 @@ spring:
   application:
     name: VibeWave
   datasource:
-    url:  jdbc:postgresql://localhost:5432/VibeWave
-    username: postgres
-    password: gfhjkm12
+    url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:VibeWave}
+    username: ${PGUSER:postgres}
+    password: ${PGPASSWORD:gfhjkm12}
   jpa:
     hibernate:
       show-sql: true

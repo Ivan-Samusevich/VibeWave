@@ -36,8 +36,6 @@ public class CommentService {
         postRepository.incrementCommentsCount(postId);
     }
 
-    //todo сделать функцию для получения всех комментиариев. Особенность в том, что мой коммент должен быть всегда вверху.
-
     @Transactional
     public void updateComment(Long commentId, UpdateCommentRequest updateCommentRequest){ //todo перекинуть id в request
         String text = updateCommentRequest.getText();

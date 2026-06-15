@@ -2,10 +2,9 @@ package VibeWave.controller;
 
 
 import VibeWave.dto.UserDto;
-import VibeWave.dto.UserProfile.UserProfileResponce;
+import VibeWave.dto.UserProfile.UserProfileResponse;
 import VibeWave.dto.follow.FollowResponse;
 import VibeWave.dto.post.PostResponse;
-import VibeWave.dto.user.UserResponse;
 import VibeWave.service.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,7 +21,7 @@ public class UserProfileController {
 
 
     @GetMapping("/showUserProfile")
-    public UserProfileResponce showUserProfile(@RequestParam String userName){ //todo переделать под pathVariable
+    public UserProfileResponse showUserProfile(@RequestParam String userName){ //todo переделать под pathVariable
         return userProfileService.showUserProfile(userName);
     }
 
@@ -30,6 +29,11 @@ public class UserProfileController {
     @GetMapping("/showUserPosts")
     public List<PostResponse> showUserPosts(@RequestParam String userName){
         return userProfileService.showUserPosts(userName);
+    }
+
+    @GetMapping("/searchUser/{searchText}")
+    public List<UserProfileResponse> searchUser(@PathVariable String searchText){
+        return userProfileService.searchUser(searchText);
     }
 
     @GetMapping("/showSavedPosts")

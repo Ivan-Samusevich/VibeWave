@@ -25,7 +25,6 @@ public class Comment {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    //private Long parentId; //todo в перспективе это надо для написания комментария под комментарием
     private String text;
 
     @CreationTimestamp
@@ -35,5 +34,4 @@ public class Comment {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
 }

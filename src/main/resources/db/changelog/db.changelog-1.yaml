@@ -369,12 +369,12 @@ databaseChangeLog:
                       type: timestamp
                       constraints:
                         nullable: false
-                  - addForeignKeyConstraint:
-                      constraintName: fk_messages_user
-                      baseTableName: messages
-                      baseColumnNames: sender_id
-                      referencedTableName: users
-                      referencedColumnNames: user_id
+          - addForeignKeyConstraint:
+              constraintName: fk_messages_user
+              baseTableName: messages
+              baseColumnNames: sender_id
+              referencedTableName: users
+              referencedColumnNames: user_id
   - changeSet:
       id: create-chat-table
       author: Ivan_Samusevich

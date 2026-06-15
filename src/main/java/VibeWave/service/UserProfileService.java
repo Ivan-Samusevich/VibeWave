@@ -1,6 +1,6 @@
 package VibeWave.service;
 
-import VibeWave.dto.UserProfile.UserProfileResponce;
+import VibeWave.dto.UserProfile.UserProfileResponse;
 import VibeWave.dto.follow.FollowResponse;
 import VibeWave.dto.post.PostResponse;
 
@@ -26,7 +26,6 @@ public class UserProfileService {
     private final SavedPostRepository savedPostRepository;
 
 
-    //todo Надо будет объеденить 2 метода на изменение профиля
     public void changeUserAvatarImage(Long userId, MultipartFile file){
         UserProfile userProfile = userProfileRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
@@ -45,20 +44,32 @@ public class UserProfileService {
         userProfileRepository.save(userProfile);
     }
 
-    public UserProfileResponce showUserProfile(String userName){
+    public UserProfileResponse showUserProfile(String userName){
         User user = userRepository.findByUserName(userName);
         UserProfile userProfile = user.getUserProfile();
-        UserProfileResponce userProfileResponce = new UserProfileResponce();
-        userProfileResponce.setUserName(userName);
+        UserProfileResponse userProfileResponse = new UserProfileResponse();
+        userProfileResponse.setUserName(userName);
         if(userProfile.getAvatarFileName() != null){
-            userProfileResponce.setFileURL(minioService.getFileURL(userProfile.getAvatarFileName()));
+            userProfileResponse.setFileURL(minioService.getFileURL(userProfile.getAvatarFileName()));
         }
-        userProfileResponce.setDescription(userProfile.getDescription());
-        userProfileResponce.setPostCount(userProfile.getPostCount());
-        userProfileResponce.setFollowerCount(userProfile.getFollowerCount());
-        userProfileResponce.setFollowingCount(userProfile.getFollowingCount());
-        userProfileResponce.setCreatedAt(user.getCreatedAt());
-        return userProfileResponce;
+        userProfileResponse.setDescription(userProfile.getDescription());
+        userProfileResponse.setPostCount(userProfile.getPostCount());
+        userProfileResponse.setFollowerCount(userProfile.getFollowerCount());
+        userProfileResponse.setFollowingCount(userProfile.getFollowingCount());
+        userProfileResponse.setCreatedAt(user.getCreatedAt());
+        return userProfileResponse;
+    }
+
+    public List<UserProfileResponse> searchUser(String searchText){
+        List<User> searchUsers = userRepository.findByUserNameContainingIgnoreCase(searchText);
+        List<UserProfileResponse> responses = new ArrayList<>();
+        for(User searchUser: searchUsers){
+            UserProfileResponse response = new UserProfileResponse();
+            response.setUserName(searchUser.getUserName());
+            response.setFileURL(searchUser.getUserProfile().getAvatarFileName());
+            responses.add(response);
+        }
+        return responses;
     }
 
     public List<PostResponse> showUserPosts(String userName){
@@ -80,7 +91,7 @@ public class UserProfileService {
 
     public List<PostResponse> showSavedPosts(String userName){
         User user = userRepository.findByUserName(userName);
-        List<SavedPost> savedPosts = savedPostRepository.findAllSavedPostsByUser(user); //todo Будет ли показывать чужие сохранения
+        List<SavedPost> savedPosts = savedPostRepository.findAllSavedPostsByUser(user);
         List<PostResponse> postResponses = new ArrayList<>();
         for(SavedPost savedPost: savedPosts){
             PostResponse postResponse = new PostResponse();
