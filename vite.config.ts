@@ -16,7 +16,7 @@ export default defineConfig(({mode}) => {
       hmr: process.env.DISABLE_HMR !== 'true',
       proxy: {
         '/api': {
-          target: 'http://localhost:8080',
+          target: 'https://vibewave-production-9a49.up.railway.app',
           changeOrigin: true,
           secure: false,
         },
