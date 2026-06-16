@@ -27,7 +27,7 @@ jwt:
   accessExpirationTime: 900000 #15 минут
   refreshExpirationTime: 604800000 #1 неделя
 minio:
-  url: http://localhost:9000
-  accessKey: admin
-  secretKey: password
-  bucket: user-media
+  url: ${MINIO_URL:http://localhost:9000}
+  accessKey: ${MINIO_USER:admin}
+  secretKey: ${MINIO_PASSWORD:password}
+  bucket: ${MINIO_BUCKET:user-media}

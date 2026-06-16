@@ -39,6 +39,7 @@ public class PostService {
             postRepository.save(post);
             answer = "Пост создан";
             String fileName = minioService.uploadFileFromPost(file, post.getPostId());
+            System.out.println(fileName);
             post.setFileName(fileName);
             postRepository.save(post);
         }
@@ -81,6 +82,7 @@ public class PostService {
             postResponse.setScore(post.getLikesCount() * 2 + post.getCommentsCount() * 5); // Лайк - 2 очка, комментарий - 4 очка
             postResponse.setCreatedAt(post.getCreatedAt());
             postResponses.add(postResponse);
+            System.out.println(minioService.getFileURL(post.getFileName()));
         }
         postResponses.sort(Comparator.comparing(PostResponse::getScore).reversed());
         return postResponses;
