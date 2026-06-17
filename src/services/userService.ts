@@ -51,4 +51,99 @@ export const userService = {
     const response = await api.get<UserResponse[]>(`/userProfile/showFollowing/${username}`);
     return response.data;
   },
+
+  searchUsers: async (query: string, currentUsername?: string): Promise<UserResponse[]> => {
+    if (!query.trim()) return [];
+    
+    try {
+      const response = await api.get<UserProfileResponse[]>(`/userProfile/searchUser/${encodeURIComponent(query.trim())}`);
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        return response.data.map(u => {
+          let fileURLResult = u.fileURL;
+          if (fileURLResult && !fileURLResult.startsWith('/api/media/') && !fileURLResult.startsWith('http')) {
+            fileURLResult = `/api/media/${fileURLResult}`;
+          }
+          return {
+            userName: u.userName,
+            fileURL: fileURLResult
+          };
+        });
+      }
+    } catch (e) {
+      console.warn('Failed searching users via /userProfile/searchUser, trying fallbacks', e);
+    }
+
+    try {
+      const response = await api.get<UserResponse[]>(`/userProfile/search?userName=${query}`);
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        return response.data;
+      }
+    } catch (e) {}
+
+    try {
+      const response = await api.get<UserProfileResponse>(`/userProfile/showUserProfile?userName=${query}`);
+      if (response.data && response.data.userName) {
+        return [{
+          userName: response.data.userName,
+          fileURL: response.data.fileURL
+        }];
+      }
+    } catch (e) {}
+
+    try {
+      const harvestedUsersMap = new Map<string, string | undefined>();
+      const trimmedQuery = query.trim().toLowerCase();
+
+      if (currentUsername) {
+        harvestedUsersMap.set(currentUsername.toLowerCase(), undefined);
+      }
+
+      try {
+        const postsRes = await api.get<PostResponse[]>('/posts/getPosts');
+        if (Array.isArray(postsRes.data)) {
+          postsRes.data.forEach(p => {
+            if (p.userName) {
+              harvestedUsersMap.set(p.userName.toLowerCase(), p.avatarURL || p.imageURL);
+            }
+          });
+        }
+      } catch (postErr) {}
+
+      if (currentUsername) {
+        try {
+          const response = await api.get<UserResponse[]>(`/userProfile/showFollowers/${currentUsername}`);
+          if (Array.isArray(response.data)) {
+            response.data.forEach(f => {
+              if (f.userName) harvestedUsersMap.set(f.userName.toLowerCase(), f.fileURL);
+            });
+          }
+        } catch (fErr) {}
+
+        try {
+          const response = await api.get<UserResponse[]>(`/userProfile/showFollowing/${currentUsername}`);
+          if (Array.isArray(response.data)) {
+            response.data.forEach(f => {
+              if (f.userName) harvestedUsersMap.set(f.userName.toLowerCase(), f.fileURL);
+            });
+          }
+        } catch (fErr) {}
+      }
+
+      const matchedUsers: UserResponse[] = [];
+      for (const [uname, avatar] of harvestedUsersMap.entries()) {
+        if (uname.includes(trimmedQuery)) {
+          matchedUsers.push({
+            userName: uname,
+            fileURL: avatar
+          });
+        }
+      }
+
+      return matchedUsers;
+    } catch (generalErr) {
+      console.error('General search fallback error:', generalErr);
+    }
+
+    return [];
+  },
 };

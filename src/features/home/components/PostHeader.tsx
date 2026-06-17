@@ -36,7 +36,7 @@ export const PostHeader: React.FC<PostHeaderProps> = React.memo(({ userName, ava
           className="p-1 text-zinc-400 hover:text-red-500 transition-colors"
           title="Удалить публикацию"
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="cursor-pointer h-4 w-4" />
         </button>
       )}
     </div>

@@ -3,9 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { logout } from '../features/auth/authSlice';
-import { Button } from './Button';
-import { LogOut, User, Home, PlusSquare, Sun, Moon, MessageCircle } from 'lucide-react';
+import { LogOut, Home, PlusSquare, Sun, Moon, MessageCircle } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { UserSearchBar } from './UserSearchBar';
 
 interface NavbarProps {
   onAddPostClick?: () => void;
@@ -25,9 +25,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onAddPostClick }) => {
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80">
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
-        <Link to="/" className="text-2xl font-bold tracking-tight text-zinc-900 font-display dark:text-zinc-50">
+        <Link to="/" className="text-2xl font-bold tracking-tight text-zinc-900 font-display dark:text-zinc-50 shrink-0">
           VibeWave
         </Link>
+
+        <UserSearchBar />
 
         <div className="flex items-center gap-4">
           <Link to="/" className="p-2 text-zinc-600 hover:text-zinc-900 transition-colors dark:text-zinc-400 dark:hover:text-zinc-100">
@@ -60,10 +62,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onAddPostClick }) => {
             </Link>
             <button 
               onClick={handleLogout}
-              className="flex h-10 w-10 items-center justify-center cursor-pointer rounded-full bg-zinc-100 text-zinc-600 hover:bg-zinc-200 transition-colors dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-zinc-100"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 text-zinc-600 hover:bg-zinc-200 transition-colors dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-zinc-100"
               title="Выйти"
             >
-              <LogOut className="h-5 w-5" />
+              <LogOut className="cursor-pointer h-5 w-5" />
             </button>
           </div>
         </div>
