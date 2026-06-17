@@ -11,7 +11,7 @@ interface ChatMessageItemProps {
   onDelete: (messageId: number) => void;
 }
 
-export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ 
+export const ChatMessageItem: React.FC<ChatMessageItemProps> = React.memo(({ 
   message, 
   currentUser,
   onEdit,
@@ -116,4 +116,6 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
       </div>
     </motion.div>
   );
-};
+});
+
+ChatMessageItem.displayName = 'ChatMessageItem';

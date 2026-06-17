@@ -8,7 +8,7 @@ interface ChatSidebarProps {
   onChatClick: (userName: string) => void;
 }
 
-export const ChatSidebar: React.FC<ChatSidebarProps> = ({
+export const ChatSidebar: React.FC<ChatSidebarProps> = React.memo(({
   chats,
   chatsLoading,
   targetUserName,
@@ -58,4 +58,6 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
       </div>
     </aside>
   );
-};
+});
+
+ChatSidebar.displayName = 'ChatSidebar';

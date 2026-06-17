@@ -10,7 +10,7 @@ interface ChatInputProps {
   loading: boolean;
 }
 
-export const ChatInput: React.FC<ChatInputProps> = ({ input, setInput, onSendMessage, loading }) => {
+export const ChatInput: React.FC<ChatInputProps> = React.memo(({ input, setInput, onSendMessage, loading }) => {
   return (
     <div className="p-4 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800">
       <form onSubmit={onSendMessage} className="flex gap-2 items-end max-w-4xl mx-auto">
@@ -33,4 +33,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({ input, setInput, onSendMes
       </form>
     </div>
   );
-};
+});
+
+ChatInput.displayName = 'ChatInput';
