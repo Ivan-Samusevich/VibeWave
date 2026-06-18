@@ -22,7 +22,7 @@ public class MinioService {
 
     public String uploadFileFromPost(MultipartFile file, Long postId){
         try{
-            String fileName = "post/" + "File_to_post:" + postId + "/" + UUID.randomUUID() + file.getOriginalFilename();
+            String fileName = "post/" + "File-to-post-number-" + postId + "/" + UUID.randomUUID() + file.getOriginalFilename();
             minioClient.putObject(
                     PutObjectArgs.builder()
                             .bucket(bucket)
@@ -41,7 +41,7 @@ public class MinioService {
 
     public String uploadFileFromUserProfile(MultipartFile file, Long userId){
         try{
-            String fileName = "avatars/" + "Аватар пользователя по номеру: " + userId + "/" + file.getOriginalFilename();
+            String fileName = "avatars/" + "Avatar-to-user-number-" + userId + "/" + file.getOriginalFilename();
             minioClient.putObject(
                     PutObjectArgs.builder()
                             .bucket(bucket)
