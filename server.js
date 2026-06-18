@@ -30,10 +30,8 @@ app.use('/ws', createProxyMiddleware({
   secure: false,
 }));
 
-// Раздаем статику фронтенда
 app.use(express.static(path.join(__dirname, 'dist')));
 
-// Все остальные запросы отдаем на index.html
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
