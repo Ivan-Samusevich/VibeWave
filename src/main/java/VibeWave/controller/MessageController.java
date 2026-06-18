@@ -11,6 +11,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/message")
 @RequiredArgsConstructor
+@CrossOrigin(
+        origins = "https://innovative-determination-production-d7c1.up.railway.app",
+        allowCredentials = "true"
+)
 public class MessageController {
 
     private final MessageService messageService;

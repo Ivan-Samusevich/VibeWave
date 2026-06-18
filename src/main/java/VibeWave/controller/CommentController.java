@@ -14,6 +14,10 @@ import java.util.List;
 @RestController
 @RequestMapping("api/comments")
 @RequiredArgsConstructor
+@CrossOrigin(
+        origins = "https://innovative-determination-production-d7c1.up.railway.app",
+        allowCredentials = "true"
+)
 public class CommentController {
 
     private final CommentService commentService;

@@ -7,9 +7,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @Controller
 @RequiredArgsConstructor
+@CrossOrigin(
+        origins = "https://innovative-determination-production-d7c1.up.railway.app",
+        allowCredentials = "true"
+)
 public class ChatSocketController {
 
     private final MessageService messageService;

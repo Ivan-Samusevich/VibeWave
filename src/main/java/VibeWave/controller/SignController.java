@@ -18,6 +18,10 @@ import java.time.Duration;
 @RestController
 @RequestMapping("api/users")
 @RequiredArgsConstructor
+@CrossOrigin(
+        origins = "https://innovative-determination-production-d7c1.up.railway.app",
+        allowCredentials = "true"
+)
 public class SignController {
     private final SignService signService;
 

@@ -11,6 +11,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/chat")
 @RequiredArgsConstructor
+@CrossOrigin(
+        origins = "https://innovative-determination-production-d7c1.up.railway.app",
+        allowCredentials = "true"
+)
 public class ChatController {
 
     private final ChatService chatService;

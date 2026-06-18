@@ -13,6 +13,10 @@ import java.util.List;
 @RestController
 @RequestMapping("api/posts")
 @RequiredArgsConstructor
+@CrossOrigin(
+        origins = "https://innovative-determination-production-d7c1.up.railway.app",
+        allowCredentials = "true"
+)
 public class PostController {
     
     private final PostService postService;
