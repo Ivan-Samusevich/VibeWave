@@ -32,7 +32,7 @@ export const useChatForm = () => {
     }
 
     
-    const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:8080/ws';
+    const wsUrl = import.meta.env.VITE_WS_URL || 'wss://vibewave-production-9a49.up.railway.app/ws';
 
     console.log('[WebSocket] Connecting Client to:', wsUrl);
 
