@@ -21,12 +21,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("UPDATE Post p SET p.likesCount = p.likesCount - 1 WHERE p.id = :postId")
     void decrementLikesCount(@Param("postId") Long postId);
 
-    List<Post> findAllByUser(User user);
+    List<Post> findAllByUserAndIsDeletedFalse(User user);
 
     @Query("""
             SELECT p FROM Post p
             JOIN FETCH p.user u
             LEFT JOIN FETCH u.userProfile
+            WHERE p.isDeleted = false
             """)
     List<Post> findAllPosts();
 

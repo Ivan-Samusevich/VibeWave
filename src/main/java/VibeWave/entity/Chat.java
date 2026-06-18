@@ -17,8 +17,13 @@ public class Chat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long chatId;
 
-    private Long firstUserId;
-    private Long secondUserId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "first_user_id")
+    private User firstUser;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "second_user_id")
+    private User secondUser;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

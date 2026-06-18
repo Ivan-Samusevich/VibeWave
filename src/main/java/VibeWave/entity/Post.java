@@ -26,8 +26,8 @@ public class Post {
     private String fileName;
     private String text;
     private Long likesCount;
-    //todo Добавить потом хэштеги.
     private Long commentsCount;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -36,4 +36,5 @@ public class Post {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    private boolean isDeleted;
 }

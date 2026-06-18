@@ -11,6 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ChatResponse {
     private Long chatId;
-
+    private String fileName;
     private String userName;
 }

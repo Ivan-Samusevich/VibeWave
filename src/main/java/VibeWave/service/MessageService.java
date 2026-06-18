@@ -19,7 +19,6 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
-    private final ChatService chatService;
 
     public List<MessageResponse> getMessages(Long chatId){
         List<Message> messages = messageRepository.findByChatIdOrderByCreatedAtAsc(chatId);

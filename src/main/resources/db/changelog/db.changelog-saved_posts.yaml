@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-saved_posts-table
+      author: Ivan_Samusevich
+      comment: create saved_posts table
+      changes:
+        - createTable:
+            tableName: saved_posts
+            columns:
+              - column:
+                  name: save_post_id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: post_id
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: create-fk-saved_posts-with-posts-and-users
+      author: Ivan_Samusevich
+      comment: create fk saved posts with posts and users
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_saved-posts_post
+            baseTableName: saved_posts
+            baseColumnNames: post_id
+            referencedTableName: posts
+            referencedColumnNames: post_id
+        - addForeignKeyConstraint:
+            constraintName: fk_saved-posts_user
+            baseTableName: saved_posts
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: user_id

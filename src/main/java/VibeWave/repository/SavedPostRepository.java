@@ -20,8 +20,9 @@ public interface SavedPostRepository extends JpaRepository<SavedPost, Long> {
 
     @Query("""
             SELECT sp FROM SavedPost sp
-            JOIN FETCH sp.user u
+            JOIN FETCH sp.post p
             WHERE sp.user = :user
+            AND p.isDeleted = false
             """)
     List<SavedPost> findAllSavedPostsByUser(@Param("user") User user);
 

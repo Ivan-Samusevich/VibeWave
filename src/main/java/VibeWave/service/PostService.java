@@ -39,7 +39,6 @@ public class PostService {
             postRepository.save(post);
             answer = "Пост создан";
             String fileName = minioService.uploadFileFromPost(file, post.getPostId());
-            System.out.println(fileName);
             post.setFileName(fileName);
             postRepository.save(post);
         }
@@ -64,7 +63,12 @@ public class PostService {
         for(Post post : posts){
             PostResponse postResponse = new PostResponse();
             postResponse.setId(post.getPostId());
-            postResponse.setUserName(post.getUser().getUserName());
+            postResponse.setUserId(post.getUser().getUserId());
+            if(post.getUser().isDeleted()){
+                postResponse.setUserName("User is Deleted");
+            } else {
+                postResponse.setUserName(post.getUser().getUserName());
+            }
             String avatarFileName = post.getUser().getUserProfile().getAvatarFileName();
             if(avatarFileName != null) {
                 postResponse.setAvatarURL(minioService.getFileURL(avatarFileName));
@@ -75,14 +79,12 @@ public class PostService {
 
             postResponse.setLiked(likedPosts.contains(post.getPostId()));
 
-
             postResponse.setSaved(savedPosts.contains(post.getPostId()));
             postResponse.setImageURL(minioService.getFileURL(post.getFileName()));
             postResponse.setFileType(fileTypeDetect(post.getFileName()));
             postResponse.setScore(post.getLikesCount() * 2 + post.getCommentsCount() * 5); // Лайк - 2 очка, комментарий - 4 очка
             postResponse.setCreatedAt(post.getCreatedAt());
             postResponses.add(postResponse);
-            System.out.println(minioService.getFileURL(post.getFileName()));
         }
         postResponses.sort(Comparator.comparing(PostResponse::getScore).reversed());
         return postResponses;
@@ -92,8 +94,8 @@ public class PostService {
     public void deletePost(Long postId, Long userId){
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Пост не найден"));
-        minioService.deleteFileFromMinio(post.getFileName());
-        postRepository.delete(post);
+        post.setDeleted(true);
+        postRepository.save(post);
         userProfileRepository.decrementPostCount(userId);
     }
 
@@ -105,7 +107,6 @@ public class PostService {
         boolean isSaved = savedPostRepository.existsByUserAndPost(user, post);
         if(!isSaved){
             SavedPost savedPost = new SavedPost();
-            //todo разобраться с тем, как сделать так, чтобы отображался статус сохранения(Есть он или нет)
 
             savedPost.setUser(user);
 

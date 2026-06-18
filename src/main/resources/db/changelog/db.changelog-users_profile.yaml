@@ -1,0 +1,43 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-userProfile-table
+      author: Ivan_Samusevich
+      comment: create userProfile table
+      changes:
+        - createTable:
+            tableName: users_profile
+            columns:
+              - column:
+                  name: user_profile_id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: avatar_file_name
+                  type: varchar(100)
+              - column:
+                  name: post_count
+                  type: int
+                  defaultValue: 0
+              - column:
+                  name: follower_count
+                  type: int
+                  defaultValue: 0
+              - column:
+                  name: following_count
+                  type: int
+                  defaultValue: 0
+              - column:
+                  name: is_active
+                  type: boolean
+        - addForeignKeyConstraint:
+            constraintName: fk_users_profile_user
+            baseTableName: users_profile
+            baseColumnNames: user_profile_id
+            referencedTableName: users
+            referencedColumnNames: user_id

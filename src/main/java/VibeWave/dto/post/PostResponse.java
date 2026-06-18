@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class PostResponse {
     private Long id;
+    private Long userId;
     private String userName;
     private String avatarURL;
     private String text;

@@ -15,7 +15,7 @@ spring:
       show-sql: true
       generate-ddl: false
   liquibase:
-    change-log: classpath:db/changelog/db.changelog-1.yaml
+    change-log: classpath:db/changelog/db.changelog-master.yaml
     enabled: true
   servlet:
     multipart:

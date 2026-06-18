@@ -2,6 +2,7 @@ package VibeWave.service;
 
 import VibeWave.dto.chat.ChatResponse;
 import VibeWave.entity.Chat;
+import VibeWave.entity.User;
 import VibeWave.repository.ChatRepository;
 import VibeWave.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,47 +20,64 @@ public class ChatService {
 
 //    todo в перспективе сделать PageAble(это для того, чтобы из бд брать условно по 10 сообщений, остальные по мере необходимости будут подгружаться)
 
-    public Chat getOrCreateChat(Long myId, Long secondUserId){
+    public Chat getOrCreateChat(Long firstUserId, Long secondUserId){
 
-        Long firstId = Math.min(myId, secondUserId);
-        Long secondId = Math.max(myId, secondUserId);
+        Long firstId = Math.min(firstUserId, secondUserId);
+        Long secondId = Math.max(firstUserId, secondUserId);
 
-        Optional<Chat> optionalChat = chatRepository.findByFirstUserIdAndSecondUserId(firstId, secondId);
+        Optional<Chat> optionalChat = chatRepository.findByFirstUserUserIdAndSecondUserUserId(firstId, secondId);
 
         if(optionalChat.isPresent()){
             return optionalChat.get();
         }
 
         Chat chat = new Chat();
-        chat.setFirstUserId(firstId);
-        chat.setSecondUserId(secondId);
+        chat.setFirstUser(userRepository.findByUserId(firstId));
+        chat.setSecondUser(userRepository.findByUserId(secondId));
         return chatRepository.save(chat);
     }
 
     public ChatResponse openChat(Long myId, String userName){
-        Long secondUserId = userRepository.getIdByUsername(userName);
-        Long firstId = Math.min(myId, secondUserId);
-        Long secondId = Math.max(myId, secondUserId);
+        User currentUser = userRepository.findByUserId(myId);
+        User secondUser = userRepository.findByUserName(userName);
+
+        Long firstId = Math.min(currentUser.getUserId(), secondUser.getUserId());
+        Long secondId = Math.max(currentUser.getUserId(), secondUser.getUserId());
 
 
         Chat chat = getOrCreateChat(firstId, secondId);
-        return new ChatResponse(chat.getChatId(), userName);
+
+        String secondUserName;
+        if(secondUser.isDeleted()) {
+            secondUserName = "User is Deleted";
+        } else {
+            secondUserName = secondUser.getUserName();
+        }
+
+        return new ChatResponse(chat.getChatId(), secondUserName, secondUser.getUserProfile().getAvatarFileName());
     }
 
     public List<ChatResponse> getAllMyChats(Long myId){
 
-        List<Chat> chats = chatRepository.findByFirstUserIdOrSecondUserId(myId, myId);
+        List<Chat> chats = chatRepository.findByFirstUserUserIdOrSecondUserUserId(myId, myId);
         List<ChatResponse> responses = new ArrayList<>();
-        String userName;
+        User secondUser;
         for(Chat chat: chats){
-            if(chat.getFirstUserId().equals(myId)){
-                userName = userRepository.getUsernameById(chat.getSecondUserId());
+            if(chat.getFirstUser().getUserId().equals(myId)){
+                secondUser = userRepository.findByUserId(chat.getSecondUser().getUserId());
             } else {
-                userName = userRepository.getUsernameById(chat.getFirstUserId());
+                secondUser = userRepository.findByUserId(chat.getFirstUser().getUserId());
+            }
+            String secondUserName;
+            if(secondUser.isDeleted()) {
+                secondUserName = "User is Deleted";
+            } else {
+                secondUserName = secondUser.getUserName();
             }
             ChatResponse response = new ChatResponse();
             response.setChatId(chat.getChatId());
-            response.setUserName(userName);
+            response.setFileName(secondUser.getUserProfile().getAvatarFileName());
+            response.setUserName(secondUserName);
             responses.add(response);
         }
         return responses;

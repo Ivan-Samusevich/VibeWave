@@ -72,9 +72,17 @@ public class UserProfileService {
         return responses;
     }
 
+    @Transactional
+    public void deleteUser(Long userId){
+        User user = userRepository.findByUserId(userId);
+        user.setDeleted(true);
+        user.getUserProfile().setAvatarFileName("avatars/Deleted_User.png");
+        userRepository.save(user);
+    }
+
     public List<PostResponse> showUserPosts(String userName){
         User user = userRepository.findByUserName(userName);
-        List<Post> posts = postRepository.findAllByUser(user);
+        List<Post> posts = postRepository.findAllByUserAndIsDeletedFalse(user);
         List<PostResponse> postResponses = new ArrayList<>();
         for(Post post : posts){
             PostResponse postResponse = new PostResponse();
@@ -98,8 +106,12 @@ public class UserProfileService {
             postResponse.setId(savedPost.getPost().getPostId());
             Post post = postRepository.findById(savedPost.getPost().getPostId())
                     .orElseThrow(() -> new RuntimeException("Пост не найден"));
-            postResponse.setUserName(userRepository.getUsernameById(savedPost.getUser().getUserId()));
-            postResponse.setAvatarURL(userProfileRepository.findAvatarFileNameByUserProfileId(post.getUser().getUserId()));
+            if(savedPost.getPost().getUser().isDeleted()){
+                postResponse.setUserName("User is Deleted");
+            } else {
+                postResponse.setUserName(savedPost.getUser().getUserName());
+            }
+            postResponse.setAvatarURL(savedPost.getUser().getUserProfile().getAvatarFileName());
             postResponse.setText(post.getText());
             postResponse.setLikesCount(post.getLikesCount());
             postResponse.setImageURL(minioService.getFileURL(post.getFileName()));

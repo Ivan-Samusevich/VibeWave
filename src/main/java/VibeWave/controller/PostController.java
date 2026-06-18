@@ -30,7 +30,7 @@ public class PostController {
         return postService.getPosts(currentUser);
     }
 
-    @DeleteMapping("/deletePost/{postId}")
+    @PutMapping("/deletePost/{postId}")
     public void deletePost(@PathVariable Long postId,
                            @AuthenticationPrincipal UserDto currentUser){
         postService.deletePost(postId, currentUser.getUserId());
