@@ -62,7 +62,7 @@ public class MinioService {
 
     public String getFileURL(String fileName){
         try{
-            return "/api/media/" + fileName;
+            return "https://vibewave-production-9a49.up.railway.app/api/media/" + fileName;
         } catch (Exception e){
             throw new RuntimeException("Ошибка получения ссылки");
         }
