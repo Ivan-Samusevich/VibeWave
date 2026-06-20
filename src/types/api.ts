@@ -15,7 +15,7 @@ export interface UserProfileResponse {
   description?: string;
   fileURL?: string;
   createdAt?: string;
-  isFollowing?: boolean;
+  isFollow?: boolean;
 }
 
 export interface UserResponse {
@@ -71,6 +71,8 @@ export interface Media {
 export interface ChatResponse {
   chatId: number;
   userName: string;
+  avatarURL?: string;
+  fileName?: string;
 }
 
 export interface MessageResponse {

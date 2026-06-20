@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { RootState } from '../../../store';
 import { addMessage, setMessages } from '../chatSlice';
 import { chatService } from '../../../services/chatService';
+import { userService } from '../../../services/userService';
 import { ChatResponse } from '../../../types/api';
 import { Client } from '@stomp/stompjs';
 
@@ -99,7 +100,40 @@ export const useChatForm = () => {
     setChatsLoading(true);
     try {
       const data = await chatService.getAllMyChats();
-      setChats(data);
+      setChats(data.map(chat => {
+        if (chat.fileName) {
+          return {
+            ...chat,
+            avatarURL: chat.fileName.startsWith('http') || chat.fileName.startsWith('/api/')
+              ? chat.fileName
+              : `/api/media/${chat.fileName}`
+          };
+        }
+        return chat;
+      }));
+
+      const enriched = await Promise.all(
+        data.map(async (chat) => {
+          if (chat.fileName) {
+            return {
+              ...chat,
+              avatarURL: chat.fileName.startsWith('http') || chat.fileName.startsWith('/api/')
+                ? chat.fileName
+                : `/api/media/${chat.fileName}`
+            };
+          }
+          try {
+            const profile = await userService.getProfile(chat.userName);
+            return {
+              ...chat,
+              avatarURL: profile.fileURL
+            };
+          } catch (e) {
+            return chat;
+          }
+        })
+      );
+      setChats(enriched);
     } catch (error) {
       console.error('Failed to fetch chats:', error);
     } finally {

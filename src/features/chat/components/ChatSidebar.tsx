@@ -40,12 +40,22 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = React.memo(({
                     : 'hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300'
                 }`}
               >
-                <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm ${
-                  targetUserName === chat.userName
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-zinc-100 dark:bg-zinc-800'
-                }`}>
-                  {chat.userName.charAt(0).toUpperCase()}
+                <div className="h-10 w-10 rounded-full bg-linear-to-tr from-indigo-500 to-purple-500 p-0.5 shrink-0 flex items-center justify-center">
+                  {chat.avatarURL ? (
+                    <img
+                      src={chat.avatarURL}
+                      alt={chat.userName}
+                      className="h-full w-full rounded-full object-cover border border-white dark:border-zinc-900"
+                    />
+                  ) : (
+                    <div className={`h-full w-full rounded-full flex items-center justify-center font-bold text-sm ${
+                      targetUserName === chat.userName
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-zinc-100 dark:bg-zinc-800 dark:text-zinc-300'
+                    }`}>
+                      {chat.userName.charAt(0).toUpperCase()}
+                    </div>
+                  )}
                 </div>
                 <div className="flex-1 text-left min-w-0">
                   <p className="font-bold truncate">{chat.userName}</p>
