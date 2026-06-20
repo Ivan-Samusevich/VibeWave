@@ -18,4 +18,5 @@ public class UserProfileResponse {
     private Long followerCount;
     private Long followingCount;
     private LocalDateTime createdAt;
+    private boolean isFollow;
 }

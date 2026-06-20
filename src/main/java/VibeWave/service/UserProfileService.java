@@ -44,8 +44,9 @@ public class UserProfileService {
         userProfileRepository.save(userProfile);
     }
 
-    public UserProfileResponse showUserProfile(String userName){
+    public UserProfileResponse showUserProfile(String userName, Long myId){
         User user = userRepository.findByUserName(userName);
+        boolean isFollow = followRepository.existsByFollowerUserIdAndFollowingUserId(myId, user.getUserId());
         UserProfile userProfile = user.getUserProfile();
         UserProfileResponse userProfileResponse = new UserProfileResponse();
         userProfileResponse.setUserName(userName);
@@ -56,6 +57,7 @@ public class UserProfileService {
         userProfileResponse.setPostCount(userProfile.getPostCount());
         userProfileResponse.setFollowerCount(userProfile.getFollowerCount());
         userProfileResponse.setFollowingCount(userProfile.getFollowingCount());
+        userProfileResponse.setFollow(isFollow);
         userProfileResponse.setCreatedAt(user.getCreatedAt());
         return userProfileResponse;
     }
@@ -66,7 +68,7 @@ public class UserProfileService {
         for(User searchUser: searchUsers){
             UserProfileResponse response = new UserProfileResponse();
             response.setUserName(searchUser.getUserName());
-            response.setFileURL(searchUser.getUserProfile().getAvatarFileName());
+            response.setFileURL(minioService.getFileURL(searchUser.getUserProfile().getAvatarFileName()));
             responses.add(response);
         }
         return responses;
@@ -92,6 +94,7 @@ public class UserProfileService {
             postResponse.setLikesCount(post.getLikesCount());
             postResponse.setImageURL(minioService.getFileURL(post.getFileName()));
             postResponse.setFileType(fileTypeDetect(post.getFileName()));
+
             postResponses.add(postResponse);
         }
         return postResponses;
@@ -125,12 +128,22 @@ public class UserProfileService {
     public void followOnUser(String userName, Long userId){
         User follower = userRepository.findByUserId(userId);
         User following = userRepository.findByUserName(userName);
-        Follow follow = new Follow();
-        follow.setFollower(follower);
-        follow.setFollowing(following);
-        followRepository.save(follow);
-        userProfileRepository.incrementFollowingCount(userId);
-        userProfileRepository.incrementFollowerCount(following.getUserId());
+        boolean isFollow = followRepository.existsByFollowerUserIdAndFollowingUserId(
+                follower.getUserId(), following.getUserId());
+        if(!isFollow) {
+            Follow follow = new Follow();
+            follow.setFollower(follower);
+            follow.setFollowing(following);
+            followRepository.save(follow);
+            userProfileRepository.incrementFollowingCount(userId);
+            userProfileRepository.incrementFollowerCount(following.getUserId());
+        } else {
+            userProfileRepository.decrementFollowingCount(userId);
+            userProfileRepository.decrementFollowerCount(following.getUserId());
+            Follow follow = followRepository.findByFollowerAndFollowing(follower, following);
+            followRepository.delete(follow);
+        }
+
     }
 
     public List<FollowResponse> getFollower(String userName){

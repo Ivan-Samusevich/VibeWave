@@ -25,8 +25,9 @@ public class UserProfileController {
 
 
     @GetMapping("/showUserProfile")
-    public UserProfileResponse showUserProfile(@RequestParam String userName){ //todo переделать под pathVariable и для id
-        return userProfileService.showUserProfile(userName);
+    public UserProfileResponse showUserProfile(@RequestParam String userName,
+                                               @AuthenticationPrincipal UserDto currentUser){ //todo переделать под pathVariable и для id
+        return userProfileService.showUserProfile(userName, currentUser.getUserId());
     }
 
     //todo переделывать
