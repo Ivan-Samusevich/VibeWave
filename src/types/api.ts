@@ -15,7 +15,7 @@ export interface UserProfileResponse {
   description?: string;
   fileURL?: string;
   createdAt?: string;
-  isFollow?: boolean;
+  follow?: boolean;
 }
 
 export interface UserResponse {

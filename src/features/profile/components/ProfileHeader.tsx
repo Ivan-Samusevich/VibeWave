@@ -69,15 +69,15 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                         ) : (
                             <>
                                 <Button
-                                    variant={profileData.isFollow ? "outline" : "primary"}
+                                    variant={profileData.follow ? "outline" : "primary"}
                                     size="sm"
-                                    className={`cursor-pointer h-9 px-6 font-semibold transition-all ${profileData.isFollow
+                                    className={`cursor-pointer h-9 px-6 font-semibold transition-all ${profileData.follow
                                         ? "dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800"
                                         : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg"
                                         }`}
                                     onClick={onFollow}
                                 >
-                                    {profileData.isFollow ? (
+                                    {profileData.follow ? (
                                         <span className="flex items-center gap-2 font-bold">
                                             <UserCheck className="h-4 w-4" /> Вы подписаны
                                         </span>

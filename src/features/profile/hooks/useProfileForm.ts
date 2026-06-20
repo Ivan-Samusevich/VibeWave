@@ -105,8 +105,8 @@ export const useProfileForm = () => {
       // Toggle state locally
       setProfileData(prev => prev ? {
         ...prev,
-        isFollow: !prev.isFollow,
-        followerCount: prev.isFollow ? prev.followerCount - 1 : prev.followerCount + 1
+        follow: !prev.follow,
+        followerCount: prev.follow ? prev.followerCount - 1 : prev.followerCount + 1
       } : null);
     } catch (error) {
       console.error('Follow failed:', error);
