@@ -17,6 +17,7 @@ public class ChatService {
 
     private final UserRepository userRepository;
     private final ChatRepository chatRepository;
+    private final MinioService minioService;
 
 //    todo в перспективе сделать PageAble(это для того, чтобы из бд брать условно по 10 сообщений, остальные по мере необходимости будут подгружаться)
 
@@ -76,7 +77,9 @@ public class ChatService {
             }
             ChatResponse response = new ChatResponse();
             response.setChatId(chat.getChatId());
-            response.setFileName(secondUser.getUserProfile().getAvatarFileName());
+            if(secondUser.getUserProfile().getAvatarFileName() != null) {
+                response.setFileName(minioService.getFileURL(secondUser.getUserProfile().getAvatarFileName()));
+            }
             response.setUserName(secondUserName);
             responses.add(response);
         }

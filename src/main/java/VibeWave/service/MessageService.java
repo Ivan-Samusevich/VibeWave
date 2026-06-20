@@ -29,8 +29,8 @@ public class MessageService {
             response.setUserName(userRepository.getUsernameById(message.getSenderId()));
             response.setChatId(message.getChatId());
             response.setText(message.getText());
-            response.setCreatedAt(message.getCreatedAt());
-            response.setUpdatedAt(message.getUpdatedAt());
+            response.setCreatedAt(message.getCreatedAt().plusHours(3));
+            response.setUpdatedAt(message.getUpdatedAt().plusHours(3));
             responses.add(response);
         }
         return responses;

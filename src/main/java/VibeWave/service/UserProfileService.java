@@ -68,7 +68,9 @@ public class UserProfileService {
         for(User searchUser: searchUsers){
             UserProfileResponse response = new UserProfileResponse();
             response.setUserName(searchUser.getUserName());
-            response.setFileURL(minioService.getFileURL(searchUser.getUserProfile().getAvatarFileName()));
+            if(searchUser.getUserProfile().getAvatarFileName() != null) {
+                response.setFileURL(minioService.getFileURL(searchUser.getUserProfile().getAvatarFileName()));
+            }
             responses.add(response);
         }
         return responses;
