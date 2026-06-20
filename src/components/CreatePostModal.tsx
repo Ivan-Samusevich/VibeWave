@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { X, Image as ImageIcon, Film, Upload, User } from 'lucide-react';
 import { Button } from './Button';
-import { Input } from './Input';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface CreatePostModalProps {
@@ -66,7 +65,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClos
 
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
               <div 
-                className={`relative aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-colors overflow-hidden ${
+                className={`relative h-48 xs:h-56 sm:h-auto sm:aspect-square w-full rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-colors overflow-hidden ${
                   mediaPreview 
                     ? 'border-transparent bg-zinc-100 dark:bg-zinc-950' 
                     : 'border-zinc-200 dark:border-zinc-800 hover:border-indigo-500 dark:hover:border-indigo-400'
@@ -103,7 +102,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClos
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   placeholder="Добавьте подпись..."
-                  className="w-full min-h-100px p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-indigo-500 outline-none resize-none text-sm dark:text-zinc-100"
+                  className="w-full min-h-25 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-indigo-500 outline-none resize-none text-sm dark:text-zinc-100"
                 />
               </div>
 

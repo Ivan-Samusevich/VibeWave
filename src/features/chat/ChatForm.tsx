@@ -38,7 +38,7 @@ export const ChatForm: React.FC = () => {
           onChatClick={(uname) => navigate(`/chat?user=${uname}`)}
         />
 
-        <section className="flex-1 flex flex-col bg-zinc-50 dark:bg-zinc-950 overflow-hidden">
+        <section className={`flex-1 ${targetUserName ? 'flex' : 'hidden md:flex'} flex-col bg-zinc-50 dark:bg-zinc-950 overflow-hidden`}>
           {!targetUserName ? (
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-zinc-900 md:bg-transparent">
               <motion.div
@@ -60,6 +60,7 @@ export const ChatForm: React.FC = () => {
               <ChatHeader 
                 targetUserName={targetUserName}
                 onRefresh={fetchMessages}
+                onBackClick={() => navigate('/chat')}
               />
 
               <ChatMessages 

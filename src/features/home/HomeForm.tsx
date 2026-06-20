@@ -67,7 +67,7 @@ export const HomeForm: React.FC = () => {
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 transition-colors duration-200">
       <Navbar onAddPostClick={() => setIsModalOpen(true)} />
 
-      <main className="mx-auto max-w-2xl px-4 py-8">
+      <main className="mx-auto max-w-2xl px-4 py-8 pb-24 sm:pb-8">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 space-y-4">
             <div className="h-10 w-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>

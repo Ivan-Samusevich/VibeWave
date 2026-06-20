@@ -31,10 +31,10 @@ export const PostDetailModal: React.FC<PostDetailModalProps> = ({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="relative bg-white dark:bg-zinc-900 w-full max-w-5xl rounded-lg shadow-2xl flex flex-col md:flex-row overflow-hidden max-h-[90vh]"
+            className="relative bg-white dark:bg-zinc-900 w-full max-w-5xl rounded-lg shadow-2xl flex flex-col md:flex-row overflow-y-auto md:overflow-hidden max-h-[95vh] md:max-h-[90vh]"
           >
             {/* Media Part */}
-            <div className="flex-1 bg-black flex items-center justify-center min-h-75">
+            <div className="flex-1 bg-black flex items-center justify-center min-h-48 xs:min-h-64 md:min-h-75">
               {selectedPost.fileType === "video" ? (
                 <video
                   src={selectedPost.imageURL}

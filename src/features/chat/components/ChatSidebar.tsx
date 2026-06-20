@@ -15,7 +15,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = React.memo(({
   onChatClick,
 }) => {
   return (
-    <aside className="w-80 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hidden md:flex flex-col">
+    <aside className={`w-full md:w-80 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 ${targetUserName ? 'hidden md:flex' : 'flex'} flex-col`}>
       <div className="p-4 border-b border-zinc-100 dark:border-zinc-800">
         <h2 className="font-bold text-lg dark:text-zinc-100">Чаты</h2>
       </div>

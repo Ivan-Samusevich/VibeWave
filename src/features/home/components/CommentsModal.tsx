@@ -95,7 +95,7 @@ export const CommentsModal: React.FC<CommentsModalProps> = ({
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="relative bg-white dark:bg-zinc-900 w-full max-w-4xl rounded-xl shadow-2xl flex flex-col md:flex-row overflow-hidden max-h-[90vh] md:h-162.5 border border-zinc-200 dark:border-zinc-800"
+            className="relative bg-white dark:bg-zinc-900 w-full max-w-4xl rounded-xl shadow-2xl flex flex-col md:flex-row overflow-hidden h-[85vh] xs:h-[550px] md:h-162.5 max-h-[90vh] border border-zinc-200 dark:border-zinc-800"
           >
             {/* Left Column: Post Media (Desktop optimized) */}
             <div className="hidden md:flex flex-1 bg-black items-center justify-center overflow-hidden relative">

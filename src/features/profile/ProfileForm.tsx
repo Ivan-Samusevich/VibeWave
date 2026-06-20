@@ -61,7 +61,7 @@ export const ProfileForm: React.FC = () => {
   }
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-8 space-y-8">
+    <main className="mx-auto max-w-4xl px-4 py-8 pb-24 sm:pb-8 space-y-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

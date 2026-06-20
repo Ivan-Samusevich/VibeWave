@@ -55,17 +55,21 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
             <div className="space-y-6">
               <div className="flex flex-col items-center gap-4">
-                <div className="relative h-24 w-24 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 border-2 border-zinc-200 dark:border-zinc-700">
-                  {editPreview || profileData?.fileURL ? (
-                    <img
-                      src={editPreview || profileData?.fileURL}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <User className="h-12 w-12 text-zinc-300 m-6" />
-                  )}
-                  <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer">
-                    <Camera className="text-white h-6 w-6" />
+                <div className="relative h-24 w-24">
+                  <div className="h-full w-full rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 border-2 border-zinc-200 dark:border-zinc-700">
+                    {editPreview || profileData?.fileURL ? (
+                      <img
+                        src={editPreview || profileData?.fileURL}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-zinc-100 dark:bg-zinc-800">
+                        <User className="h-12 w-12 text-zinc-300" />
+                      </div>
+                    )}
+                  </div>
+                  <label className="absolute bottom-0 right-0 h-8 w-8 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center shadow-lg border-2 border-white dark:border-zinc-900 cursor-pointer transition-colors">
+                    <Camera className="h-4 w-4" />
                     <input
                       type="file"
                       className="hidden"
@@ -75,7 +79,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
                   </label>
                 </div>
                 <p className="text-xs text-zinc-500 font-medium whitespace-nowrap">
-                  Нажмите на фото, чтобы изменить аватар
+                  Нажмите на камеру, чтобы загрузить аватар
                 </p>
               </div>
 
