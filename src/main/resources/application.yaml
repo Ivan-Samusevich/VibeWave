@@ -14,6 +14,8 @@ spring:
     hibernate:
       show-sql: true
       generate-ddl: false
+      jdbc:
+        time_zone: Europe/Moscow
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
     enabled: true

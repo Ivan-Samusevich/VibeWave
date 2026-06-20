@@ -24,9 +24,6 @@ databaseChangeLog:
                   type: int
                   constraints:
                     nullable: false
-              #                - column:
-              #                    name: parent_id
-              #                    type: int
               - column:
                   name: text
                   type: text
@@ -54,3 +51,19 @@ databaseChangeLog:
             baseColumnNames: user_id
             referencedTableName: users
             referencedColumnNames: user_id
+
+  - changeSet:
+      id: add-cascade-to-fk_comments_posts
+      author: Ivan_Samusevich
+      comment: add cascade to fk_comments_posts
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: comments
+            constraintName: fk_comments_post
+        - addForeignKeyConstraint:
+            constraintName: fk_comments_posts
+            baseTableName: comments
+            baseColumnNames: post_id
+            referencedTableName: posts
+            referencedColumnNames: post_id
+            onDelete: CASCADE

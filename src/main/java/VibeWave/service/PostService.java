@@ -94,8 +94,7 @@ public class PostService {
     public void deletePost(Long postId, Long userId){
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Пост не найден"));
-        post.setDeleted(true);
-        postRepository.save(post);
+        postRepository.delete(post);
         userProfileRepository.decrementPostCount(userId);
     }
 

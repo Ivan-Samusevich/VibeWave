@@ -34,7 +34,7 @@ public class PostController {
         return postService.getPosts(currentUser);
     }
 
-    @PutMapping("/deletePost/{postId}")
+    @DeleteMapping("/deletePost/{postId}") // todo переделать на то, как было раньше
     public void deletePost(@PathVariable Long postId,
                            @AuthenticationPrincipal UserDto currentUser){
         postService.deletePost(postId, currentUser.getUserId());

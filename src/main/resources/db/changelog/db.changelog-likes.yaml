@@ -46,3 +46,19 @@ databaseChangeLog:
             baseColumnNames: post_id
             referencedTableName: posts
             referencedColumnNames: post_id
+
+  - changeSet:
+      id: add-cascade-to-fk_likes_posts
+      author: Ivan_Samusevich
+      comment: add cascade to fk_likes_posts
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: likes
+            constraintName: fk_likes_posts
+        - addForeignKeyConstraint:
+            constraintName: fk_likes_posts
+            baseTableName: likes
+            baseColumnNames: post_id
+            referencedTableName: posts
+            referencedColumnNames: post_id
+            onDelete: CASCADE
