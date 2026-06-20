@@ -53,3 +53,13 @@ databaseChangeLog:
             baseColumnNames: user_id
             referencedTableName: users
             referencedColumnNames: user_id
+
+  - changeSet:
+      id: make-post-text-nullable-true
+      author: Ivan_Samusevich
+      comment: make post text nullable true
+      changes:
+        - dropNotNullConstraint:
+            tableName: posts
+            columnName: text
+            columnDateType: text

@@ -27,33 +27,21 @@ public class PostService {
 
     @Transactional
     public String createPost(UserDto currentUser, String text, MultipartFile file){
-        String answer = "Проверьте введённые данные";
         User user = userRepository.findByUserId(currentUser.getUserId());
-        if(checkPostData(text))
-        {
-            Post post = new Post();
-            post.setUser(user);
-            post.setText(text);
-            post.setLikesCount(0L);
-            post.setCommentsCount(0L);
-            postRepository.save(post);
-            answer = "Пост создан";
-            String fileName = minioService.uploadFileFromPost(file, post.getPostId());
-            post.setFileName(fileName);
-            postRepository.save(post);
-        }
+        Post post = new Post();
+        post.setUser(user);
+        post.setText(text);
+        post.setLikesCount(0L);
+        post.setCommentsCount(0L);
+        postRepository.save(post);
+        String fileName = minioService.uploadFileFromPost(file, post.getPostId());
+        post.setFileName(fileName);
+        postRepository.save(post);
         userProfileRepository.incrementPostCount(currentUser.getUserId());
-        return answer;
+        return "Post is Create";
 
     }
 
-    private boolean checkPostData(String text) {
-        boolean answer = true;
-        if(text.isEmpty()){
-            answer = false;
-        }
-        return answer;
-    }
 
     public List<PostResponse> getPosts(UserDto currentUser){
         List<Post> posts = postRepository.findAllPosts();
