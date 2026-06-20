@@ -83,7 +83,7 @@ public class PostService {
             postResponse.setImageURL(minioService.getFileURL(post.getFileName()));
             postResponse.setFileType(fileTypeDetect(post.getFileName()));
             postResponse.setScore(post.getLikesCount() * 2 + post.getCommentsCount() * 5); // Лайк - 2 очка, комментарий - 4 очка
-            postResponse.setCreatedAt(post.getCreatedAt());
+            postResponse.setCreatedAt(post.getCreatedAt().plusHours(3));
             postResponses.add(postResponse);
         }
         postResponses.sort(Comparator.comparing(PostResponse::getScore).reversed());

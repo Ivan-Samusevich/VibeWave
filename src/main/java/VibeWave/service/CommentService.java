@@ -66,7 +66,7 @@ public class CommentService {
             if(avatarFileName != null) {
                 commentResponse.setAvatarURL(minioService.getFileURL(avatarFileName));
             }
-            commentResponse.setCreatedAt(comment.getCreatedAt());
+            commentResponse.setCreatedAt(comment.getCreatedAt().plusHours(3));
             commentResponses.add(commentResponse);
         }
 
