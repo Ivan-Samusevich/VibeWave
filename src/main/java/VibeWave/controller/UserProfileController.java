@@ -26,13 +26,12 @@ public class UserProfileController {
 
     @GetMapping("/showUserProfile")
     public UserProfileResponse showUserProfile(@RequestParam String userName,
-                                               @AuthenticationPrincipal UserDto currentUser){ //todo переделать под pathVariable и для id
+                                               @AuthenticationPrincipal UserDto currentUser){
         return userProfileService.showUserProfile(userName, currentUser.getUserId());
     }
 
-    //todo переделывать
     @GetMapping("/showUserPosts")
-    public List<PostResponse> showUserPosts(@RequestParam String userName){ //todo переделать под pathVariable и для id
+    public List<PostResponse> showUserPosts(@RequestParam String userName){
         return userProfileService.showUserPosts(userName);
     }
 
@@ -42,7 +41,7 @@ public class UserProfileController {
     }
 
     @GetMapping("/showSavedPosts")
-    public List<PostResponse> showSavedPosts(@RequestParam String userName){ //todo переделать под pathVariable и для id
+    public List<PostResponse> showSavedPosts(@RequestParam String userName){
         return userProfileService.showSavedPosts(userName);
     }
 
@@ -54,23 +53,18 @@ public class UserProfileController {
         userProfileService.changeUserDescription(description, currentUser.getUserId());
     }
 
-    @PutMapping("/deleteUser")
-    public void deleteUser(@AuthenticationPrincipal UserDto currentUser){
-        userProfileService.deleteUser(currentUser.getUserId());
-    }
-
-    @PostMapping("/follow/{userName}") //todo переделать для id
+    @PostMapping("/follow/{userName}")
     public void followOnUSer(@PathVariable String userName,
                              @AuthenticationPrincipal UserDto currentUser){
         userProfileService.followOnUser(userName, currentUser.getUserId());
     }
 
-    @GetMapping("/showFollowers/{userName}") //todo переделать для id
+    @GetMapping("/showFollowers/{userName}")
     public List<FollowResponse> showFollowers(@PathVariable String userName){
         return userProfileService.getFollower(userName);
     }
 
-    @GetMapping("/showFollowing/{userName}") //todo переделать для id
+    @GetMapping("/showFollowing/{userName}")
     public List<FollowResponse> showFollowing(@PathVariable String userName){
         return userProfileService.getFollowing(userName);
     }

@@ -76,17 +76,10 @@ public class UserProfileService {
         return responses;
     }
 
-    @Transactional
-    public void deleteUser(Long userId){
-        User user = userRepository.findByUserId(userId);
-        user.setDeleted(true);
-        user.getUserProfile().setAvatarFileName("avatars/Deleted_User.png");
-        userRepository.save(user);
-    }
 
     public List<PostResponse> showUserPosts(String userName){
         User user = userRepository.findByUserName(userName);
-        List<Post> posts = postRepository.findAllByUserAndIsDeletedFalse(user);
+        List<Post> posts = postRepository.findAllByUser(user);
         List<PostResponse> postResponses = new ArrayList<>();
         for(Post post : posts){
             PostResponse postResponse = new PostResponse();

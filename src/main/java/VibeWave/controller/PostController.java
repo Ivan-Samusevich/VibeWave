@@ -34,20 +34,20 @@ public class PostController {
         return postService.getPosts(currentUser);
     }
 
-    @DeleteMapping("/deletePost/{postId}") // todo переделать на то, как было раньше
+    @DeleteMapping("/deletePost/{postId}")
     public void deletePost(@PathVariable Long postId,
                            @AuthenticationPrincipal UserDto currentUser){
         postService.deletePost(postId, currentUser.getUserId());
     }
 
-    @PostMapping("/toggleLike/{postId}/{likeStatus}")//todo убрать получение статуса, когда сообщу Вале
+    @PostMapping("/toggleLike/{postId}/{likeStatus}")
     public void putLike(@PathVariable Long postId,
                         @AuthenticationPrincipal UserDto currentUser){
 
         postService.toggleLike(currentUser.getUserId(), postId);
     }
 
-    @PostMapping("/toggleSavedPost/{postId}/{isSaved}") //todo убрать получение статуса, когда сообщу Вале
+    @PostMapping("/toggleSavedPost/{postId}/{isSaved}")
     public void putSavePost(@PathVariable Long postId,
                             @AuthenticationPrincipal UserDto currentUser){
         postService.toggleSavedPost(currentUser.getUserId(), postId);

@@ -1,4 +1,4 @@
-package VibeWave.dto.UserProfile;
+package VibeWave.dto.user;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class UpdateUserProfileRequest {
+public class UserRequest {
 
-    private String description;
+    private String email;
+    private String password;
 }

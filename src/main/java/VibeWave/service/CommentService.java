@@ -37,7 +37,7 @@ public class CommentService {
     }
 
     @Transactional
-    public void updateComment(Long commentId, UpdateCommentRequest updateCommentRequest){ //todo перекинуть id в request
+    public void updateComment(Long commentId, UpdateCommentRequest updateCommentRequest){
         String text = updateCommentRequest.getText();
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Комментарий не найден"));

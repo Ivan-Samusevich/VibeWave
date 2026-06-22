@@ -21,7 +21,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("UPDATE Post p SET p.likesCount = p.likesCount - 1 WHERE p.id = :postId")
     void decrementLikesCount(@Param("postId") Long postId);
 
-    List<Post> findAllByUserAndIsDeletedFalse(User user);
+    List<Post> findAllByUser(User user);
 
     @Query("""
             SELECT p FROM Post p

@@ -11,8 +11,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
 
-    boolean existsByEmailAndPassword(String email, String password);
-
     User findByEmail(String email);
 
     User findByUserId(Long userId);
@@ -21,9 +19,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u.userName FROM User u WHERE u.userId = :userid")
     String getUsernameById(@Param("userid") Long userId);
-
-    @Query("SELECT u.userId FROM User u WHERE u.userName = :username")
-    Long getIdByUsername(@Param("username") String userName);
 
     List<User> findByUserNameContainingIgnoreCase(String searchText);
 }

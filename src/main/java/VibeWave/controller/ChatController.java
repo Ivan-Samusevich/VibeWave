@@ -24,7 +24,6 @@ public class ChatController {
         return chatService.getAllMyChats(currentUser.getUserId());
     }
 
-    //todo добавить контроллер для openChat
     @GetMapping("/openWith/{userName}")
     public ChatResponse openChat(@PathVariable String userName,
                                  @AuthenticationPrincipal UserDto currentUser){

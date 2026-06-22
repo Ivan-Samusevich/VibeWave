@@ -45,3 +45,15 @@ databaseChangeLog:
             baseColumnNames: sender_id
             referencedTableName: users
             referencedColumnNames: user_id
+
+  - changeSet:
+      id: add-fk_messages_chat
+      author: Ivan_Samusevich
+      comment: add fk_messages_chat
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_messages_chat
+            baseTableName: messages
+            baseColumnNames: chat_id
+            referencedTableName: chats
+            referencedColumnNames: chat_id

@@ -21,7 +21,6 @@ public class Message {
 
     private Long senderId;
     private String text;
-    //todo добавить потом статус прочитывания
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

@@ -3,7 +3,10 @@ package VibeWave.service;
 import VibeWave.dto.message.SendMessageRequest;
 import VibeWave.dto.message.MessageResponse;
 import VibeWave.dto.message.UpdateMessageRequest;
+import VibeWave.entity.Chat;
 import VibeWave.entity.Message;
+import VibeWave.entity.User;
+import VibeWave.repository.ChatRepository;
 import VibeWave.repository.MessageRepository;
 import VibeWave.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +43,6 @@ public class MessageService {
     @Transactional
     public MessageResponse sendMessage(SendMessageRequest request){
 
-
         Message message = new Message();
         message.setChatId(request.getChatId());
         message.setSenderId(request.getSenderId());
@@ -51,7 +54,7 @@ public class MessageService {
                 .chatId(message.getChatId())
                 .userName(userRepository.getUsernameById(message.getSenderId()))
                 .text(message.getText())
-                .createdAt(message.getCreatedAt())
+                .createdAt(message.getCreatedAt().plusHours(3))
                 .build();
     }
 

@@ -19,8 +19,6 @@ public class ChatService {
     private final ChatRepository chatRepository;
     private final MinioService minioService;
 
-//    todo в перспективе сделать PageAble(это для того, чтобы из бд брать условно по 10 сообщений, остальные по мере необходимости будут подгружаться)
-
     public Chat getOrCreateChat(Long firstUserId, Long secondUserId){
 
         Long firstId = Math.min(firstUserId, secondUserId);
@@ -45,17 +43,9 @@ public class ChatService {
         Long firstId = Math.min(currentUser.getUserId(), secondUser.getUserId());
         Long secondId = Math.max(currentUser.getUserId(), secondUser.getUserId());
 
-
         Chat chat = getOrCreateChat(firstId, secondId);
 
-        String secondUserName;
-        if(secondUser.isDeleted()) {
-            secondUserName = "User is Deleted";
-        } else {
-            secondUserName = secondUser.getUserName();
-        }
-
-        return new ChatResponse(chat.getChatId(), secondUserName, secondUser.getUserProfile().getAvatarFileName());
+        return new ChatResponse(chat.getChatId(), secondUser.getUserName(), secondUser.getUserProfile().getAvatarFileName());
     }
 
     public List<ChatResponse> getAllMyChats(Long myId){
@@ -69,18 +59,13 @@ public class ChatService {
             } else {
                 secondUser = userRepository.findByUserId(chat.getFirstUser().getUserId());
             }
-            String secondUserName;
-            if(secondUser.isDeleted()) {
-                secondUserName = "User is Deleted";
-            } else {
-                secondUserName = secondUser.getUserName();
-            }
+
             ChatResponse response = new ChatResponse();
             response.setChatId(chat.getChatId());
             if(secondUser.getUserProfile().getAvatarFileName() != null) {
                 response.setFileName(minioService.getFileURL(secondUser.getUserProfile().getAvatarFileName()));
             }
-            response.setUserName(secondUserName);
+            response.setUserName(secondUser.getUserName());
             responses.add(response);
         }
         return responses;

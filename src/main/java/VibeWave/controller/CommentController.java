@@ -27,7 +27,7 @@ public class CommentController {
                                 @PathVariable Long postId,
                                 @RequestBody CreateCommentRequest commentRequest){
         commentService.createComment(postId, currentUser.getUserId(), commentRequest.getText());
-        return "Comment is create"; //todo потом переделать
+        return "Comment is create";
     }
 
     @GetMapping("/getComments/{postId}")
@@ -37,7 +37,7 @@ public class CommentController {
 
     @PutMapping("/updateComment/{commentId}")
     public void updateComment(@PathVariable Long commentId,
-                              @RequestBody UpdateCommentRequest updateCommentRequest){ // todo переделать id в request не получать из PathVariable
+                              @RequestBody UpdateCommentRequest updateCommentRequest){
         commentService.updateComment(commentId, updateCommentRequest);
     }
 

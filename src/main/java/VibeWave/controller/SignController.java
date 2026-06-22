@@ -4,6 +4,7 @@ import VibeWave.config.JwtTokenUtil;
 import VibeWave.dto.AuthResponse;
 import VibeWave.dto.SignResult;
 import VibeWave.dto.UserDto;
+import VibeWave.dto.user.UserRequest;
 import VibeWave.entity.User;
 import VibeWave.service.SignService;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +27,8 @@ public class SignController {
     private final SignService signService;
 
     @PostMapping("/signin")
-    public ResponseEntity<AuthResponse> signIn(@RequestBody User user){
-        SignResult result = signService.signIn(user);
+    public ResponseEntity<AuthResponse> signIn(@RequestBody UserRequest request){
+        SignResult result = signService.signIn(request);
 
         ResponseCookie cookie = ResponseCookie.from("refreshToken", result.getRefreshToken())
                 .httpOnly(true)

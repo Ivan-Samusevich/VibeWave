@@ -52,11 +52,7 @@ public class PostService {
             PostResponse postResponse = new PostResponse();
             postResponse.setId(post.getPostId());
             postResponse.setUserId(post.getUser().getUserId());
-            if(post.getUser().isDeleted()){
-                postResponse.setUserName("User is Deleted");
-            } else {
-                postResponse.setUserName(post.getUser().getUserName());
-            }
+            postResponse.setUserName(post.getUser().getUserName());
             String avatarFileName = post.getUser().getUserProfile().getAvatarFileName();
             if(avatarFileName != null) {
                 postResponse.setAvatarURL(minioService.getFileURL(avatarFileName));
@@ -117,7 +113,7 @@ public class PostService {
 
     @Transactional
     public void toggleLike(Long userId, Long postId){
-        //todo разобраться с тем, как сделать так, чтобы отображался статус лайка(Есть он или нет)
+
         User user = userRepository.findByUserId(userId);
         Post post = postRepository.findByPostId(postId);
 

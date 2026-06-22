@@ -8,9 +8,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface UserProfileRepository extends JpaRepository<UserProfile, Long> {
 
-    @Query("SELECT u.avatarFileName FROM UserProfile u WHERE u.id = :userProfileId")
-    String findAvatarFileNameByUserProfileId(Long userProfileId);
-
     @Modifying
     @Query("UPDATE UserProfile u SET u.postCount = u.postCount + 1 WHERE u.id = :userId")
     void incrementPostCount(@Param("userId") Long userId);
